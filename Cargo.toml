@@ -1,3 +1,7 @@
 [workspace]
 resolver = "2"
 members = ["modparser"]
+
+[workspace.dependencies]
+thiserror = "1.0.58"
+tempfile = "3.10.1"
