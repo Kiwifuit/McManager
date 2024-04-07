@@ -1,4 +1,3 @@
-use std::fmt::Error;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
