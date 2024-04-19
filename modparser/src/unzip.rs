@@ -25,27 +25,29 @@ pub enum UnzipError {
     WriteToTempFile,
 }
 
-pub fn grab_meta_file<F: AsRef<Path>>(file: F) -> Result<File, UnzipError> {
+pub fn grab_meta_file<F: AsRef<Path>>(file: F) -> Result<String, UnzipError> {
     let zipfile = File::open(file)?;
     let mut archive = ZipArchive::new(zipfile)?;
 
     let mut file = archive
         .by_name(MOD_META_FILE)
         .or(Err(UnzipError::MetaFileNotFound))?;
-    let mut outfile = tempfile::tempfile().or(Err(UnzipError::TempFileNotMade))?;
+    // let mut outfile = tempfile::tempfile().or(Err(UnzipError::TempFileNotMade))?;
 
-    let mut buf = vec![];
-    file.read_to_end(&mut buf)
+    let mut buf = String::new();
+    file.read_to_string(&mut buf)
         .or(Err(UnzipError::WriteToTempFile))?;
-    outfile
-        .write_all(&buf)
-        .or(Err(UnzipError::WriteToTempFile))?;
+    // outfile
+    //     .write_all(&buf)
+    //     .or(Err(UnzipError::WriteToTempFile))?;
 
-    Ok(outfile)
+    Ok(buf)
 }
 
 #[cfg(test)]
 mod tests {
+    use std::io::Read;
+
     use super::grab_meta_file;
 
     #[test]
@@ -53,7 +55,14 @@ mod tests {
         let file = "samples/tisadvanced-1.19.2-0.3.0.jar";
         let res = grab_meta_file(file);
 
-        dbg!(&res);
+        assert!(res.is_ok());
+    }
+
+    #[test]
+    fn meta_readable() {
+        let file = "samples/tisadvanced-1.19.2-0.3.0.jar";
+        let res = grab_meta_file(file);
+
         assert!(res.is_ok());
     }
 }
