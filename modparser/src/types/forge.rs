@@ -200,7 +200,8 @@ pub enum ModVersionRangeMode {
 mod tests {
     use super::*;
     use crate::unzip::grab_meta_file;
-    use toml::{from_str, toml};
+    use std::fs::read_dir;
+    use toml::from_str;
 
     #[test]
     fn mod_version() {
@@ -384,6 +385,15 @@ mod tests {
         assert!(mod_version.is_ok());
 
         let mod_version = mod_version.unwrap();
+
+        assert_eq!(
+            mod_version.from,
+            ModVersion {
+                major: Some(1),
+                minor: Some(2),
+                patch: Some(3)
+            }
+        );
 
         assert_eq!(
             mod_version.to,
