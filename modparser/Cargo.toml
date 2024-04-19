@@ -2,6 +2,10 @@
 name = "modparser"
 version = "0.1.0"
 edition = "2021"
+description = "Library to parse minecraft mod (*.jar) files"
+license = "GPL-v3"
+repository = "https://github.com/Kiwifuit/McManager"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
