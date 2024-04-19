@@ -244,6 +244,20 @@ mod tests {
         assert_eq!(version_parsed.patch, None);
     }
 
+        #[test]
+    fn mod_version_major_minor_patch() {
+        let version_raw = "1.2.3";
+
+        let version = version_raw.parse::<ModVersion>();
+        assert!(version.is_ok());
+
+        let version_parsed = version.unwrap();
+
+        assert_eq!(version_parsed.major, Some(1));
+        assert_eq!(version_parsed.minor, Some(2));
+        assert_eq!(version_parsed.patch, Some(3));
+    }
+
     #[test]
     fn version_range_unclosed() {
         let version = "[1.2.3,";
