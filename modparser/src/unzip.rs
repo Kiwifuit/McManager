@@ -46,7 +46,7 @@ mod tests {
 
     #[test]
     fn meta_get() {
-        let file = "samples/tisadvanced-1.19.2-0.3.0.jar";
+        let file = "samples/forge/tisadvanced-1.19.2-0.3.0.jar";
         let res = grab_meta_file(file);
 
         assert!(res.is_ok());
@@ -54,7 +54,7 @@ mod tests {
 
     #[test]
     fn meta_readable() {
-        let file = "samples/tisadvanced-1.19.2-0.3.0.jar";
+        let file = "samples/forge/tisadvanced-1.19.2-0.3.0.jar";
         let res = grab_meta_file(file);
 
         assert!(res.is_ok());
