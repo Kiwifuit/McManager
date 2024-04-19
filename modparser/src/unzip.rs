@@ -32,22 +32,16 @@ pub fn grab_meta_file<F: AsRef<Path>>(file: F) -> Result<String, UnzipError> {
     let mut file = archive
         .by_name(MOD_META_FILE)
         .or(Err(UnzipError::MetaFileNotFound))?;
-    // let mut outfile = tempfile::tempfile().or(Err(UnzipError::TempFileNotMade))?;
 
     let mut buf = String::new();
     file.read_to_string(&mut buf)
         .or(Err(UnzipError::WriteToTempFile))?;
-    // outfile
-    //     .write_all(&buf)
-    //     .or(Err(UnzipError::WriteToTempFile))?;
 
     Ok(buf)
 }
 
 #[cfg(test)]
 mod tests {
-    use std::io::Read;
-
     use super::grab_meta_file;
 
     #[test]

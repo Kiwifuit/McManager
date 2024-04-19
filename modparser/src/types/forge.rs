@@ -1,46 +1,139 @@
-use std::path::Path;
+use std::collections::HashMap;
+use std::path::PathBuf;
 use std::str::FromStr;
 
+use serde::de::{Deserializer, MapAccess, Visitor};
 use serde::Deserialize;
 use thiserror::Error;
 
+#[derive(Deserialize, Debug)]
 pub struct ModManifest {
-    mod_loader: String,
-    loader_version: ModVersionRange,
-    license: String,
-    issue_tracker: String,
-    homepage_url: String,
+    #[serde(rename = "modLoader")]
+    pub mod_loader: String,
+    #[serde(rename = "loaderVersion")]
+    pub loader_version: ModVersion,
+    pub license: String,
+    #[serde(rename = "issueTrackerURL")]
+    pub issue_tracker: Option<String>,
+    #[serde(rename = "displayURL")]
+    pub homepage_url: Option<String>,
+    pub mods: Vec<Mod>,
+    pub dependencies: Option<HashMap<String, Vec<Dependency>>>,
 }
 
+#[derive(Deserialize, Debug)]
 pub struct Mod {
-    id: String,
-    version: ModVersion,
-    display_name: String,
-    authors: String,
-    credits: String,
-    description: String,
-    update_url: String,
-    homepage_url: String,
-    logo: Path,
+    #[serde(rename = "modId")]
+    pub id: String,
+    pub version: String,
+    #[serde(rename = "displayName")]
+    pub display_name: String,
+    pub authors: Option<Authors>,
+    pub credits: Option<String>,
+    pub description: String,
+    #[serde(rename = "updateJSONURL")]
+    pub update_url: Option<String>,
+    #[serde(rename = "displayURL")]
+    pub homepage_url: Option<String>,
+    #[serde(rename = "logoFile")]
+    pub logo: Option<PathBuf>,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum Authors {
+    SingleAuthor(String),
+    MultipleAuthors(Vec<String>),
+}
+
+#[derive(Debug)]
+pub enum ModVersion {
+    Any,
+    VersionRange(ModVersionRange),
+    SpecificVersion(ModSemver),
+}
+
+impl<'de> Deserialize<'de> for ModVersion {
+    fn deserialize<D>(deserializer: D) -> Result<ModVersion, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct ModLoeaderVersionVisitor;
+
+        impl<'de> Visitor<'de> for ModLoeaderVersionVisitor {
+            type Value = ModVersion;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("valid string or struct representing ModLoeaderVersion variant")
+            }
+
+            fn visit_str<E>(self, value: &str) -> Result<ModVersion, E>
+            where
+                E: serde::de::Error,
+            {
+                match value {
+                    "*" => Ok(ModVersion::Any),
+                    version if version.chars().nth(0).unwrap().is_numeric() => {
+                        Ok(ModVersion::SpecificVersion(
+                            version.parse().map_err(serde::de::Error::custom)?,
+                        ))
+                    }
+                    version => Ok(if version.starts_with('[') {
+                        ModVersion::VersionRange(version.parse().map_err(serde::de::Error::custom)?)
+                    } else {
+                        eprintln!("Hellow!");
+                        ModVersion::SpecificVersion(
+                            version.parse().map_err(serde::de::Error::custom)?,
+                        )
+                    }),
+                }
+            }
+
+            fn visit_map<A>(self, mut access: A) -> Result<ModVersion, A::Error>
+            where
+                A: MapAccess<'de>,
+            {
+                let my_struct = ModVersionRange::deserialize(
+                    serde::de::value::MapAccessDeserializer::new(&mut access),
+                )?;
+                Ok(ModVersion::VersionRange(my_struct))
+            }
+        }
+
+        deserializer.deserialize_any(ModLoeaderVersionVisitor)
+    }
+}
+
+#[derive(Deserialize, Debug)]
 pub struct Dependency {
-    id: String,
-    version: ModVersion,
-    mandatory: bool,
-    version_range: ModVersionRange,
-    ordering: String,
-    side: String,
+    #[serde(rename = "modId")]
+    pub id: String,
+    // pub version: ModVersion,
+    pub mandatory: bool,
+    #[serde(rename = "versionRange")]
+    pub version_range: ModVersion,
+    pub ordering: Option<String>,
+    pub side: String,
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct ModVersion {
-    major: Option<u32>,
-    minor: Option<u32>,
-    patch: Option<u32>,
+pub struct ModSemver {
+    pub major: Option<u32>,
+    pub minor: Option<u32>,
+    pub patch: Option<u32>,
 }
 
-impl FromStr for ModVersion {
+impl<'de> Deserialize<'de> for ModSemver {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let mod_data = String::deserialize(deserializer)?;
+        mod_data.parse().map_err(serde::de::Error::custom)
+    }
+}
+
+impl FromStr for ModSemver {
     type Err = ModVersionParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -54,7 +147,7 @@ impl FromStr for ModVersion {
             })
             .collect::<Vec<Result<u32, ModVersionParseError>>>();
 
-        Ok(ModVersion {
+        Ok(ModSemver {
             major: a.first().and_then(|some_case| some_case.to_owned().ok()),
             minor: a.get(1).and_then(|some_case| some_case.to_owned().ok()),
             patch: a.get(2).and_then(|some_case| some_case.to_owned().ok()),
@@ -70,18 +163,8 @@ pub enum ModVersionParseError {
 
 #[derive(Debug)]
 pub struct ModVersionRange {
-    from: ModVersion,
-    to: Option<ModVersion>,
-    mode: ModVersionRangeMode,
-}
-
-impl ModVersionRange {
-    fn is_infinity(version: &Option<ModVersion>) -> bool {
-        if let Some(max_version) = version {
-            max_version.major.is_none()
-                && max_version.minor.is_none()
-    pub from: ModVersion,
-    pub to: Option<ModVersion>,
+    pub from: ModSemver,
+    pub to: Option<ModSemver>,
     pub mode: ModVersionRangeMode,
 }
 
@@ -96,7 +179,7 @@ impl<'de> Deserialize<'de> for ModVersionRange {
 }
 
 impl ModVersionRange {
-    fn is_infinity(version: &Option<ModVersion>) -> bool {
+    fn is_infinity(version: &Option<ModSemver>) -> bool {
         if let Some(max_version) = version {
             max_version.major.is_none()
                 && max_version.minor.is_none()
@@ -117,7 +200,7 @@ impl FromStr for ModVersionRange {
 
         if delimeter_loc.is_none() && closing_loc.is_none() {
             // we assume that we will find a comma somewhere
-            return Err(ModVersionRangeParseError::Malformed);
+            return Err(ModVersionRangeParseError::Malformed(s.to_string()));
         } else if delimeter_loc.is_none() && closing_loc.is_some() {
             // we assume that we are given a 'strict version requirement'
             // e.g. STRICTLY 1.19.2 and no other version
@@ -135,11 +218,11 @@ impl FromStr for ModVersionRange {
         let delimeter_loc = delimeter_loc.unwrap_or(closing_loc.unwrap());
         let strlen = s.len();
 
-        let ver_min = s[1..delimeter_loc].parse::<ModVersion>();
+        let ver_min = s[1..delimeter_loc].parse::<ModSemver>();
         let ver_max = if is_strict_version {
             None
         } else {
-            s[delimeter_loc + 1..strlen - 1].parse::<ModVersion>().ok()
+            s[delimeter_loc + 1..strlen - 1].parse::<ModSemver>().ok()
         };
         let mode = if is_strict_version {
             ModVersionRangeMode::None
@@ -151,8 +234,6 @@ impl FromStr for ModVersionRange {
                 ']' => ModVersionRangeMode::BetweenInclusive,
                 _ => ModVersionRangeMode::None,
             }
-        } else {
-            ModVersionRangeMode::GreaterThan
         };
 
         Ok(ModVersionRange {
@@ -165,8 +246,8 @@ impl FromStr for ModVersionRange {
 
 #[derive(Error, Debug, PartialEq, Eq)]
 pub enum ModVersionRangeParseError {
-    #[error("string is malformed")]
-    Malformed,
+    #[error("string {0:?} is malformed")]
+    Malformed(String),
 
     #[error("string does not supply a minimum version")]
     NoMinimum,
@@ -207,7 +288,7 @@ mod tests {
     fn mod_version() {
         let version_raw = "1.2.3";
 
-        let version = version_raw.parse::<ModVersion>();
+        let version = version_raw.parse::<ModSemver>();
         assert!(version.is_ok());
 
         let version_parsed = version.unwrap();
@@ -221,7 +302,7 @@ mod tests {
     fn mod_version_major() {
         let version_raw = "1";
 
-        let version = version_raw.parse::<ModVersion>();
+        let version = version_raw.parse::<ModSemver>();
         assert!(version.is_ok());
 
         let version_parsed = version.unwrap();
@@ -235,7 +316,7 @@ mod tests {
     fn mod_version_major_minor() {
         let version_raw = "1.2";
 
-        let version = version_raw.parse::<ModVersion>();
+        let version = version_raw.parse::<ModSemver>();
         assert!(version.is_ok());
 
         let version_parsed = version.unwrap();
@@ -245,11 +326,11 @@ mod tests {
         assert_eq!(version_parsed.patch, None);
     }
 
-        #[test]
+    #[test]
     fn mod_version_major_minor_patch() {
         let version_raw = "1.2.3";
 
-        let version = version_raw.parse::<ModVersion>();
+        let version = version_raw.parse::<ModSemver>();
         assert!(version.is_ok());
 
         let version_parsed = version.unwrap();
@@ -279,7 +360,7 @@ mod tests {
         assert!(mod_version.is_err());
         assert_eq!(
             mod_version.unwrap_err(),
-            ModVersionRangeParseError::Malformed
+            ModVersionRangeParseError::Malformed("[1.2.3".to_string())
         )
     }
 
@@ -306,7 +387,7 @@ mod tests {
 
         assert_eq!(
             mod_version.from,
-            ModVersion {
+            ModSemver {
                 major: Some(1),
                 minor: Some(2),
                 patch: Some(3)
@@ -315,7 +396,7 @@ mod tests {
 
         assert_eq!(
             mod_version.to,
-            Some(ModVersion {
+            Some(ModSemver {
                 major: Some(4),
                 minor: Some(5),
                 patch: Some(6)
@@ -336,7 +417,7 @@ mod tests {
 
         assert_eq!(
             mod_version.from,
-            ModVersion {
+            ModSemver {
                 major: Some(1),
                 minor: Some(2),
                 patch: Some(3)
@@ -345,7 +426,7 @@ mod tests {
 
         assert_eq!(
             mod_version.to,
-            Some(ModVersion {
+            Some(ModSemver {
                 major: Some(4),
                 minor: Some(5),
                 patch: Some(6)
@@ -366,7 +447,7 @@ mod tests {
 
         assert_eq!(
             mod_version.from,
-            ModVersion {
+            ModSemver {
                 major: Some(1),
                 minor: Some(2),
                 patch: Some(3)
@@ -388,7 +469,7 @@ mod tests {
 
         assert_eq!(
             mod_version.from,
-            ModVersion {
+            ModSemver {
                 major: Some(1),
                 minor: Some(2),
                 patch: Some(3)
@@ -397,7 +478,7 @@ mod tests {
 
         assert_eq!(
             mod_version.to,
-            Some(ModVersion {
+            Some(ModSemver {
                 major: None,
                 minor: None,
                 patch: None
@@ -407,5 +488,22 @@ mod tests {
         assert_eq!(mod_version.mode, ModVersionRangeMode::GreaterThan)
     }
 
-    // modparser/samples/architectury-6.6.92-forge.jar
+    #[test]
+    fn mod_manifest() {
+        for file in read_dir("samples/forge/").unwrap() {
+            let file = file.unwrap();
+
+            if file.file_type().unwrap().is_dir() {
+                continue;
+            }
+
+            let mod_meta = from_str::<ModManifest>(
+                grab_meta_file(file.path())
+                    .expect("expected meta file to be grabbed")
+                    .as_str(),
+            );
+
+            assert!(mod_meta.is_ok());
+        }
+    }
 }
