@@ -80,6 +80,26 @@ impl ModVersionRange {
         if let Some(max_version) = version {
             max_version.major.is_none()
                 && max_version.minor.is_none()
+    pub from: ModVersion,
+    pub to: Option<ModVersion>,
+    pub mode: ModVersionRangeMode,
+}
+
+impl<'de> Deserialize<'de> for ModVersionRange {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let mod_data = String::deserialize(deserializer)?;
+        mod_data.parse().map_err(serde::de::Error::custom)
+    }
+}
+
+impl ModVersionRange {
+    fn is_infinity(version: &Option<ModVersion>) -> bool {
+        if let Some(max_version) = version {
+            max_version.major.is_none()
+                && max_version.minor.is_none()
                 && max_version.patch.is_none()
         } else {
             true
@@ -93,10 +113,15 @@ impl FromStr for ModVersionRange {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let delimeter_loc = s.find(',');
         let closing_loc = s.find(']').or(s.find(')'));
+        let mut is_strict_version = false;
 
-        if delimeter_loc.is_none() {
+        if delimeter_loc.is_none() && closing_loc.is_none() {
             // we assume that we will find a comma somewhere
             return Err(ModVersionRangeParseError::Malformed);
+        } else if delimeter_loc.is_none() && closing_loc.is_some() {
+            // we assume that we are given a 'strict version requirement'
+            // e.g. STRICTLY 1.19.2 and no other version
+            is_strict_version = true;
         } else if delimeter_loc.unwrap() == 1 {
             // we assume that we will find a minimum version at the beginning
             return Err(ModVersionRangeParseError::NoMinimum);
@@ -107,12 +132,20 @@ impl FromStr for ModVersionRange {
             return Err(ModVersionRangeParseError::Unclosed);
         }
 
-        let delimeter_loc = delimeter_loc.unwrap();
+        let delimeter_loc = delimeter_loc.unwrap_or(closing_loc.unwrap());
         let strlen = s.len();
 
         let ver_min = s[1..delimeter_loc].parse::<ModVersion>();
-        let ver_max = s[delimeter_loc + 1..strlen - 1].parse::<ModVersion>().ok();
-        let mode = if !Self::is_infinity(&ver_max) {
+        let ver_max = if is_strict_version {
+            None
+        } else {
+            s[delimeter_loc + 1..strlen - 1].parse::<ModVersion>().ok()
+        };
+        let mode = if is_strict_version {
+            ModVersionRangeMode::None
+        } else if Self::is_infinity(&ver_max) {
+            ModVersionRangeMode::GreaterThan
+        } else {
             match s.chars().nth(closing_loc.unwrap()).unwrap() {
                 ')' => ModVersionRangeMode::Between,
                 ']' => ModVersionRangeMode::BetweenInclusive,
@@ -225,7 +258,7 @@ mod tests {
 
     #[test]
     fn version_range_malformed() {
-        let version = "[1.2.3)";
+        let version = "[1.2.3";
 
         let mod_version = version.parse::<ModVersionRange>();
         assert!(mod_version.is_err());
@@ -305,6 +338,28 @@ mod tests {
         );
 
         assert_eq!(mod_version.mode, ModVersionRangeMode::BetweenInclusive)
+    }
+
+    #[test]
+    fn version_range_shouldnt_fail_single_inclusive() {
+        let version = "[1.2.3]";
+
+        let mod_version = version.parse::<ModVersionRange>();
+        assert!(mod_version.is_ok());
+
+        let mod_version = mod_version.unwrap();
+
+        assert_eq!(
+            mod_version.from,
+            ModVersion {
+                major: Some(1),
+                minor: Some(2),
+                patch: Some(3)
+            }
+        );
+
+        assert_eq!(mod_version.to, None);
+        assert_eq!(mod_version.mode, ModVersionRangeMode::None)
     }
 
     #[test]
