@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["modparser"]
+members = ["modparser", "modrinth"]
 
 [workspace.dependencies]
 serde = { version = "1.0.197", features = ["derive"] }
