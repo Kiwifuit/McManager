@@ -5,21 +5,12 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[[bin]]
-name = "modrinth-cli"
-path = "src/bin.rs"
-required-features = ["clap"]
-
 [dependencies]
 serde.workspace = true
 thiserror.workspace = true
 tempfile.workspace = true
 reqwest = "0.12.4"
 tokio = { version = "1.37.0", features = ["full"] }
-clap = { version = "4.5.4", optional = true }
 
 [lints]
 workspace = true
-
-[features]
-clap = ["dep:clap"]
