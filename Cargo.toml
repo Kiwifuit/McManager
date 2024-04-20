@@ -4,6 +4,7 @@ members = ["modparser", "modrinth"]
 
 [workspace.dependencies]
 serde = { version = "1.0.197", features = ["derive"] }
+log = "0.4.21"
 thiserror = "1.0.58"
 tempfile = "3.10.1"
 

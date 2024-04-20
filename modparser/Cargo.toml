@@ -11,8 +11,9 @@ readme = "README.md"
 
 [dependencies]
 zip = { version = "0.6.6", default-features = false, features = ["deflate"] }
-thiserror = { workspace = true }
-serde = { workspace = true }
+serde.workspace = true
+thiserror.workspace = true
+log.workspace = true
 
 [dev-dependencies]
 toml = "0.8.12"

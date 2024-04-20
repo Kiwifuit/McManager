@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use log::debug;
 use reqwest::Client;
 use thiserror::Error;
 
@@ -12,6 +13,7 @@ pub enum APIError {
 }
 
 pub async fn check_api() -> Result<(bool, Client), APIError> {
+    debug!("building client");
     let client = Client::builder()
         .user_agent(format!(
             "{} using {} v{}",
@@ -25,6 +27,7 @@ pub async fn check_api() -> Result<(bool, Client), APIError> {
         .redirect(reqwest::redirect::Policy::none())
         .build()?;
 
+    debug!("vibe checking modrinth endpoint at {:?}", ENDPOINT);
     let resp = client.get(ENDPOINT).send().await;
 
     Ok((resp.is_ok(), client))

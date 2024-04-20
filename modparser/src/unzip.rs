@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 
+use log::debug;
 use thiserror::Error;
 use zip::ZipArchive;
 
@@ -43,16 +44,27 @@ pub fn grab_meta_file<F: AsRef<Path>>(file: F, ml_type: ModLoader) -> Result<Mod
 
     let (config_file, loader) = match ml_type {
         ModLoader::Guess => {
+            debug!("guessing the type of mod");
+
             if archive.by_name(FORGE_META).is_ok() {
+                debug!("determined that the mod is a Forge mod");
                 (FORGE_META, ModLoader::Forge)
             } else {
+                debug!("determined that the mod is a Fabric mod");
                 (FABRIC_META, ModLoader::Fabric)
             }
         }
-        ModLoader::Forge => (FORGE_META, ModLoader::Forge),
-        ModLoader::Fabric => (FABRIC_META, ModLoader::Fabric),
+        ModLoader::Forge => {
+            debug!("determined that the mod is a Forge mod");
+            (FORGE_META, ModLoader::Forge)
+        }
+        ModLoader::Fabric => {
+            debug!("determined that the mod is a Fabric mod");
+            (FABRIC_META, ModLoader::Fabric)
+        }
     };
 
+    debug!("grabbing the mod's metadata at {}", &config_file);
     let mut file = archive
         .by_name(config_file)
         .or(Err(UnzipError::MetaFileNotFound))?;
