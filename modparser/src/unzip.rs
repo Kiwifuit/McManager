@@ -9,7 +9,7 @@ const FORGE_META: &str = "META-INF/mods.toml";
 const FABRIC_META: &str = "fabric.mod.json";
 
 pub struct ModMeta {
-    pub(crate) loader: ModLoader,
+    pub loader: ModLoader,
     pub raw: String,
 }
 
