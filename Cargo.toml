@@ -9,6 +9,6 @@ thiserror = "1.0.58"
 tempfile = "3.10.1"
 
 [workspace.lints.clippy]
-dbg_macro = "warn"
+dbg_macro = "forbid"
 allow_attributes = "forbid"
 collection_is_never_read = "forbid"
