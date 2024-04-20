@@ -121,8 +121,6 @@ mod tests {
                 continue;
             }
 
-            dbg!(&file);
-
             let mod_meta = from_str::<FabricMod>(
                 grab_meta_file(file.path(), crate::unzip::ModLoader::Fabric)
                     .expect("expected meta file to be grabbed")
@@ -130,7 +128,6 @@ mod tests {
                     .as_str(),
             );
 
-            dbg!(&mod_meta);
             assert!(mod_meta.is_ok());
         }
     }
