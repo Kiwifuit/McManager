@@ -7,28 +7,28 @@ use serde::Deserialize;
 use thiserror::Error;
 
 #[derive(Deserialize, Debug)]
-pub struct ModManifest {
+pub struct ForgeMod {
     #[serde(rename = "modLoader")]
     pub mod_loader: String,
     #[serde(rename = "loaderVersion")]
-    pub loader_version: ModVersion,
+    pub loader_version: ForgeModVersion,
     pub license: String,
     #[serde(rename = "issueTrackerURL")]
     pub issue_tracker: Option<String>,
     #[serde(rename = "displayURL")]
     pub homepage_url: Option<String>,
-    pub mods: Vec<Mod>,
-    pub dependencies: Option<HashMap<String, Vec<Dependency>>>,
+    pub mods: Vec<ForgeModMetadata>,
+    pub dependencies: Option<HashMap<String, Vec<ForgeModDependency>>>,
 }
 
 #[derive(Deserialize, Debug)]
-pub struct Mod {
+pub struct ForgeModMetadata {
     #[serde(rename = "modId")]
     pub id: String,
     pub version: String,
     #[serde(rename = "displayName")]
     pub display_name: String,
-    pub authors: Option<Authors>,
+    pub authors: Option<ForgeModAuthors>,
     pub credits: Option<String>,
     pub description: String,
     #[serde(rename = "updateJSONURL")]
@@ -41,62 +41,64 @@ pub struct Mod {
 
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
-pub enum Authors {
+pub enum ForgeModAuthors {
     SingleAuthor(String),
     MultipleAuthors(Vec<String>),
 }
 
 #[derive(Debug)]
-pub enum ModVersion {
+pub enum ForgeModVersion {
     Any,
     VersionRange(ModVersionRange),
     SpecificVersion(ModSemver),
 }
 
-impl<'de> Deserialize<'de> for ModVersion {
-    fn deserialize<D>(deserializer: D) -> Result<ModVersion, D::Error>
+impl<'de> Deserialize<'de> for ForgeModVersion {
+    fn deserialize<D>(deserializer: D) -> Result<ForgeModVersion, D::Error>
     where
         D: Deserializer<'de>,
     {
         struct ModLoeaderVersionVisitor;
 
         impl<'de> Visitor<'de> for ModLoeaderVersionVisitor {
-            type Value = ModVersion;
+            type Value = ForgeModVersion;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
                 formatter.write_str("valid string or struct representing ModLoeaderVersion variant")
             }
 
-            fn visit_str<E>(self, value: &str) -> Result<ModVersion, E>
+            fn visit_str<E>(self, value: &str) -> Result<ForgeModVersion, E>
             where
                 E: serde::de::Error,
             {
                 match value {
-                    "*" => Ok(ModVersion::Any),
+                    "*" => Ok(ForgeModVersion::Any),
                     version if version.chars().nth(0).unwrap().is_numeric() => {
-                        Ok(ModVersion::SpecificVersion(
+                        Ok(ForgeModVersion::SpecificVersion(
                             version.parse().map_err(serde::de::Error::custom)?,
                         ))
                     }
                     version => Ok(if version.starts_with('[') {
-                        ModVersion::VersionRange(version.parse().map_err(serde::de::Error::custom)?)
+                        ForgeModVersion::VersionRange(
+                            version.parse().map_err(serde::de::Error::custom)?,
+                        )
                     } else {
                         eprintln!("Hellow!");
-                        ModVersion::SpecificVersion(
+                        ForgeModVersion::SpecificVersion(
                             version.parse().map_err(serde::de::Error::custom)?,
                         )
                     }),
                 }
             }
 
-            fn visit_map<A>(self, mut access: A) -> Result<ModVersion, A::Error>
+            fn visit_map<A>(self, mut access: A) -> Result<ForgeModVersion, A::Error>
             where
                 A: MapAccess<'de>,
             {
                 let my_struct = ModVersionRange::deserialize(
                     serde::de::value::MapAccessDeserializer::new(&mut access),
                 )?;
-                Ok(ModVersion::VersionRange(my_struct))
+                Ok(ForgeModVersion::VersionRange(my_struct))
             }
         }
 
@@ -105,13 +107,13 @@ impl<'de> Deserialize<'de> for ModVersion {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct Dependency {
+pub struct ForgeModDependency {
     #[serde(rename = "modId")]
     pub id: String,
     // pub version: ModVersion,
     pub mandatory: bool,
     #[serde(rename = "versionRange")]
-    pub version_range: ModVersion,
+    pub version_range: ForgeModVersion,
     pub ordering: Option<String>,
     pub side: String,
 }
@@ -497,7 +499,7 @@ mod tests {
                 continue;
             }
 
-            let mod_meta = from_str::<ModManifest>(
+            let mod_meta = from_str::<ForgeMod>(
                 grab_meta_file(file.path(), crate::unzip::ModLoader::Forge)
                     .expect("expected meta file to be grabbed")
                     .raw
