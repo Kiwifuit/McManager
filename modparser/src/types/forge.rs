@@ -498,8 +498,9 @@ mod tests {
             }
 
             let mod_meta = from_str::<ModManifest>(
-                grab_meta_file(file.path())
+                grab_meta_file(file.path(), crate::unzip::ModLoader::Forge)
                     .expect("expected meta file to be grabbed")
+                    .raw
                     .as_str(),
             );
 
