@@ -32,3 +32,19 @@ pub async fn check_api() -> Result<(bool, Client), APIError> {
 
     Ok((resp.is_ok(), client))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::types::*;
+
+    #[tokio::test]
+    async fn check_api_works() {
+        let api_check = check_api().await;
+
+        assert!(api_check.is_ok());
+        let (labrinth_responding, _client) = api_check.unwrap();
+
+        assert!(labrinth_responding);
+    }
+}
