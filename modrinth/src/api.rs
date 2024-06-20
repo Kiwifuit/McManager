@@ -130,6 +130,6 @@ mod tests {
 
         let project = project.unwrap();
         assert_eq!(project.id, "5yJ5IDKm");
-        assert_eq!(project.project_type, Some("mod"));
+        assert_eq!(project.project_type, Some("mod".to_string()));
     }
 }

@@ -1,5 +1,7 @@
 use serde::Deserialize;
 
+use super::version::Loader;
+
 #[derive(Debug, Deserialize)]
 pub struct ModrinthProject {
     pub id: String,
@@ -54,7 +56,7 @@ pub struct ModrinthProject {
 
     pub versions: Vec<String>,
     pub game_versions: Vec<String>,
-    pub loaders: Vec<String>,
+    pub loaders: Vec<Loader>,
     pub gallery: Vec<GalleryEntry>,
 }
 
