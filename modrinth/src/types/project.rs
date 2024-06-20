@@ -1,63 +1,54 @@
 use serde::Deserialize;
 
-use super::{License, Loader, ModRequirement};
+use super::{Loader, ModRequirement, ProjectType};
 
+// TODO: Add serde_valid (optional?)
+//       https://docs.rs/serde_valid/latest/serde_valid/
 #[derive(Debug, Deserialize)]
 pub struct ModrinthProject {
-    pub id: String,
     pub slug: String,
-    // TODO: Turn this into an enum
-    pub project_type: Option<String>,
-    pub team: Option<String>,
-    pub author: Option<String>,
-
     pub title: String,
     pub description: String,
-    #[serde(rename = "downloads")]
-    _downloads: u64,
-    #[serde(rename = "followers")]
-    _followers: u64,
-    pub body: String,
-    pub license: License,
-
     pub categories: Vec<String>,
-    pub additional_categories: Option<Vec<String>>,
-    pub display_categories: Option<Vec<String>>,
-
-    pub server_side: ModRequirement,
     pub client_side: ModRequirement,
+    pub server_side: ModRequirement,
+    pub body: String,
+    pub status: Status,
 
-    // _thread_id: String,
-    pub color: u32,
-    #[serde(rename = "status")]
-    _status: String,
-    #[serde(rename = "requested_status")]
-    _requested_status: String,
-    #[serde(rename = "issues_url")]
-    _issues_url: String,
-    #[serde(rename = "source_url")]
-    _source_url: String,
+    pub additional_categories: Option<Vec<String>>,
+    pub issues_url: Option<String>,
+    pub source_url: Option<String>,
     pub wiki_url: Option<String>,
     pub discord_url: Option<String>,
-    pub icon_url: Option<String>,
-    pub body_url: Option<String>,
-    #[serde(rename = "moderator_message")]
-    _moderator_message: Option<String>,
-    #[serde(rename = "donation_urls")]
-    _donation_urls: Vec<DonationUrl>,
-    #[serde(rename = "published")]
-    _published: String,
-    #[serde(rename = "updated")]
-    _updated: String,
-    #[serde(rename = "approved")]
-    _approved: String,
-    #[serde(rename = "queued")]
-    _queued: String,
 
+    pub project_type: ProjectType,
+    pub downloads: usize,
+    pub icon_url: Option<String>,
+
+    pub color: Option<u32>,
+
+    pub id: String,
+    pub team: String,
+
+    pub published: String,
+    pub updated: String,
+    pub approved: Option<String>,
+    pub queued: Option<String>,
+
+    pub followers: u32,
     pub versions: Vec<String>,
     pub game_versions: Vec<String>,
     pub loaders: Vec<Loader>,
-    pub gallery: Vec<GalleryEntry>,
+    pub gallery: Option<Vec<GalleryEntry>>,
+
+    #[serde(rename = "requested_status")]
+    _requested_status: Option<RequestedStatus>,
+    #[serde(rename = "donation_urls")]
+    _donation_urls: Option<Vec<DonationUrl>>,
+    #[serde(rename = "thread_id")]
+    _thread_id: Option<String>,
+    #[serde(rename = "monetization_status")]
+    _monetization_status: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -79,4 +70,29 @@ pub struct DonationUrl {
     _platform: String,
     #[serde(rename = "url")]
     _url: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(untagged, rename_all = "lowercase")]
+pub enum Status {
+    Approved,
+    Archived,
+    Rejected,
+    Draft,
+    Unlisted,
+    Processing,
+    Withheld,
+    Scheduled,
+    Private,
+    Unknown,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(untagged, rename_all = "lowercase")]
+pub enum RequestedStatus {
+    Approved,
+    Archived,
+    Unlisted,
+    Private,
+    Draft,
 }
