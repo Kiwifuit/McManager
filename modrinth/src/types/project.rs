@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use super::version::Loader;
+use super::{License, Loader, ModRequirement};
 
 #[derive(Debug, Deserialize)]
 pub struct ModrinthProject {
@@ -61,14 +61,6 @@ pub struct ModrinthProject {
 }
 
 #[derive(Debug, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum ModRequirement {
-    Optional,
-    Required,
-    Unsupported,
-}
-
-#[derive(Debug, Deserialize)]
 pub struct GalleryEntry {
     pub url: String,
     #[serde(rename = "featured")]
@@ -77,17 +69,6 @@ pub struct GalleryEntry {
     pub description: String,
     pub created: String,
     pub ordering: u8,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(untagged)]
-pub enum License {
-    Single(String),
-    Detailed {
-        id: String,
-        name: String,
-        url: Option<String>,
-    },
 }
 
 #[derive(Debug, Deserialize)]
