@@ -73,7 +73,7 @@ pub struct DonationUrl {
 }
 
 #[derive(Debug, Deserialize)]
-#[serde(untagged, rename_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum Status {
     Approved,
     Archived,
@@ -88,7 +88,7 @@ pub enum Status {
 }
 
 #[derive(Debug, Deserialize)]
-#[serde(untagged, rename_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum RequestedStatus {
     Approved,
     Archived,

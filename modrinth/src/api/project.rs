@@ -41,7 +41,7 @@ mod test {
     use super::*;
     use crate::api::get_client;
     use crate::types::query::ProjectQueryBuilder;
-    use crate::types::IndexBy;
+    use crate::types::{IndexBy, ProjectType};
 
     #[tokio::test]
     async fn check_search_projects() {
@@ -80,6 +80,6 @@ mod test {
 
         let project = project.unwrap();
         assert_eq!(project.id, "5yJ5IDKm");
-        assert_eq!(project.project_type, Some("mod".to_string()));
+        assert_eq!(project.project_type, ProjectType::Mod);
     }
 }
