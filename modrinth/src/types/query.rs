@@ -58,15 +58,12 @@ impl ProjectQueryBuilder {
     ///   - `modified_timestamp`
     ///
     /// In order to then use these facets, you need a value to filter by, as well as an operation to perform on this value. The most common operation is : (same as =), though you can also use !=, >=, >, <=, and <. Join together the type, operation, and value, and you've got your string.
-    /// ```
-    /// {type} {operation} {value}
-    /// ```
+    /// > `{type} {operation} {value}`
+    ///
     /// Examples:
-    /// ```
-    /// categories = adventure
-    /// versions != 1.20.1
-    /// downloads <= 100
-    /// ```
+    /// - `categories = adventure`
+    /// - `versions != 1.20.1`
+    /// - `downloads <= 100`
     ///
     /// You then join these strings together in arrays to signal AND and OR operators.
     /// ### OR
