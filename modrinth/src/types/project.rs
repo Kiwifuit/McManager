@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct ModrinthProject {
-    pub id: Option<String>,
+    pub id: String,
     pub slug: String,
     // TODO: Turn this into an enum
     pub project_type: Option<String>,
@@ -26,8 +26,7 @@ pub struct ModrinthProject {
     pub client_side: ModRequirement,
 
     // _thread_id: String,
-    #[serde(rename = "color")]
-    _color: u32,
+    color: u32,
     #[serde(rename = "status")]
     _status: String,
     #[serde(rename = "requested_status")]
@@ -36,9 +35,9 @@ pub struct ModrinthProject {
     _issues_url: String,
     #[serde(rename = "source_url")]
     _source_url: String,
-    pub wiki_url: String,
-    pub discord_url: String,
-    pub icon_url: String,
+    pub wiki_url: Option<String>,
+    pub discord_url: Option<String>,
+    pub icon_url: Option<String>,
     pub body_url: Option<String>,
     #[serde(rename = "moderator_message")]
     _moderator_message: Option<String>,
@@ -85,7 +84,7 @@ pub enum License {
     Detailed {
         id: String,
         name: String,
-        url: String,
+        url: Option<String>,
     },
 }
 

@@ -1,4 +1,7 @@
-use crate::types::query::{ProjectQuery, SearchProjectHit, SearchProjectResult};
+use crate::types::{
+    project::ModrinthProject,
+    query::{ProjectQuery, SearchProjectHit, SearchProjectResult},
+};
 use std::time::Duration;
 
 use log::debug;
@@ -51,6 +54,19 @@ pub async fn search_project(
     Ok(raw_res.hits)
 }
 
+pub async fn get_project(
+    client: &Client,
+    project: &SearchProjectHit,
+) -> Result<ModrinthProject, APIError> {
+    Ok(client
+        .get(format!("{}/v2/project/{}", ENDPOINT, project.project_id))
+        .send()
+        .await
+        .unwrap()
+        .json()
+        .await?)
+}
+
 pub async fn get_client() -> Client {
     let api_check = check_api().await;
 
@@ -90,5 +106,30 @@ mod tests {
         let res = search_project(&client, &query).await;
 
         assert!(res.is_ok());
+    }
+
+    #[tokio::test]
+    async fn check_get_project() {
+        let client = get_client().await;
+
+        let query = ProjectQueryBuilder::new()
+            .query("kontraption")
+            .limit(1)
+            .index(query::IndexBy::Relevance)
+            .build();
+
+        let res = search_project(&client, &query).await.unwrap();
+
+        let res = res.first().unwrap();
+        assert_eq!(res.project_id, "5yJ5IDKm"); // https://modrinth.com/mod/kontraption
+        assert_eq!(res.project_type, "mod");
+
+        let project = get_project(&client, res).await;
+
+        assert!(project.is_ok());
+
+        let project = project.unwrap();
+        assert_eq!(project.id, "5yJ5IDKm");
+        assert_eq!(project.project_type, Some("mod"));
     }
 }
