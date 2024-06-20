@@ -6,8 +6,8 @@ pub(crate) struct SearchProjectResult {
     pub(crate) hits: Vec<SearchProjectHit>,
     #[serde(rename = "offset")]
     _offset: u8,
-    pub(crate) limit: u8,
-    pub(crate) total_hits: u16,
+    _limit: u8,
+    pub total_hits: u16,
 }
 
 #[derive(Debug, Deserialize)]

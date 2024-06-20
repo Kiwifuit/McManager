@@ -15,7 +15,7 @@ pub struct ProjectQuery {
     #[serde(skip_serializing_if = "super::is_zero")]
     pub limit: u8,
 }
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct ProjectQueryBuilder {
     pub query: Option<String>,
     pub facets: Option<String>,
@@ -26,13 +26,7 @@ pub struct ProjectQueryBuilder {
 
 impl ProjectQueryBuilder {
     pub fn new() -> Self {
-        Self {
-            query: None,
-            facets: None,
-            index: None,
-            offset: None,
-            limit: None,
-        }
+        Self::default()
     }
 
     /// The query to search for

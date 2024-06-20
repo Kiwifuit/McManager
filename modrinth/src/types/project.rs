@@ -28,7 +28,7 @@ pub struct ModrinthProject {
     pub client_side: ModRequirement,
 
     // _thread_id: String,
-    color: u32,
+    pub color: u32,
     #[serde(rename = "status")]
     _status: String,
     #[serde(rename = "requested_status")]
