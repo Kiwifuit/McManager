@@ -7,7 +7,7 @@ pub(crate) struct SearchProjectResult {
     #[serde(rename = "offset")]
     _offset: u8,
     _limit: u8,
-    pub total_hits: u16,
+    pub total_hits: usize,
 }
 
 #[derive(Debug, Deserialize)]

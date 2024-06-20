@@ -9,7 +9,7 @@ use crate::types::result::SearchProjectResult;
 pub async fn search_project(
     client: &Client,
     params: &ProjectQuery,
-) -> Result<Vec<SearchProjectHit>, APIError> {
+) -> Result<(Vec<SearchProjectHit>, usize), APIError> {
     let raw_res: SearchProjectResult = client
         .get(format!("{}/v2/search", ENDPOINT))
         .query(params)
@@ -20,7 +20,7 @@ pub async fn search_project(
         .await?;
 
     assert_eq!(raw_res.hits.len(), params.limit as usize);
-    Ok(raw_res.hits)
+    Ok((raw_res.hits, raw_res.total_hits))
 }
 
 pub async fn get_project(
@@ -68,7 +68,7 @@ mod test {
             .index(IndexBy::Relevance)
             .build();
 
-        let res = search_project(&client, &query).await.unwrap();
+        let (res, _) = search_project(&client, &query).await.unwrap();
 
         let res = res.first().unwrap();
         assert_eq!(res.project_id, "5yJ5IDKm"); // https://modrinth.com/mod/kontraption
