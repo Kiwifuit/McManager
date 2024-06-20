@@ -21,15 +21,16 @@ pub enum License {
     },
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum ModRequirement {
     Optional,
     Required,
     Unsupported,
+    Unknown,
 }
 
-#[derive(Debug, Serialize, Default)]
+#[derive(Debug, Serialize, Default, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum IndexBy {
     #[default]
@@ -40,7 +41,7 @@ pub enum IndexBy {
     Updated,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum Loader {
     Bukkit,
@@ -64,6 +65,15 @@ pub enum Loader {
     Vanilla,
     Velocity,
     Waterfall,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum ProjectType {
+    Mod,
+    Modpack,
+    Resourcepack,
+    Shader,
 }
 
 #[derive(Debug, Deserialize)]
