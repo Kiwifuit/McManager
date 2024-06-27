@@ -8,6 +8,8 @@ pub mod dependency;
 pub mod project;
 pub mod version;
 
+pub use project::*;
+
 const ENDPOINT: &str = "https://api.modrinth.com";
 
 #[derive(Debug, Error)]

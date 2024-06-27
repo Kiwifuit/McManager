@@ -3,17 +3,17 @@ use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 pub struct ProjectQuery {
-    pub query: String,
+    pub(crate) query: String,
     #[serde(skip_serializing_if = "String::is_empty")]
-    pub facets: String,
+    pub(crate) facets: String,
     // TODO: some sort of is_default thingy
     //       so that serde omits this if its
     //       set to its defaults
-    pub index: IndexBy,
+    pub(crate) index: IndexBy,
     #[serde(skip_serializing_if = "super::is_zero")]
-    pub offset: u8,
+    pub(crate) offset: u8,
     #[serde(skip_serializing_if = "super::is_zero")]
-    pub limit: u8,
+    pub(crate) limit: u8,
 }
 #[derive(Debug, Default)]
 pub struct ProjectQueryBuilder {
@@ -97,7 +97,8 @@ impl ProjectQueryBuilder {
     /// This function silently does nothing if the supplied
     /// `limit` is above 100 in accordance to modrinth's limits
     pub fn limit(mut self, limit: u8) -> Self {
-        self.limit = Some(limit);
+        self.limit = limit.lt(&100).then_some(limit);
+
         self
     }
 
@@ -114,9 +115,52 @@ impl ProjectQueryBuilder {
 
 #[derive(Debug, Serialize)]
 pub struct VersionQuery {
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    loaders: Vec<Loader>,
-    #[serde(rename = "game_versions", skip_serializing_if = "Vec::is_empty")]
-    versions: Vec<String>,
-    featured: bool,
+    #[serde(
+        skip_serializing_if = "Vec::is_empty",
+        // serialize_with = "super::vq_ser_vec"
+    )]
+    pub(crate) loaders: Vec<Loader>,
+    #[serde(
+        skip_serializing_if = "Vec::is_empty",
+        // serialize_with = "super::vq_ser_vec"
+    )]
+    pub(crate) game_versions: Vec<String>,
+    pub(crate) featured: bool,
+}
+
+#[derive(Debug, Default)]
+pub struct VersionQueryBuilder {
+    pub loaders: Option<Vec<Loader>>,
+    pub versions: Option<Vec<String>>,
+    pub featured: Option<bool>,
+}
+
+impl VersionQueryBuilder {
+    pub fn new() -> Self {
+        unimplemented!();
+        // Self::default()
+    }
+
+    pub fn loaders(mut self, loaders: Vec<Loader>) -> Self {
+        // self.loaders = Some(loaders);
+        self
+    }
+
+    pub fn versions<A: ToString>(mut self, versions: Vec<A>) -> Self {
+        // self.versions = Some(versions.iter().map(|a| a.to_string()).collect());
+        self
+    }
+
+    pub fn featured(mut self, featured: bool) -> Self {
+        // self.featured = Some(featured);
+        self
+    }
+
+    pub fn build(self) -> VersionQuery {
+        VersionQuery {
+            loaders: self.loaders.unwrap_or_default(),
+            game_versions: self.versions.unwrap_or_default(),
+            featured: self.featured.unwrap_or_default(),
+        }
+    }
 }

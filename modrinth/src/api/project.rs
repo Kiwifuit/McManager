@@ -79,6 +79,7 @@ mod test {
         assert!(project.is_ok());
 
         let project = project.unwrap();
+
         assert_eq!(project.id, "5yJ5IDKm");
         assert_eq!(project.project_type, ProjectType::Mod);
     }

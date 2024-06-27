@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer};
 
 pub mod project;
 pub mod query;
@@ -82,3 +82,21 @@ pub enum Gallery {
     Single(String),
     Multiple(Vec<String>),
 }
+
+// pub(crate) fn vq_ser_vec<S, T>(vec: &Vec<T>, serializer: S) -> Result<S::Ok, S::Error>
+// where
+//     S: Serializer,
+//     T: Serialize,
+// {
+//     serializer.serialize_str(
+//         format!(
+//             "[{}]",
+//             vec.iter()
+//             .map(|a| serializer.serialize_str(v))
+//                 // .map(|a| format!("\"{}\"", a.to_string()))
+//                 // .collect::<Vec<String>>()
+//                 // .join(",")
+//         )
+//         .as_str(),
+//     )
+// }
