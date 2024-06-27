@@ -51,10 +51,24 @@ pub enum VersionRequestedStatus {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct VersionDependency {
+#[serde(untagged)]
+pub enum VersionDependency {
+    Unresolved(UnresolvedVersionDependency),
+    #[serde(skip)]
+    Resolved(ResolvedVersionDependency),
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UnresolvedVersionDependency {
     pub version_id: Option<String>,
     pub project_id: Option<String>,
     pub file_name: Option<String>,
+    pub dependency_type: DependencyType,
+}
+
+#[derive(Debug)]
+pub struct ResolvedVersionDependency {
+    pub dependency: ModrinthProjectVersion,
     pub dependency_type: DependencyType,
 }
 
