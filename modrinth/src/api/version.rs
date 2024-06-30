@@ -26,7 +26,7 @@ pub async fn get_versions(
 mod test {
     use super::*;
     use crate::{
-        get_client, get_project, search_project, IndexBy, ProjectQueryBuilder, VersionQueryBuilder,
+        get_client, get_project, search_project, IndexBy, Loader, ProjectQueryBuilder, VersionQueryBuilder
     };
 
     #[tokio::test]
@@ -45,6 +45,7 @@ mod test {
         let v_query = VersionQueryBuilder::new()
             .featured(true)
             .versions(vec!["1.20.1"])
+            .loaders(vec![Loader::Forge])
             .build();
 
         let version = get_versions(&client, &project, &v_query).await;
