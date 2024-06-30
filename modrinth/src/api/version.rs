@@ -7,14 +7,11 @@ use reqwest::Client;
 pub async fn get_versions(
     client: &Client,
     project: &ModrinthProject,
-    params: String,
+    params: &VersionQuery,
 ) -> Result<Vec<ModrinthProjectVersion>, APIError> {
     let resp: Vec<ModrinthProjectVersion> = client
-        .get(format!(
-            "{}/v2/project/{}/version{}",
-            ENDPOINT, project.id, params
-        ))
-        // .query(params)
+        .get(format!("{}/v2/project/{}/version", ENDPOINT, project.id))
+        .query(params)
         .send()
         .await
         .unwrap()
@@ -45,14 +42,12 @@ mod test {
         let (res, _) = search_project(&client, &query).await.unwrap();
         let project = get_project(&client, res.first().unwrap()).await.unwrap();
 
-        // let v_query = VersionQueryBuilder::new()
-        //     .featured(true)
-        //     .versions(vec!["1.19.2"])
-        //     .build();
+        let v_query = VersionQueryBuilder::new()
+            .featured(true)
+            .versions(vec!["1.20.1"])
+            .build();
 
-        // dbg!(&v_query);
-        // dbg!(serde_urlencoded::to_string(&v_query).unwrap());
-        let version = get_versions(&client, &project, "?featured=true".to_string()).await;
+        let version = get_versions(&client, &project, &v_query).await;
 
         assert!(version.is_ok());
         assert!(!version.unwrap().is_empty());
