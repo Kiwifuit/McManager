@@ -1,3 +1,4 @@
+#![allow(clippy::ptr_arg)]
 use serde::{Deserialize, Serialize, Serializer};
 
 pub mod project;
@@ -149,27 +150,43 @@ pub(crate) fn serialize_vec_urlencoded<S, T>(vec: &Vec<T>, serializer: S) -> Res
 where
     S: Serializer,
     T: Serialize,
+    T: Serialize + ToString,
 {
-    todo!()
-    // let mut serialized_str = String::new();
-    // serialized_str.push('[');
+    let vec_str = serialize_vec(vec);
 
-    // for (i, item) in vec.iter().enumerate() {
-    //     if i != 0 {
-    //         serialized_str.push(',');
-    //     }
-    //     // Wrap the item in a temporary map
-    //     let map = vec![("item", item)];
+    serializer.serialize_str(&vec_str)
+}
 
-    //     let item_str = serde_urlencoded::to_string(&map).map_err(S::Error::custom)?;
-    //     let item_str = item_str.trim_start_matches("item=");
+pub(crate) fn serialize_vec_nested<S, T>(
+    vec: &Vec<Vec<T>>,
+    serializer: S,
+) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+    T: Serialize + ToString,
+{
+    let vec_vec_str = format!(
+        "[{}]",
+        vec.iter()
+            .map(serialize_vec)
+            .collect::<Vec<String>>()
+            .join(", ")
+    );
 
-    //     serialized_str.push_str(&format!("{:?}", item_str));
-    // }
+    serializer.serialize_str(&vec_vec_str)
+}
 
-    // serialized_str.push(']');
-
-    // serializer.serialize_str(&serialized_str)
+fn serialize_vec<T>(vec: &Vec<T>) -> String
+where
+    T: ToString,
+{
+    format!(
+        "[{}]",
+        vec.iter()
+            .map(|a| format!("{:?}", a.to_string()))
+            .collect::<Vec<_>>()
+            .join(", ")
+    )
 }
 
 #[allow(clippy::trivially_copy_pass_by_ref)]

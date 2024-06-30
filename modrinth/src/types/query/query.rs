@@ -6,7 +6,7 @@ pub struct ProjectQuery {
     pub(crate) query: String,
     #[serde(
         skip_serializing_if = "Vec::is_empty",
-        serialize_with = "crate::types::serialize_vec_urlencoded"
+        serialize_with = "crate::types::serialize_vec_nested"
     )]
     pub(crate) facets: Vec<Vec<String>>,
     // TODO: some sort of is_default thingy
