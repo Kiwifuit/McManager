@@ -78,8 +78,8 @@ impl ProjectQueryBuilder {
     ///
     /// Separate arrays are considered to be joined by AND statements.
     /// For example, the search `[["versions:1.16.5"], ["project_type:modpack"]]` translates to *Projects that support 1.16.5 AND are modpacks*.
-    pub fn facets<S: ToString>(mut self, facets: S) -> Self {
-        // self.facets = Some(facets.to_string());
+    pub fn facets(mut self, facets: Vec<Vec<Facet>>) -> Self {
+        self.facets = Some(facets);
         self
     }
 
