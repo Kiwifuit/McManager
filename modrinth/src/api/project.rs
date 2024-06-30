@@ -41,6 +41,8 @@ mod test {
     use super::*;
     use crate::api::get_client;
     use crate::types::query::ProjectQueryBuilder;
+    use crate::types::Facet;
+    use crate::types::Loader;
     use crate::types::{IndexBy, ProjectType};
 
     #[tokio::test]
@@ -51,6 +53,13 @@ mod test {
             .query("gravestones")
             .limit(3)
             .index(IndexBy::Relevance)
+            .facets(vec![
+                vec![Facet::Loader(Loader::Forge)],
+                vec![
+                    Facet::Category("adventure".to_string()),
+                    Facet::Category("utility".to_string()),
+                ],
+            ])
             .build();
 
         let res = search_project(&client, &query).await;
