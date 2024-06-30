@@ -4,8 +4,11 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 pub struct ProjectQuery {
     pub(crate) query: String,
-    #[serde(skip_serializing_if = "String::is_empty")]
-    pub(crate) facets: String,
+    #[serde(
+        skip_serializing_if = "Vec::is_empty",
+        serialize_with = "super::serialize_vec_urlencoded"
+    )]
+    pub(crate) facets: Vec<Vec<String>>,
     // TODO: some sort of is_default thingy
     //       so that serde omits this if its
     //       set to its defaults
@@ -18,7 +21,7 @@ pub struct ProjectQuery {
 #[derive(Debug, Default)]
 pub struct ProjectQueryBuilder {
     pub query: Option<String>,
-    pub facets: Option<String>,
+    pub facets: Option<Vec<Vec<String>>>,
     pub index: Option<IndexBy>,
     pub offset: Option<u8>,
     pub limit: Option<u8>,
@@ -117,12 +120,12 @@ impl ProjectQueryBuilder {
 pub struct VersionQuery {
     #[serde(
         skip_serializing_if = "Vec::is_empty",
-        // serialize_with = "super::vq_ser_vec"
+        serialize_with = "super::serialize_vec_urlencoded"
     )]
     pub(crate) loaders: Vec<Loader>,
     #[serde(
         skip_serializing_if = "Vec::is_empty",
-        // serialize_with = "super::vq_ser_vec"
+        serialize_with = "super::serialize_vec_urlencoded"
     )]
     pub(crate) game_versions: Vec<String>,
     pub(crate) featured: bool,
