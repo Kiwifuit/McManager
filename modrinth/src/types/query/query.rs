@@ -1,3 +1,4 @@
+use crate::types::Facet;
 use crate::types::IndexBy;
 use serde::Serialize;
 
@@ -8,7 +9,7 @@ pub struct ProjectQuery {
         skip_serializing_if = "Vec::is_empty",
         serialize_with = "crate::types::serialize_vec_nested"
     )]
-    pub(crate) facets: Vec<Vec<String>>,
+    pub(crate) facets: Vec<Vec<Facet>>,
     // TODO: some sort of is_default thingy
     //       so that serde omits this if its
     //       set to its defaults
@@ -21,7 +22,7 @@ pub struct ProjectQuery {
 #[derive(Debug, Default)]
 pub struct ProjectQueryBuilder {
     pub query: Option<String>,
-    pub facets: Option<Vec<Vec<String>>>,
+    pub facets: Option<Vec<Vec<Facet>>>,
     pub index: Option<IndexBy>,
     pub offset: Option<u8>,
     pub limit: Option<u8>,

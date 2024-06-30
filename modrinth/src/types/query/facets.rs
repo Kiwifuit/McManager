@@ -17,12 +17,9 @@ pub enum Facet {
     },
 }
 
-impl Serialize for Facet {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let facet_str = match self {
+impl ToString for Facet {
+    fn to_string(&self) -> String {
+        match self {
             Self::ProjectType(project_type) => format!("project_type:{}", project_type.to_string()),
             Self::Category(category) => format!("category:{}", category),
             Self::Loader(loader) => format!("loader:{}", loader.to_string()),
@@ -30,7 +27,16 @@ impl Serialize for Facet {
             Self::OpenSource(open_source) => format!("open_source:{}", open_source),
             Self::License(license) => format!("license:{}", license),
             Self::Custom { _type, op, value } => format!("{}{}{}", _type, op.to_string(), value),
-        };
+        }
+    }
+}
+
+impl Serialize for Facet {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let facet_str = self.to_string();
 
         serializer.serialize_str(&facet_str)
     }

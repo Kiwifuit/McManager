@@ -6,6 +6,8 @@ pub mod query;
 pub mod result;
 pub mod version;
 
+pub use query::{Facet, FacetOp};
+
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
 pub enum License {
@@ -138,18 +140,9 @@ pub enum Gallery {
     Multiple(Vec<String>),
 }
 
-// This is the jankiest piece of shit
-// I have yet to write. It is an amalgamation
-// between me and ChatGPT's stupidity and
-// creativity.
-//
-// If anyone knows serde hacks and can improve
-// this, I AM BEGGING YOU PLEASE BROTHER
-// FIX MY CODE
 pub(crate) fn serialize_vec_urlencoded<S, T>(vec: &Vec<T>, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
-    T: Serialize,
     T: Serialize + ToString,
 {
     let vec_str = serialize_vec(vec);
