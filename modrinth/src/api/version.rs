@@ -54,7 +54,6 @@ mod test {
         // dbg!(serde_urlencoded::to_string(&v_query).unwrap());
         let version = get_versions(&client, &project, "?featured=true".to_string()).await;
 
-        dbg!(&version);
         assert!(version.is_ok());
         assert!(!version.unwrap().is_empty());
     }
