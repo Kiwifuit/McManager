@@ -21,8 +21,8 @@ impl ToString for Facet {
     fn to_string(&self) -> String {
         match self {
             Self::ProjectType(project_type) => format!("project_type:{}", project_type.to_string()),
-            Self::Category(category) => format!("category:{}", category),
-            Self::Loader(loader) => format!("loader:{}", loader.to_string()),
+            Self::Category(category) => format!("categories:{}", category),
+            Self::Loader(loader) => format!("categories:{}", loader.to_string()),
             Self::Version(version) => format!("version:{}", version),
             Self::OpenSource(open_source) => format!("open_source:{}", open_source),
             Self::License(license) => format!("license:{}", license),
