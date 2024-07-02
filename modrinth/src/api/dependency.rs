@@ -103,11 +103,11 @@ mod test {
         })
         .await;
 
-        if _err.is_err() {
-            dbg!(_err.unwrap_err());
-        } else {
-            dbg!(&version);
-        }
+        // if _err.is_err() {
+        //     dbg!(_err.unwrap_err());
+        // } else {
+        //     dbg!(&version);
+        // }
 
         assert!(version
             .dependencies

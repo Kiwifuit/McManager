@@ -40,15 +40,6 @@ pub struct ModrinthProject {
     pub game_versions: Vec<String>,
     pub loaders: Vec<Loader>,
     pub gallery: Option<Vec<GalleryEntry>>,
-
-    #[serde(rename = "requested_status")]
-    _requested_status: Option<RequestedStatus>,
-    #[serde(rename = "donation_urls")]
-    _donation_urls: Option<Vec<DonationUrl>>,
-    #[serde(rename = "thread_id")]
-    _thread_id: Option<String>,
-    #[serde(rename = "monetization_status")]
-    _monetization_status: Option<String>,
 }
 
 impl super::ModrinthProjectMeta for ModrinthProject {
@@ -60,22 +51,10 @@ impl super::ModrinthProjectMeta for ModrinthProject {
 #[derive(Debug, Deserialize)]
 pub struct GalleryEntry {
     pub url: String,
-    #[serde(rename = "featured")]
-    _featured: bool,
     pub title: Option<String>,
     pub description: Option<String>,
     pub created: String,
     pub ordering: Option<u8>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct DonationUrl {
-    #[serde(rename = "id")]
-    _id: String,
-    #[serde(rename = "platform")]
-    _platform: String,
-    #[serde(rename = "url")]
-    _url: String,
 }
 
 #[derive(Debug, Deserialize)]
