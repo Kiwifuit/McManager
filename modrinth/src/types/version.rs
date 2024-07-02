@@ -58,6 +58,21 @@ pub enum VersionDependency {
     Resolved(ResolvedVersionDependency),
 }
 
+impl VersionDependency {
+    pub fn is_resolved(&self) -> bool {
+        match self {
+            Self::Resolved(_) => true,
+            Self::Unresolved(_) => false,
+        }
+    }
+    pub fn is_unresolved(&self) -> bool {
+        match self {
+            Self::Resolved(_) => false,
+            Self::Unresolved(_) => true,
+        }
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct UnresolvedVersionDependency {
     pub version_id: Option<String>,
@@ -66,13 +81,23 @@ pub struct UnresolvedVersionDependency {
     pub dependency_type: DependencyType,
 }
 
+impl super::ModrinthProjectMeta for UnresolvedVersionDependency {
+    fn project_id(&self) -> Option<&String> {
+        self.project_id.as_ref()
+    }
+
+    fn version_id(&self) -> Option<&String> {
+        self.version_id.as_ref()
+    }
+}
+
 #[derive(Debug)]
 pub struct ResolvedVersionDependency {
     pub dependency: ModrinthProjectVersion,
     pub dependency_type: DependencyType,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum DependencyType {
     Required,

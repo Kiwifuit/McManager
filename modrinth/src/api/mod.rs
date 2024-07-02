@@ -16,6 +16,14 @@ const ENDPOINT: &str = "https://api.modrinth.com";
 pub enum APIError {
     #[error("http error: {0}")]
     Http(#[from] reqwest::Error),
+
+    #[error("http error: {0}")]
+    ResolvedDependency(String),
+    #[error("http error")]
+    NoDependencies,
+
+    #[error("http error")]
+    UnresolvableDependency,
 }
 
 pub async fn check_api() -> Result<(bool, Client), APIError> {

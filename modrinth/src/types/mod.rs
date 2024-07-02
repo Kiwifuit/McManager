@@ -8,6 +8,13 @@ pub mod version;
 
 pub use query::{Facet, FacetOp};
 
+pub(crate) trait ModrinthProjectMeta {
+    fn project_id(&self) -> Option<&String>;
+    fn version_id(&self) -> Option<&String> {
+        None
+    }
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
 pub enum License {

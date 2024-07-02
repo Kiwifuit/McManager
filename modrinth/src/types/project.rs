@@ -51,6 +51,12 @@ pub struct ModrinthProject {
     _monetization_status: Option<String>,
 }
 
+impl super::ModrinthProjectMeta for ModrinthProject {
+    fn project_id(&self) -> Option<&String> {
+        Some(&self.id)
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct GalleryEntry {
     pub url: String,
