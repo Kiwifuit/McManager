@@ -1,8 +1,8 @@
-use super::{APIError, ENDPOINT};
+use super::APIError;
 use crate::{
     types::{
         query::VersionQuery,
-        version::{ResolvedVersionDependency, UnresolvedVersionDependency, VersionDependency},
+        version::{ResolvedVersionDependency, VersionDependency},
     },
     version::{get_version, get_versions},
     ModrinthProjectVersion,
@@ -83,13 +83,13 @@ mod test {
         let mut versions = get_versions(&client, &project, &v_query).await.unwrap();
         let version = versions.get_mut(0).unwrap();
 
-        let err = resolve_dependencies(&client, version, &v_query, |versions| {
+        let _err = resolve_dependencies(&client, version, &v_query, |versions| {
             versions.into_iter().next().unwrap()
         })
         .await;
 
-        // if err.is_err() {
-        //     dbg!(err.unwrap_err());
+        // if _err.is_err() {
+        //     dbg!(_err.unwrap_err());
         // } else {
         //     dbg!(version);
         // }

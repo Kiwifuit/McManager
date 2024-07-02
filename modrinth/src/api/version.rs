@@ -4,6 +4,7 @@ use crate::types::version::ModrinthProjectVersion;
 use crate::types::ModrinthProjectMeta;
 use reqwest::Client;
 
+#[allow(private_bounds)]
 pub async fn get_versions<M>(
     client: &Client,
     project: &M,
@@ -42,7 +43,7 @@ where
         .get(format!(
             "{}/v2/version/{}",
             ENDPOINT,
-            project.project_id().unwrap()
+            project.version_id().unwrap()
         ))
         .send()
         .await
@@ -84,27 +85,5 @@ mod test {
 
         assert!(version.is_ok());
         assert!(!version.unwrap().is_empty());
-    }
-
-    #[tokio::test]
-    async fn test_get_version() {
-        let client = get_client().await;
-
-        let query = ProjectQueryBuilder::new()
-            .query("Gravestones")
-            .limit(1)
-            .index(IndexBy::Relevance)
-            .build();
-
-        let (res, _) = search_project(&client, &query).await.unwrap();
-        let project = get_project(&client, res.first().unwrap()).await.unwrap();
-
-        let v_query = VersionQueryBuilder::new()
-            .featured(true)
-            .versions(vec!["1.18"])
-            .loaders(vec![Loader::Fabric])
-            .build();
-
-        let version = get_versions(&client, &project, &v_query).await.unwrap();
     }
 }
