@@ -8,6 +8,7 @@ use crate::{
     ModrinthProjectVersion,
 };
 use reqwest::Client;
+// use std::boxed::Box;
 
 pub async fn resolve_dependencies<F>(
     client: &Client,
@@ -16,7 +17,7 @@ pub async fn resolve_dependencies<F>(
     resolver: F,
 ) -> Result<(), APIError>
 where
-    F: Fn(Vec<ModrinthProjectVersion>) -> ModrinthProjectVersion,
+    F: Fn(Vec<ModrinthProjectVersion>) -> ModrinthProjectVersion + Copy,
 {
     if project.dependencies.is_none() || project.dependencies.as_ref().is_some_and(|v| v.is_empty())
     {
@@ -36,13 +37,27 @@ where
             return Err(APIError::UnresolvableDependency);
         }
 
-        let resolved_version = if unresolved_dependency.version_id.is_some() {
+        let mut resolved_version = if unresolved_dependency.version_id.is_some() {
             get_version(client, unresolved_dependency).await?
         } else {
             let version_list = get_versions(client, unresolved_dependency, version_params).await?;
 
             resolver(version_list)
         };
+
+        if resolved_version
+            .dependencies
+            .as_ref()
+            .is_some_and(|deps| !deps.is_empty())
+        {
+            Box::pin(resolve_dependencies(
+                client,
+                &mut resolved_version,
+                version_params,
+                resolver,
+            ))
+            .await?;
+        }
 
         *dependency = VersionDependency::Resolved(ResolvedVersionDependency {
             dependency: resolved_version,
@@ -66,7 +81,7 @@ mod test {
         let client = get_client().await;
 
         let query = ProjectQueryBuilder::new()
-            .query("Almost Unified")
+            .query("BotaniaCombat")
             .limit(1)
             .index(IndexBy::Relevance)
             .build();
@@ -88,11 +103,11 @@ mod test {
         })
         .await;
 
-        // if _err.is_err() {
-        //     dbg!(_err.unwrap_err());
-        // } else {
-        //     dbg!(version);
-        // }
+        if _err.is_err() {
+            dbg!(_err.unwrap_err());
+        } else {
+            dbg!(&version);
+        }
 
         assert!(version
             .dependencies
