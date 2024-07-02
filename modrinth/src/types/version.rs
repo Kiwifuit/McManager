@@ -106,7 +106,7 @@ pub enum DependencyType {
     Embedded,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq, Eq)]
 pub struct VersionFile {
     pub hashes: VersionFileHashes,
     pub url: String,
@@ -116,13 +116,13 @@ pub struct VersionFile {
     pub file_type: Option<VersionFileType>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq, Eq)]
 pub struct VersionFileHashes {
     pub sha512: String,
     pub sha1: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq, Eq)]
 pub enum VersionFileType {
     #[serde(rename = "required-resource-pack")]
     Required,
