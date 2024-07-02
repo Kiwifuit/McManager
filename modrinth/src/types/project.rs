@@ -62,10 +62,10 @@ pub struct GalleryEntry {
     pub url: String,
     #[serde(rename = "featured")]
     _featured: bool,
-    pub title: String,
-    pub description: String,
+    pub title: Option<String>,
+    pub description: Option<String>,
     pub created: String,
-    pub ordering: u8,
+    pub ordering: Option<u8>,
 }
 
 #[derive(Debug, Deserialize)]

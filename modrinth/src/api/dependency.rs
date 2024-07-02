@@ -76,8 +76,8 @@ mod test {
 
         let v_query = VersionQueryBuilder::new()
             .featured(true)
-            .versions(vec!["1.19.2"])
-            .loaders(vec![Loader::Forge])
+            .versions(vec!["1.20.1"])
+            .loaders(vec![Loader::Fabric])
             .build();
 
         let mut versions = get_versions(&client, &project, &v_query).await.unwrap();
