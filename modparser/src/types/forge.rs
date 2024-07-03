@@ -83,7 +83,6 @@ impl<'de> Deserialize<'de> for ForgeModVersion {
                             version.parse().map_err(serde::de::Error::custom)?,
                         )
                     } else {
-                        eprintln!("Hellow!");
                         ForgeModVersion::SpecificVersion(
                             version.parse().map_err(serde::de::Error::custom)?,
                         )
