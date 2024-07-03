@@ -1,5 +1,5 @@
 use super::{APIError, ENDPOINT};
-use log::{debug, info, warn};
+use log::info;
 use reqwest::Client;
 
 use crate::types::project::ModrinthProject;
@@ -50,7 +50,7 @@ mod test {
 
     #[tokio::test]
     async fn check_search_projects() {
-        let client = get_client().await;
+        let client = get_client().await.unwrap();
 
         let query = ProjectQueryBuilder::new()
             .query("gravestones")
@@ -72,7 +72,7 @@ mod test {
 
     #[tokio::test]
     async fn check_get_project() {
-        let client = get_client().await;
+        let client = get_client().await.unwrap();
 
         let query = ProjectQueryBuilder::new()
             .query("kontraption")

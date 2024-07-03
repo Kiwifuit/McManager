@@ -1,5 +1,5 @@
 use super::{APIError, ENDPOINT};
-use log::{debug, info, warn};
+use log::info;
 use reqwest::Client;
 
 use crate::types::query::VersionQuery;
@@ -70,7 +70,7 @@ mod test {
 
     #[tokio::test]
     async fn check_get_versions() {
-        let client = get_client().await;
+        let client = get_client().await.unwrap();
 
         let query = ProjectQueryBuilder::new()
             .query("kontraption")

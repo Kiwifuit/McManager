@@ -101,7 +101,7 @@ mod test {
 
     #[tokio::test]
     async fn check_dep_resolution() {
-        let client = get_client().await;
+        let client = get_client().await.unwrap();
 
         let query = ProjectQueryBuilder::new()
             .query("BotaniaCombat")
