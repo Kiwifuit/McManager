@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use log::debug;
+use log::{debug, error, info, warn};
 use reqwest::Client;
 use thiserror::Error;
 
@@ -48,9 +48,13 @@ pub async fn check_api() -> Result<(bool, Client), APIError> {
 }
 
 pub async fn get_client() -> Client {
+    info!("Checking api");
     let api_check = check_api().await;
 
-    assert!(api_check.is_ok());
+    if let Err(api_err) = api_check {
+        error!("Error while testing Modrinth api: {:}. Are you sure you are connected to the internet?", api_err)
+    }
+    // assert!(api_check.is_ok());
     let (_labrinth_responding, client) = api_check.unwrap();
 
     client

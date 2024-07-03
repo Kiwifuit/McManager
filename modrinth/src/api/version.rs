@@ -1,8 +1,10 @@
 use super::{APIError, ENDPOINT};
+use log::{debug, info, warn};
+use reqwest::Client;
+
 use crate::types::query::VersionQuery;
 use crate::types::version::ModrinthProjectVersion;
 use crate::types::ModrinthProjectMeta;
-use reqwest::Client;
 
 #[allow(private_bounds)]
 pub async fn get_versions<M>(
@@ -13,6 +15,8 @@ pub async fn get_versions<M>(
 where
     M: ModrinthProjectMeta,
 {
+    info!("Searching for versions with params: {:?}", params);
+
     let resp: Vec<ModrinthProjectVersion> = client
         // TODO: ADD ERROR
         .get(format!(
@@ -38,6 +42,8 @@ pub(crate) async fn get_version<M>(
 where
     M: ModrinthProjectMeta,
 {
+    info!("Searching for version: {:?}", project.version_id().unwrap());
+
     let resp: ModrinthProjectVersion = client
         // TODO: ADD ERROR
         .get(format!(

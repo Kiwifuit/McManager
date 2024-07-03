@@ -7,8 +7,8 @@ use crate::{
     version::{get_version, get_versions},
     ModrinthProjectVersion,
 };
+use log::{debug, info, warn};
 use reqwest::Client;
-// use std::boxed::Box;
 
 pub async fn resolve_dependencies<F>(
     client: &Client,
@@ -24,6 +24,7 @@ where
         return Err(APIError::NoDependencies);
     }
 
+    info!("Resolving dependnecies for mod {}", project.name);
     for dependency in project.dependencies.as_mut().unwrap().iter_mut() {
         let unresolved_dependency = match dependency {
             VersionDependency::Resolved(ver) => {
@@ -40,9 +41,22 @@ where
         let mut resolved_version = if unresolved_dependency.version_id.is_some() {
             get_version(client, unresolved_dependency).await?
         } else {
+            warn!(
+                "No version ID supplied for project {:?}",
+                unresolved_dependency.project_id.as_ref().unwrap()
+            );
             let version_list = get_versions(client, unresolved_dependency, version_params).await?;
 
-            resolver(version_list)
+            if version_list.len() == 1 {
+                debug!("Only 1 version found, returning that");
+                version_list.into_iter().next().unwrap()
+            } else {
+                debug!(
+                    "{} versions found with the matching criterion",
+                    version_list.len()
+                );
+                resolver(version_list)
+            }
         };
 
         if resolved_version
@@ -50,6 +64,10 @@ where
             .as_ref()
             .is_some_and(|deps| !deps.is_empty())
         {
+            debug!(
+                "Resolving dependency {}'s dependencies",
+                resolved_version.name
+            );
             Box::pin(resolve_dependencies(
                 client,
                 &mut resolved_version,
@@ -59,12 +77,17 @@ where
             .await?;
         }
 
+        info!(
+            "Mod with ID {} resolved to {}",
+            resolved_version.id, resolved_version.name
+        );
         *dependency = VersionDependency::Resolved(ResolvedVersionDependency {
             dependency: resolved_version,
             dependency_type: unresolved_dependency.dependency_type.clone(),
         });
     }
 
+    info!("All dependnecies resolved!");
     Ok(())
 }
 

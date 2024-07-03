@@ -1,4 +1,5 @@
 use super::{APIError, ENDPOINT};
+use log::{debug, info, warn};
 use reqwest::Client;
 
 use crate::types::project::ModrinthProject;
@@ -10,6 +11,7 @@ pub async fn search_project(
     client: &Client,
     params: &ProjectQuery,
 ) -> Result<(Vec<SearchProjectHit>, usize), APIError> {
+    info!("Searching for project with params: {:?}", params);
     let raw_res: SearchProjectResult = client
         .get(format!("{}/v2/search", ENDPOINT))
         .query(params)
@@ -27,6 +29,7 @@ pub async fn get_project(
     client: &Client,
     project: &SearchProjectHit,
 ) -> Result<ModrinthProject, APIError> {
+    info!("Getting project information for {}", project.title);
     Ok(client
         .get(format!("{}/v2/project/{}", ENDPOINT, project.project_id))
         .send()
