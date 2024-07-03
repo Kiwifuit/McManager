@@ -1,4 +1,4 @@
-# :hammer_and_pick: McServer Manager
+# 🗄️ McServer Manager
 *This repository is very much at a work in progress*. Do not expect a build anytime soon
 
 - [x] Mod parsing
@@ -12,7 +12,7 @@
     - Dogshit search api tho :clown_face:
   - [ ] BukkitDev backend library
     - This will be one hell of a webcrawling adventure :)
-- [ ] Modpack parser
+- [ ] :hammer_and_wrench: Modpack parser
 - [ ] Modpack packer?
   - Like a program that packs modpacks in a way that the aternos clone can parse
 - [ ] Aternos clone
@@ -25,6 +25,9 @@
     - [ ] From Curseforge
     - [ ] From Modrinth
     - [ ] From File (Forge/Modrinth)
+
+> [!NOTE]
+> 🛠️ indicates the component currently worked on
 
 *As you can see, this project is **FAR** from done, nor do I have any hope of finishing it, but I will do my best*
 
