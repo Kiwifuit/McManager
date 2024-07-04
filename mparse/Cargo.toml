@@ -8,7 +8,6 @@ zip = { version = "0.6.6", default-features = false, features = ["deflate"] }
 serde.workspace = true
 thiserror.workspace = true
 log.workspace = true
-# modrinth = { path = "../modrinth" }
 
 [lints]
 workspace = true
