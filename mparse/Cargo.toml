@@ -8,9 +8,20 @@ zip = { version = "0.6.6", default-features = false, features = ["deflate"] }
 serde.workspace = true
 thiserror.workspace = true
 log.workspace = true
+clap = { version = "4.5.8", features = ["derive", "cargo"], optional = true }
+serde_json = { version = "1.0.120", optional = true }
+
 
 [dev-dependencies]
 serde_json = "1.0.120"
 
+[features]
+bin = ["dep:clap", "dep:serde_json"]
+
 [lints]
 workspace = true
+
+[[bin]]
+name = "mpcli"
+path = "./src/main.rs"
+required-features = ["bin"]
