@@ -5,7 +5,7 @@ pub use forge::ForgeModpack;
 pub use modrinth::ModrinthModpack;
 
 #[derive(PartialEq)]
-pub enum ModLoader {
+pub enum ModpackProvider {
     Forge,
     Modrinth,
     None,

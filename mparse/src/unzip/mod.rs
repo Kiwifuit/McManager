@@ -6,7 +6,7 @@ use log::{debug, error, info};
 use thiserror::Error;
 use zip::ZipArchive;
 
-use crate::ModLoader;
+use crate::ModpackProvider;
 
 const FORGE_META: &str = "manifest.json";
 const MODRINTH_META: &str = "modrinth.index.json";
@@ -23,7 +23,7 @@ pub enum UnzipError {
 }
 
 pub struct ModpackMetadata {
-    pub loader: ModLoader,
+    pub loader: ModpackProvider,
     pub raw: String,
 }
 
@@ -33,16 +33,16 @@ pub fn get_modpack_manifest<F: AsRef<Path>>(file: F) -> Result<ModpackMetadata, 
 
     let (manifest_file, loader) = if archive.by_name(FORGE_META).is_ok() {
         info!("Modpack manifest found at {}", FORGE_META);
-        (FORGE_META, ModLoader::Forge)
+        (FORGE_META, ModpackProvider::Forge)
     } else if archive.by_name(MODRINTH_META).is_ok() {
         info!("Modpack manifest found at {}", MODRINTH_META);
-        (MODRINTH_META, ModLoader::Modrinth)
+        (MODRINTH_META, ModpackProvider::Modrinth)
     } else {
         error!("No manifest found!");
-        ("", ModLoader::None)
+        ("", ModpackProvider::None)
     };
 
-    if loader == ModLoader::None {
+    if loader == ModpackProvider::None {
         return Err(UnzipError::NoManifest);
     }
 
