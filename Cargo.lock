@@ -601,12 +601,20 @@ dependencies = [
 name = "mparse"
 version = "0.1.0"
 dependencies = [
- "clap",
  "log",
  "serde",
  "serde_json",
  "thiserror",
  "zip",
+]
+
+[[package]]
+name = "mpcli"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "mparse",
+ "serde_json",
 ]
 
 [[package]]
