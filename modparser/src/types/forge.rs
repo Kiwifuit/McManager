@@ -499,7 +499,7 @@ mod tests {
             }
 
             let mod_meta = from_str::<ForgeMod>(
-                grab_meta_file(file.path(), crate::unzip::ModLoader::Forge)
+                grab_meta_file(file.path())
                     .expect("expected meta file to be grabbed")
                     .raw
                     .as_str(),

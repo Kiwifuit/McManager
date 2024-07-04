@@ -17,7 +17,7 @@ pub struct ModMeta {
 pub enum ModLoader {
     Forge,
     Fabric,
-    Guess,
+    None,
 }
 
 #[derive(Error, Debug)]
@@ -38,30 +38,19 @@ pub enum UnzipError {
     WriteToTempFile,
 }
 
-pub fn grab_meta_file<F: AsRef<Path>>(file: F, ml_type: ModLoader) -> Result<ModMeta, UnzipError> {
+pub fn grab_meta_file<F: AsRef<Path>>(file: F) -> Result<ModMeta, UnzipError> {
     let zipfile = File::open(file)?;
     let mut archive = ZipArchive::new(zipfile)?;
 
-    let (config_file, loader) = match ml_type {
-        ModLoader::Guess => {
-            info!("guessing the type of mod");
-
-            if archive.by_name(FORGE_META).is_ok() {
-                info!("determined that the mod is a Forge mod");
-                (FORGE_META, ModLoader::Forge)
-            } else {
-                info!("determined that the mod is a Fabric mod");
-                (FABRIC_META, ModLoader::Fabric)
-            }
-        }
-        ModLoader::Forge => {
-            info!("determined that the mod is a Forge mod");
-            (FORGE_META, ModLoader::Forge)
-        }
-        ModLoader::Fabric => {
-            info!("determined that the mod is a Fabric mod");
-            (FABRIC_META, ModLoader::Fabric)
-        }
+    let (config_file, loader) = if archive.by_name(FORGE_META).is_ok() {
+        info!("Modpack manifest found at {}", FORGE_META);
+        (FORGE_META, ModLoader::Forge)
+    } else if archive.by_name(FABRIC_META).is_ok() {
+        info!("Modpack manifest found at {}", FABRIC_META);
+        (FABRIC_META, ModLoader::Fabric)
+    } else {
+        error!("No manifest found!");
+        ("", ModLoader::None)
     };
 
     let mut file = archive
@@ -83,7 +72,7 @@ mod tests {
     #[test]
     fn meta_get_forge() {
         let file = "samples/forge/tisadvanced-1.19.2-0.3.0.jar";
-        let res = grab_meta_file(file, ModLoader::Forge);
+        let res = grab_meta_file(file);
 
         assert!(res.is_ok());
         assert!(!res.unwrap().raw.is_empty());
@@ -92,7 +81,7 @@ mod tests {
     #[test]
     fn meta_get_fabric() {
         let file = "samples/fabric/antique-atlas-2.5.0+1.20.jar";
-        let res = grab_meta_file(file, ModLoader::Fabric);
+        let res = grab_meta_file(file);
 
         assert!(res.is_ok());
         assert!(!res.unwrap().raw.is_empty());
@@ -100,14 +89,8 @@ mod tests {
 
     #[test]
     fn meta_readable() {
-        let forge_mod = grab_meta_file(
-            "samples/forge/tisadvanced-1.19.2-0.3.0.jar",
-            ModLoader::Guess,
-        );
-        let fabric_mod = grab_meta_file(
-            "samples/fabric/antique-atlas-2.5.0+1.20.jar",
-            ModLoader::Guess,
-        );
+        let forge_mod = grab_meta_file("samples/forge/tisadvanced-1.19.2-0.3.0.jar");
+        let fabric_mod = grab_meta_file("samples/fabric/antique-atlas-2.5.0+1.20.jar");
 
         assert!(forge_mod.is_ok());
         assert!(!forge_mod.unwrap().raw.is_empty());

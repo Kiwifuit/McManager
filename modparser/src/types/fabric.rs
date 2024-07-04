@@ -122,7 +122,7 @@ mod tests {
             }
 
             let mod_meta = from_str::<FabricMod>(
-                grab_meta_file(file.path(), crate::unzip::ModLoader::Fabric)
+                grab_meta_file(file.path())
                     .expect("expected meta file to be grabbed")
                     .raw
                     .as_str(),
