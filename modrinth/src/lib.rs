@@ -1,9 +1,15 @@
-mod api;
-mod types;
+pub mod api;
+#[cfg(feature = "types")]
+pub mod types;
 
 pub use api::*;
+#[cfg(feature = "types")]
 pub use types::project::ModrinthProject;
+#[cfg(feature = "types")]
 pub use types::query::{ProjectQueryBuilder, VersionQueryBuilder};
+#[cfg(feature = "types")]
 pub use types::version::ModrinthProjectVersion;
+#[cfg(feature = "types")]
 pub use types::{Facet, FacetOp};
+#[cfg(feature = "types")]
 pub use types::{IndexBy, Loader};
