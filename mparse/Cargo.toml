@@ -4,6 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+zip = { version = "0.6.6", default-features = false, features = ["deflate"] }
+serde.workspace = true
+thiserror.workspace = true
+log.workspace = true
+# modrinth = { path = "../modrinth" }
 
 [lints]
 workspace = true
