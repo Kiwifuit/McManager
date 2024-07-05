@@ -1,8 +1,10 @@
 use clap::{Parser, Subcommand};
-use log::{info, warn};
-use mparse::{get_modpack_manifest, ForgeModpack, ModrinthModpack};
-use serde_json::from_reader;
-use std::{ffi::OsString, path::PathBuf};
+use log::{error, info, warn};
+use mparse::{
+    get_modpack_manifest, ForgeModpack, ModpackMetadata, ModpackProvider, ModrinthModpack,
+};
+use serde_json::from_str;
+use std::{ffi::OsString, fs::File, path::PathBuf};
 
 mod logger;
 
@@ -55,6 +57,60 @@ fn get_default_minecraft_home() -> OsString {
     OsString::from(DEFAULT_MINECRAFT_HOME)
 }
 
+#[derive(Debug)]
+enum ManifestType {
+    Forge(ForgeModpack),
+    Modrinth(ModrinthModpack),
+}
+
+fn show_modpack_info(meta: ModpackMetadata) {
+    let meta = match meta.loader {
+        ModpackProvider::Forge => {
+            let file = from_str::<ForgeModpack>(&meta.raw);
+
+            if file.is_err() {
+                error!(
+                    "Unable to parse forge modpack information: {}",
+                    file.unwrap_err()
+                );
+                return;
+            }
+
+            ManifestType::Forge(file.unwrap())
+        }
+        ModpackProvider::Modrinth => {
+            let file = from_str::<ModrinthModpack>(&meta.raw);
+
+            if file.is_err() {
+                error!(
+                    "Unable to parse modrinth modpack information: {}",
+                    file.unwrap_err()
+                );
+                return;
+            }
+
+            ManifestType::Modrinth(file.unwrap())
+        }
+        ModpackProvider::None => {
+            panic!("somehow get_modpack_manifest provided a 'None' value, which shouldn't have happened");
+        }
+    };
+
+    dbg!(meta);
+}
+
+fn subcmd_info(args: InfoArgs) {
+    info!("Showing info for pack {}", args.file.display());
+    match get_modpack_manifest(args.file) {
+        Err(err) => error!("Unable to unpack modpack: {}", err),
+        Ok(modpack) => show_modpack_info(modpack),
+    };
+}
+fn subcmd_install(args: InstallArgs) {
+    info!("Installing pack {}", args.file.display());
+}
+fn subcmd_uninstall(args: UninstallArgs) {}
+
 fn main() {
     let args = Args::parse();
 
@@ -62,10 +118,8 @@ fn main() {
     warn!("This program is partially complete, running in 'dry run' mode");
 
     match args.subcommand {
-        Commands::Info(args) => todo!(),
-        Commands::Install(args) => {
-            info!("Installing pack {}", args.file.display());
-        }
-        Commands::Uninstall(args) => todo!(),
+        Commands::Info(args) => subcmd_info(args),
+        Commands::Install(args) => subcmd_install(args),
+        Commands::Uninstall(args) => subcmd_uninstall(args),
     }
 }
