@@ -4,8 +4,9 @@ use mparse::{
     get_modpack_manifest, ForgeModpack, ModpackMetadata, ModpackProvider, ModrinthModpack,
 };
 use serde_json::from_str;
-use std::{ffi::OsString, fs::File, path::PathBuf};
+use std::{ffi::OsString, path::PathBuf};
 
+mod install;
 mod logger;
 
 #[cfg(unix)]
