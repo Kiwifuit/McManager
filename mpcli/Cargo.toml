@@ -4,9 +4,13 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-clap = { version = "4.5.8", features = ["derive"] }
+clap = { version = "4.5.8", features = ["derive", "string"] }
 serde_json = { version = "1.0.120" }
 mparse = { path = "../mparse" }
+log.workspace = true
+fern = { version = "0.6.2", features = ["colored"] }
+clap-verbosity-flag = "2.2.0"
+directories = "5.0.1"
 
 [lints]
 workspace = true
