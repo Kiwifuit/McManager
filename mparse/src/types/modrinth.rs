@@ -23,7 +23,7 @@ pub struct ModrinthModpackFiles {
 #[derive(Debug, Deserialize)]
 pub struct ModpackFileHashes {
     pub sha1: String,
-    pub sha2: String,
+    pub sha512: String,
 }
 
 #[derive(Debug, Deserialize)]
