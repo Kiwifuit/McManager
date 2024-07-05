@@ -107,20 +107,26 @@ fn subcmd_info(args: InfoArgs) {
         Ok(modpack) => show_modpack_info(modpack),
     };
 }
-fn subcmd_install(args: InstallArgs) {
-    info!("Installing pack {}", args.file.display());
+fn subcmd_install(args: InstallArgs, install_dir: PathBuf) {
+    info!(
+        "Installing pack {} to {}",
+        args.file.display(),
+        install_dir.display()
+    );
 }
-fn subcmd_uninstall(args: UninstallArgs) {}
+fn subcmd_uninstall(args: UninstallArgs, install_dir: PathBuf) {
+    todo!()
+}
 
 fn main() {
-    let args = Args::parse();
+    let global_args = Args::parse();
 
-    let _ = logger::setup_logger(args.verbosity.log_level_filter());
+    let _ = logger::setup_logger(global_args.verbosity.log_level_filter());
     warn!("This program is partially complete, running in 'dry run' mode");
 
-    match args.subcommand {
+    match global_args.subcommand {
         Commands::Info(args) => subcmd_info(args),
-        Commands::Install(args) => subcmd_install(args),
-        Commands::Uninstall(args) => subcmd_uninstall(args),
+        Commands::Install(args) => subcmd_install(args, global_args.minecraft_home),
+        Commands::Uninstall(args) => subcmd_uninstall(args, global_args.minecraft_home),
     }
 }
