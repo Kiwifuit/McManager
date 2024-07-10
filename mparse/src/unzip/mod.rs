@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::fs::{create_dir, File};
 use std::io::prelude::*;
 use std::path::Path;
 
@@ -6,6 +6,7 @@ use log::{debug, error, info};
 use thiserror::Error;
 use zip::ZipArchive;
 
+use crate::types::ModpackProviderMetadata;
 use crate::ModpackProvider;
 
 const FORGE_META: &str = "manifest.json";
@@ -54,4 +55,27 @@ pub fn get_modpack_manifest<F: AsRef<Path>>(file: F) -> Result<ModpackMetadata, 
     debug!("Read {} bytes to buffer", len);
 
     Ok(ModpackMetadata { loader, raw })
+}
+
+pub fn unzip_modpack_to<F: AsRef<Path>, M: ModpackProviderMetadata>(
+    zipfile: F,
+    dir: F,
+    manifest: &M,
+) -> Result<(), UnzipError> {
+    let zipfile = File::open(zipfile)?;
+    let mut archive = ZipArchive::new(zipfile)?;
+    let overrides_dir = manifest.overrides_dir();
+
+    for i in 0..archive.len() {
+        let mut file = archive.by_index(i).unwrap();
+        let outpath = file.enclosed_name();
+
+        if !file.name().starts_with(overrides_dir) {
+            continue;
+        }
+
+        dbg!(file.name());
+    }
+
+    Ok(())
 }

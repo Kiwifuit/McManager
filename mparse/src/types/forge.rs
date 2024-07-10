@@ -1,3 +1,4 @@
+use super::ModpackProviderMetadata;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -7,7 +8,13 @@ pub struct ForgeModpack {
     pub version: String,
     pub author: String,
     pub files: Vec<ModpackFiles>,
-    pub overrides: String,
+    overrides: String,
+}
+
+impl ModpackProviderMetadata for ForgeModpack {
+    fn overrides_dir(&self) -> &str {
+        &self.overrides
+    }
 }
 
 #[derive(Debug, Deserialize)]

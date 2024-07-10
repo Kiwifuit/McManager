@@ -1,3 +1,4 @@
+use super::ModpackProviderMetadata;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -8,6 +9,12 @@ pub struct ModrinthModpack {
     pub name: String,
     pub summary: Option<String>,
     pub files: Vec<ModrinthModpackFiles>,
+}
+
+impl ModpackProviderMetadata for ModrinthModpack {
+    fn overrides_dir(&self) -> &str {
+        "overrides"
+    }
 }
 
 #[derive(Debug, Deserialize)]
