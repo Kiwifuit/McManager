@@ -47,12 +47,20 @@ enum Commands {
 
 #[derive(Debug, Parser)]
 struct InstallArgs {
+    /// Modpack name. Defaults to the filename of the modpack
+    #[arg(short, long)]
+    name: Option<String>,
+
     /// File to install. Must be a ZIP archive
     file: PathBuf,
 }
 
 #[derive(Debug, Parser)]
-struct UninstallArgs {}
+struct UninstallArgs {
+    /// Modpack name. Defaults to the filename of the modpack
+    #[arg(short, long)]
+    name: Option<String>,
+}
 
 #[derive(Debug, Parser)]
 struct InfoArgs {
@@ -115,7 +123,8 @@ fn subcmd_info(args: InfoArgs) {
 }
 
 fn subcmd_install(args: InstallArgs, install_dir: PathBuf) {
-    let install_dir = if install_dir.as_os_str() == get_default_minecraft_home() {
+    // resolve `install_dir` by OS
+    let mut install_dir = if install_dir.as_os_str() == get_default_minecraft_home() {
         error!("SAME LMAO!");
 
         #[cfg(any(target_os = "windows", target_os = "macos"))]
@@ -134,6 +143,18 @@ fn subcmd_install(args: InstallArgs, install_dir: PathBuf) {
         std::path::absolute(install_dir).unwrap()
     };
 
+    // transform `install_dir` as required
+    install_dir.push(format!(
+        "version/{}",
+        args.file
+            .with_extension("")
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+    ));
+
+    // finalize `install_dir`
+    let install_dir = std::path::absolute(install_dir).unwrap();
     info!(
         "Installing pack {} to {}",
         args.file.display(),
