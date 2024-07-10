@@ -1,4 +1,10 @@
 use clap::{Parser, Subcommand};
+#[cfg(any(target_os = "windows", target_os = "macos"))]
+use dirs::config_dir;
+
+#[cfg(unix)]
+use std::env::var;
+
 use log::{error, info, warn};
 use mparse::{
     get_modpack_manifest, ForgeModpack, ModpackMetadata, ModpackProvider, ModrinthModpack,
@@ -107,7 +113,27 @@ fn subcmd_info(args: InfoArgs) {
         Ok(modpack) => show_modpack_info(modpack),
     };
 }
+
 fn subcmd_install(args: InstallArgs, install_dir: PathBuf) {
+    let install_dir = if install_dir.as_os_str() == get_default_minecraft_home() {
+        error!("SAME LMAO!");
+
+        #[cfg(any(target_os = "windows", target_os = "macos"))]
+        let new_install_dir = config_dir().unwrap().as_path().join(".minecraft");
+
+        #[cfg(unix)]
+        let new_install_dir = std::path::absolute(install_dir).unwrap();
+
+        new_install_dir
+    } else if !install_dir.ends_with(".minecraft") {
+        let mut install_dir = install_dir.to_path_buf();
+        install_dir.push(".minecraft");
+
+        std::path::absolute(install_dir).unwrap()
+    } else {
+        std::path::absolute(install_dir).unwrap()
+    };
+
     info!(
         "Installing pack {} to {}",
         args.file.display(),
