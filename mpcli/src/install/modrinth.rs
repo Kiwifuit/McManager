@@ -10,7 +10,7 @@ use std::{
 
 use crate::ModrinthModpack;
 
-const DOWNLOAD_BUFFER_LEN: usize = 512;
+const DOWNLOAD_BUFFER_LEN: usize = 1024;
 
 pub(super) fn download_mods<F: AsRef<Path>>(modpack: &ModrinthModpack, install_dir: &F) {
     info!("Downloading mods");
@@ -27,26 +27,32 @@ pub(super) fn download_mods<F: AsRef<Path>>(modpack: &ModrinthModpack, install_d
         let filename = String::from(outfilepath.file_stem().unwrap().to_string_lossy());
 
         info!("Downloading {}", filename);
-        let mut buf = [0u8; DOWNLOAD_BUFFER_LEN];
+        let mut buf = Vec::new();
         let mut remaining = resp.content_length().unwrap();
         let mut outfile = File::create(outfilepath.clone()).unwrap();
-        let download_progress = ProgressBar::new(resp.content_length().unwrap())
-            .with_message(filename)
-            .with_style(
-                ProgressStyle::with_template("{wide_msg:<20} [{bar:80}] {percent}%")
-                    .unwrap()
-                    .progress_chars("#>-"),
-            );
+        // let download_progress = ProgressBar::new(resp.content_length().unwrap())
+        //     .with_message(filename)
+        //     .with_style(
+        //         ProgressStyle::with_template("{wide_msg:<20} [{bar:80}] {percent}%")
+        //             .unwrap()
+        //             .progress_chars("#>-"),
+        //     );
 
-        download_progress.tick();
-        while remaining != 0 {
-            let read = resp.read(&mut buf).unwrap() as u64;
-            outfile.write(&buf);
+        resp.read_to_end(&mut buf);
+        outfile.write_all(&buf);
 
-            remaining -= read;
-            download_progress.inc(read);
-        }
+        // download_progress.tick();
+        // while remaining != 0 {
+        //     let read = resp.read(&mut buf).unwrap() as u64;
+        //     outfile.write(&buf);
 
-        download_progress.finish();
+        //     remaining -= read;
+        //     download_progress.inc(read);
+
+        //     dbg!(remaining);
+        //     dbg!(read);
+        // }
+
+        // download_progress.finish();
     }
 }
