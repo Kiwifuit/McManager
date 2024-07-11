@@ -15,6 +15,10 @@ impl ModpackProviderMetadata for ForgeModpack {
     fn overrides_dir(&self) -> &str {
         &self.overrides
     }
+
+    fn modpack_name(&self) -> String {
+        self.name.clone()
+    }
 }
 
 #[derive(Debug, Deserialize)]

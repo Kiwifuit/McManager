@@ -5,9 +5,10 @@ use dirs::config_dir;
 #[cfg(unix)]
 use std::env::var;
 
-use log::{error, info, warn};
+use log::{debug, error, info, warn};
 use mparse::{
-    get_modpack_manifest, ForgeModpack, ModpackMetadata, ModpackProvider, ModrinthModpack,
+    get_modpack_manifest, unzip_modpack_to, ForgeModpack, ModpackMetadata, ModpackProvider,
+    ModpackProviderMetadata, ModrinthModpack,
 };
 use serde_json::from_str;
 use std::{ffi::OsString, path::PathBuf};
@@ -72,10 +73,27 @@ fn get_default_minecraft_home() -> OsString {
     OsString::from(DEFAULT_MINECRAFT_HOME)
 }
 
+// TODO: Deprecate this whole thing
 #[derive(Debug)]
 enum ManifestType {
     Forge(ForgeModpack),
     Modrinth(ModrinthModpack),
+}
+
+impl ModpackProviderMetadata for ManifestType {
+    fn overrides_dir(&self) -> &str {
+        match self {
+            Self::Forge(content) => content.overrides_dir(),
+            Self::Modrinth(content) => content.overrides_dir(),
+        }
+    }
+
+    fn modpack_name(&self) -> String {
+        match self {
+            Self::Forge(content) => content.modpack_name(),
+            Self::Modrinth(content) => content.modpack_name(),
+        }
+    }
 }
 
 fn show_modpack_info(meta: ModpackMetadata) {
@@ -116,17 +134,49 @@ fn show_modpack_info(meta: ModpackMetadata) {
 
 fn subcmd_info(args: InfoArgs) {
     info!("Showing info for pack {}", args.file.display());
-    match get_modpack_manifest(args.file) {
+    match get_modpack_manifest(&args.file) {
         Err(err) => error!("Unable to unpack modpack: {}", err),
         Ok(modpack) => show_modpack_info(modpack),
     };
 }
 
 fn subcmd_install(args: InstallArgs, install_dir: PathBuf) {
+    debug!("Grabbing manifest...");
+    let manifest_file = get_modpack_manifest(&args.file).unwrap();
+    let manifest = match manifest_file.loader {
+        ModpackProvider::Forge => {
+            let forge_manifest = from_str::<ForgeModpack>(&manifest_file.raw);
+
+            if forge_manifest.is_err() {
+                error!(
+                    "Unable to parse forge modpack information: {}",
+                    forge_manifest.unwrap_err()
+                );
+                return;
+            }
+
+            ManifestType::Forge(forge_manifest.unwrap())
+        }
+        ModpackProvider::Modrinth => {
+            let modrinth_manifest = from_str::<ModrinthModpack>(&manifest_file.raw);
+
+            if modrinth_manifest.is_err() {
+                error!(
+                    "Unable to parse modrinth modpack information: {}",
+                    modrinth_manifest.unwrap_err()
+                );
+                return;
+            }
+
+            ManifestType::Modrinth(modrinth_manifest.unwrap())
+        }
+        ModpackProvider::None => {
+            panic!("somehow get_modpack_manifest provided a 'None' value, which shouldn't have happened");
+        }
+    };
+
     // resolve `install_dir` by OS
     let mut install_dir = if install_dir.as_os_str() == get_default_minecraft_home() {
-        error!("SAME LMAO!");
-
         #[cfg(any(target_os = "windows", target_os = "macos"))]
         let new_install_dir = config_dir().unwrap().as_path().join(".minecraft");
 
@@ -144,14 +194,7 @@ fn subcmd_install(args: InstallArgs, install_dir: PathBuf) {
     };
 
     // transform `install_dir` as required
-    install_dir.push(format!(
-        "version/{}",
-        args.file
-            .with_extension("")
-            .file_name()
-            .unwrap()
-            .to_string_lossy()
-    ));
+    install_dir.push(format!("version/{}", manifest.modpack_name()));
 
     // finalize `install_dir`
     let install_dir = std::path::absolute(install_dir).unwrap();
@@ -160,6 +203,10 @@ fn subcmd_install(args: InstallArgs, install_dir: PathBuf) {
         args.file.display(),
         install_dir.display()
     );
+
+    unzip_modpack_to(args.file, &install_dir, &manifest);
+    install::get_mods(manifest, &install_dir);
+    println!("Installed modpack at {}", install_dir.display());
 }
 fn subcmd_uninstall(args: UninstallArgs, install_dir: PathBuf) {
     todo!()

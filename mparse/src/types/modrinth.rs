@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use super::ModpackProviderMetadata;
 use serde::Deserialize;
 
@@ -15,12 +17,16 @@ impl ModpackProviderMetadata for ModrinthModpack {
     fn overrides_dir(&self) -> &str {
         "overrides"
     }
+
+    fn modpack_name(&self) -> String {
+        self.name.clone()
+    }
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ModrinthModpackFiles {
-    pub path: String,
+    pub path: Box<Path>,
     pub hashes: ModpackFileHashes,
     pub env: ModpackEnv,
     pub downloads: Vec<String>,

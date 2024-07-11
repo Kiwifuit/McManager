@@ -1,7 +1,6 @@
 pub mod forge;
 pub mod modrinth;
 
-
 pub use forge::ForgeModpack;
 pub use modrinth::ModrinthModpack;
 
@@ -12,6 +11,7 @@ pub enum ModpackProvider {
     None,
 }
 
-pub(crate) trait ModpackProviderMetadata {
+pub trait ModpackProviderMetadata {
     fn overrides_dir(&self) -> &str;
+    fn modpack_name(&self) -> String;
 }

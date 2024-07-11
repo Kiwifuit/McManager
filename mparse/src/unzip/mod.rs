@@ -1,6 +1,6 @@
-use std::fs::{create_dir, File};
+use std::fs::{create_dir, create_dir_all, File};
 use std::io::prelude::*;
-use std::path::Path;
+use std::path::{absolute, Path, PathBuf};
 
 use log::{debug, error, info};
 use thiserror::Error;
@@ -28,7 +28,7 @@ pub struct ModpackMetadata {
     pub raw: String,
 }
 
-pub fn get_modpack_manifest<F: AsRef<Path>>(file: F) -> Result<ModpackMetadata, UnzipError> {
+pub fn get_modpack_manifest<F: AsRef<Path>>(file: &F) -> Result<ModpackMetadata, UnzipError> {
     let zipfile = File::open(file)?;
     let mut archive = ZipArchive::new(zipfile)?;
 
@@ -59,22 +59,44 @@ pub fn get_modpack_manifest<F: AsRef<Path>>(file: F) -> Result<ModpackMetadata, 
 
 pub fn unzip_modpack_to<F: AsRef<Path>, M: ModpackProviderMetadata>(
     zipfile: F,
-    dir: F,
+    dir: &F,
     manifest: &M,
 ) -> Result<(), UnzipError> {
     let zipfile = File::open(zipfile)?;
     let mut archive = ZipArchive::new(zipfile)?;
     let overrides_dir = manifest.overrides_dir();
 
+    info!("Extracting archive");
     for i in 0..archive.len() {
-        let mut file = archive.by_index(i).unwrap();
-        let outpath = file.enclosed_name();
+        let mut infile = archive.by_index(i)?;
+        let arcfile = infile
+            .enclosed_name()
+            .unwrap()
+            .components()
+            .enumerate()
+            .filter_map(|(i, comp)| if i != 0 { Some(comp) } else { None })
+            .collect::<PathBuf>();
 
-        if !file.name().starts_with(overrides_dir) {
+        let outpath = absolute(dir.as_ref().join(&arcfile))?;
+
+        if !infile.name().starts_with(overrides_dir) {
             continue;
         }
 
-        dbg!(file.name());
+        if infile.is_dir() {
+            info!("Creating dir: {}", outpath.display());
+            create_dir_all(outpath);
+        } else {
+            info!("Extracting {} to {}", infile.name(), outpath.display());
+            print!("{}...", arcfile.display());
+            if !outpath.parent().unwrap().exists() {
+                create_dir_all(outpath.parent().unwrap());
+            }
+
+            let mut outfile = File::create(outpath).unwrap();
+            std::io::copy(&mut infile, &mut outfile);
+            println!("OK");
+        }
     }
 
     Ok(())
