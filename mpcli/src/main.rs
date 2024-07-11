@@ -194,7 +194,7 @@ fn subcmd_install(args: InstallArgs, install_dir: PathBuf) {
     };
 
     // transform `install_dir` as required
-    install_dir.push(format!("version/{}", manifest.modpack_name()));
+    install_dir.push(format!("versions/{}", manifest.modpack_name()));
 
     // finalize `install_dir`
     let install_dir = std::path::absolute(install_dir).unwrap();
