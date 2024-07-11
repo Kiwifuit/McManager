@@ -88,14 +88,14 @@ pub fn unzip_modpack_to<F: AsRef<Path>, M: ModpackProviderMetadata>(
             create_dir_all(outpath);
         } else {
             info!("Extracting {} to {}", infile.name(), outpath.display());
-            print!("{}...", arcfile.display());
+            info!("{}...", arcfile.display());
             if !outpath.parent().unwrap().exists() {
                 create_dir_all(outpath.parent().unwrap());
             }
 
             let mut outfile = File::create(outpath).unwrap();
             std::io::copy(&mut infile, &mut outfile);
-            println!("OK");
+            info!("OK");
         }
     }
 

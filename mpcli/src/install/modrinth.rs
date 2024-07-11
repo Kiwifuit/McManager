@@ -10,12 +10,13 @@ use std::{
 
 use crate::ModrinthModpack;
 
-pub(super) fn download_mods<F: AsRef<Path>>(modpack: ModrinthModpack, install_dir: &F) {
-    println!("Downloading mods from Modrinth");
+const DOWNLOAD_BUFFER_LEN: usize = 512;
+
+pub(super) fn download_mods<F: AsRef<Path>>(modpack: &ModrinthModpack, install_dir: &F) {
     info!("Downloading mods");
 
-    for file in modpack.files {
-        let outfilepath = absolute(install_dir.as_ref().join(file.path)).unwrap();
+    for file in &modpack.files {
+        let outfilepath = absolute(install_dir.as_ref().join(&file.path)).unwrap();
         let file_url = file.downloads.first().unwrap();
         let mut resp = get(file_url).unwrap();
 
@@ -26,13 +27,13 @@ pub(super) fn download_mods<F: AsRef<Path>>(modpack: ModrinthModpack, install_di
         let filename = String::from(outfilepath.file_stem().unwrap().to_string_lossy());
 
         info!("Downloading {}", filename);
-        let mut buf = [0u8; 1024];
+        let mut buf = [0u8; DOWNLOAD_BUFFER_LEN];
         let mut remaining = resp.content_length().unwrap();
         let mut outfile = File::create(outfilepath.clone()).unwrap();
         let download_progress = ProgressBar::new(resp.content_length().unwrap())
             .with_message(filename)
             .with_style(
-                ProgressStyle::with_template("{msg:>20} [{bar:40}] {percent}%")
+                ProgressStyle::with_template("{wide_msg:<20} [{bar:80}] {percent}%")
                     .unwrap()
                     .progress_chars("#>-"),
             );

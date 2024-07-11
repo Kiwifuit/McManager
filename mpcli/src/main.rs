@@ -204,10 +204,13 @@ fn subcmd_install(args: InstallArgs, install_dir: PathBuf) {
         install_dir.display()
     );
 
+    println!("Downloading Mods");
+    install::get_mods(&manifest, &install_dir);
+    println!("Unpacking overrides");
     unzip_modpack_to(args.file, &install_dir, &manifest);
-    install::get_mods(manifest, &install_dir);
     println!("Installed modpack at {}", install_dir.display());
 }
+
 fn subcmd_uninstall(args: UninstallArgs, install_dir: PathBuf) {
     todo!()
 }
