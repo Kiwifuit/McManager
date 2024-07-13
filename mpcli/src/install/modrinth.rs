@@ -8,7 +8,7 @@ use std::{
     path::{absolute, Path},
 };
 
-use crate::ModrinthModpack;
+use mparse::ModrinthModpack;
 
 pub(super) fn download_mods<F: AsRef<Path>>(modpack: &ModrinthModpack, install_dir: &F) {
     info!("Downloading mods");

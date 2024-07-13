@@ -1,7 +1,6 @@
-use log::error;
 use std::path::Path;
 
-use crate::ManifestType;
+use crate::types::ManifestType;
 
 mod forge;
 mod modrinth;
