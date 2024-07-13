@@ -6,6 +6,7 @@ members = ["modparser", "modrinth", "mparse", "mpcli"]
 serde = { version = "1.0.197", features = ["derive"] }
 log = "0.4.21"
 thiserror = "1.0.58"
+anyhow = "1.0.86"
 
 [workspace.lints.clippy]
 dbg_macro = "forbid"
