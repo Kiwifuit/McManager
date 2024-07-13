@@ -786,6 +786,7 @@ dependencies = [
  "mparse",
  "reqwest",
  "serde_json",
+ "thiserror",
 ]
 
 [[package]]

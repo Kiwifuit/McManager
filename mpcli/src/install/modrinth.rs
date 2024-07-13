@@ -10,10 +10,11 @@ use std::{
 
 use crate::ModrinthModpack;
 
-const DOWNLOAD_BUFFER_LEN: usize = 1024;
-
 pub(super) fn download_mods<F: AsRef<Path>>(modpack: &ModrinthModpack, install_dir: &F) {
     info!("Downloading mods");
+    let mod_progress = ProgressBar::new(modpack.files.len() as u64)
+        .with_message("Progress:")
+        .with_style(ProgressStyle::with_template("{msg} {wide_bar} {percent_precise}%").unwrap());
 
     for file in &modpack.files {
         let outfilepath = absolute(install_dir.as_ref().join(&file.path)).unwrap();
@@ -21,38 +22,18 @@ pub(super) fn download_mods<F: AsRef<Path>>(modpack: &ModrinthModpack, install_d
         let mut resp = get(file_url).unwrap();
 
         if !outfilepath.parent().unwrap().exists() {
-            create_dir_all(outfilepath.parent().unwrap());
+            create_dir_all(outfilepath.parent().unwrap()).expect("expected");
         }
 
         let filename = String::from(outfilepath.file_stem().unwrap().to_string_lossy());
 
         info!("Downloading {}", filename);
         let mut buf = Vec::new();
-        let mut remaining = resp.content_length().unwrap();
         let mut outfile = File::create(outfilepath.clone()).unwrap();
-        // let download_progress = ProgressBar::new(resp.content_length().unwrap())
-        //     .with_message(filename)
-        //     .with_style(
-        //         ProgressStyle::with_template("{wide_msg:<20} [{bar:80}] {percent}%")
-        //             .unwrap()
-        //             .progress_chars("#>-"),
-        //     );
-
-        resp.read_to_end(&mut buf);
-        outfile.write_all(&buf);
-
-        // download_progress.tick();
-        // while remaining != 0 {
-        //     let read = resp.read(&mut buf).unwrap() as u64;
-        //     outfile.write(&buf);
-
-        //     remaining -= read;
-        //     download_progress.inc(read);
-
-        //     dbg!(remaining);
-        //     dbg!(read);
-        // }
-
-        // download_progress.finish();
+        resp.read_to_end(&mut buf)
+            .expect("expected read/write process to suceed :(");
+        outfile
+            .write_all(&buf)
+            .expect("expected read/write process to suceed :(");
     }
 }
