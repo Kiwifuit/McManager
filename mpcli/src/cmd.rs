@@ -28,8 +28,10 @@ pub enum CommandError {
 
 pub fn info(args: InfoArgs) -> Result<(), CommandError> {
     info!("Showing info for pack {}", args.file.display());
-    let modpack = get_modpack_manifest(&args.file)?;
-    show_modpack_info(modpack)?;
+    let mp_manifest = get_modpack_manifest(&args.file)?;
+    let parsed_manifest = show_modpack_info(mp_manifest)?;
+
+    // println!("Name: {}",);
 
     Ok(())
 }
@@ -37,19 +39,7 @@ pub fn info(args: InfoArgs) -> Result<(), CommandError> {
 pub fn install(args: InstallArgs, install_dir: PathBuf) -> Result<(), CommandError> {
     debug!("Grabbing manifest...");
     let manifest_file = get_modpack_manifest(&args.file)?;
-    let manifest = match manifest_file.loader {
-        ModpackProvider::Forge => {
-            let forge_manifest = from_str::<ForgeModpack>(&manifest_file.raw)?;
-            ManifestType::Forge(forge_manifest)
-        }
-        ModpackProvider::Modrinth => {
-            let modrinth_manifest = from_str::<ModrinthModpack>(&manifest_file.raw)?;
-            ManifestType::Modrinth(modrinth_manifest)
-        }
-        ModpackProvider::None => {
-            panic!("somehow get_modpack_manifest provided a 'None' value, which shouldn't have happened");
-        }
-    };
+    let manifest = show_modpack_info(manifest_file)?;
 
     // resolve `install_dir` by OS
     let mut install_dir = if install_dir.as_os_str() == get_default_minecraft_home() {
@@ -93,7 +83,7 @@ pub fn uninstall(args: UninstallArgs, install_dir: PathBuf) -> Result<(), Comman
     todo!()
 }
 
-fn show_modpack_info(meta: ModpackMetadata) -> Result<(), CommandError> {
+fn show_modpack_info(meta: ModpackMetadata) -> Result<ManifestType, CommandError> {
     let meta = match meta.loader {
         ModpackProvider::Forge => {
             let forge_manifest = from_str::<ForgeModpack>(&meta.raw)?;
@@ -108,6 +98,5 @@ fn show_modpack_info(meta: ModpackMetadata) -> Result<(), CommandError> {
         }
     };
 
-    dbg!(meta);
-    Ok(())
+    Ok(meta)
 }

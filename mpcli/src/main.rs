@@ -13,7 +13,6 @@ fn main() -> Result<()> {
     let global_args = Args::parse();
 
     let _ = logger::setup_logger(global_args.verbosity.log_level_filter());
-    warn!("This program is partially complete, running in 'dry run' mode");
 
     match global_args.subcommand {
         Commands::Info(args) => cmd::info(args)?,
