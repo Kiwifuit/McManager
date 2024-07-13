@@ -1,4 +1,4 @@
-use std::fs::{create_dir, create_dir_all, File};
+use std::fs::{create_dir_all, File};
 use std::io::prelude::*;
 use std::path::{absolute, Path, PathBuf};
 
@@ -85,17 +85,16 @@ pub fn unzip_modpack_to<F: AsRef<Path>, M: ModpackProviderMetadata>(
 
         if infile.is_dir() {
             info!("Creating dir: {}", outpath.display());
-            create_dir_all(outpath);
+            create_dir_all(outpath)?;
         } else {
             info!("Extracting {} to {}", infile.name(), outpath.display());
-            info!("{}...", arcfile.display());
             if !outpath.parent().unwrap().exists() {
-                create_dir_all(outpath.parent().unwrap());
+                create_dir_all(outpath.parent().unwrap())?;
             }
 
             let mut outfile = File::create(outpath).unwrap();
-            std::io::copy(&mut infile, &mut outfile);
-            info!("OK");
+            std::io::copy(&mut infile, &mut outfile)?;
+            debug!("Extracted {}!", arcfile.display());
         }
     }
 
