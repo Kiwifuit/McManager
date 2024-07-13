@@ -14,7 +14,11 @@ pub(super) fn download_mods<F: AsRef<Path>>(modpack: &ModrinthModpack, install_d
     info!("Downloading mods");
     let mod_progress = ProgressBar::new(modpack.files.len() as u64)
         .with_message("Progress:")
-        .with_style(ProgressStyle::with_template("{msg} {wide_bar} {percent_precise}%").unwrap());
+        .with_style(
+            ProgressStyle::with_template("{msg:>15} [{wide_bar}] {percent}%")
+                .unwrap()
+                .progress_chars("=> "),
+        );
 
     for file in &modpack.files {
         let outfilepath = absolute(install_dir.as_ref().join(&file.path)).unwrap();
@@ -35,5 +39,7 @@ pub(super) fn download_mods<F: AsRef<Path>>(modpack: &ModrinthModpack, install_d
         outfile
             .write_all(&buf)
             .expect("expected read/write process to suceed :(");
+
+        mod_progress.inc(1);
     }
 }
