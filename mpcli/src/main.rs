@@ -1,6 +1,5 @@
 use anyhow::Result;
 use clap::Parser;
-use log::warn;
 
 mod cmd;
 mod install;
