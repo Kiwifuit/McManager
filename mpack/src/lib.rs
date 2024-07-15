@@ -108,8 +108,8 @@ where
 {
     let options = FileOptions::default()
         .unix_permissions(0o644)
-        .compression_method(CompressionMethod::Bzip2);
-    // .compression_level(Some(9));
+        .compression_method(CompressionMethod::Bzip2)
+        .compression_level(Some(9));
     let mut buf = vec![];
 
     info!("Zipping dir {} to modpack", path.as_ref().display());
@@ -121,8 +121,6 @@ where
             .map(str::to_owned)
             .unwrap()
             .replace("\\", "/");
-
-        dbg!(&arc_path);
 
         if path.is_dir() {
             archive.add_directory(&arc_path, options)?;

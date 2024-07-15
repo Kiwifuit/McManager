@@ -71,11 +71,14 @@ impl<'a> GenericModpackManifest<'a> {
 
         self.files.push(GenericModpackFile {
             file_type: ftype,
-            path: file
-                .as_ref()
-                .strip_prefix(&self.base_dir)
-                .unwrap()
-                .to_path_buf(),
+            path: PathBuf::from(
+                file.as_ref()
+                    .strip_prefix(&self.base_dir)
+                    .unwrap()
+                    .to_str()
+                    .unwrap()
+                    .replace("\\", "/"),
+            ),
             hash,
         });
 

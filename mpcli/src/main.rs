@@ -4,6 +4,7 @@ use clap::Parser;
 mod cmd;
 mod install;
 mod logger;
+mod pack;
 mod types;
 
 use crate::types::{Args, Commands};
