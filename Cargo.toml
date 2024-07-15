@@ -1,12 +1,13 @@
 [workspace]
 resolver = "2"
-members = ["modparser", "modrinth", "mparse", "mpcli"]
+members = ["modparser", "modrinth", "mpack", "mparse", "mpcli"]
 
 [workspace.dependencies]
 serde = { version = "1.0.197", features = ["derive"] }
 log = "0.4.21"
 thiserror = "1.0.58"
 anyhow = "1.0.86"
+zip = { version = "0.6.6", default-features = false, features = ["deflate"] }
 
 [workspace.lints.clippy]
 dbg_macro = "forbid"

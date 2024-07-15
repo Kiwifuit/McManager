@@ -769,6 +769,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "mpack"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "serde",
+ "zip",
+]
+
+[[package]]
 name = "mparse"
 version = "0.1.0"
 dependencies = [

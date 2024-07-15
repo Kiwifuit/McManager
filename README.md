@@ -12,9 +12,9 @@
     - Dogshit search api tho :clown_face:
   - [ ] BukkitDev backend library
     - This will be one hell of a webcrawling adventure :)
-- [ ] :hammer_and_wrench: Modpack parser
-- [ ] Modpack packer?
-  - Like a program that packs modpacks in a way that the aternos clone can parse
+- [x]  Modpack parser
+  - [ ] :hammer_and_wrench: Modpack packer?
+    - Like a program that packs modpacks in a way that the aternos clone can parse
 - [ ] Aternos clone
   - [ ] Basic functionality
     - [ ] Server downloading

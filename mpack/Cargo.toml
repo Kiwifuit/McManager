@@ -1,16 +1,13 @@
 [package]
-name = "mparse"
+name = "mpack"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 zip.workspace = true
-serde.workspace = true
-thiserror.workspace = true
 log.workspace = true
+serde.workspace = true
 
-[dev-dependencies]
-serde_json = "1.0.120"
 
 [lints]
 workspace = true
