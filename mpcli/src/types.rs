@@ -35,6 +35,8 @@ pub enum Commands {
     Uninstall(UninstallArgs),
     /// Show modpack information
     Info(InfoArgs),
+    /// Exports a modpack to an archive
+    Export,
 }
 
 #[derive(Debug, Parser)]

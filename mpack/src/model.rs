@@ -34,6 +34,9 @@ impl<'a> Default for GenericModpackManifest<'a> {
 impl<'a> GenericModpackManifest<'a> {
     fn hash_file<P: AsRef<Path>>(file: &P) -> io::Result<Digest> {
         info!("Hashing file {}", file.as_ref().display());
+        if file.as_ref().is_dir() {
+            debug!("LMAO")
+        }
 
         let mut hash = Sha1::new();
         let mut hash_file = File::open(file).unwrap();
@@ -68,7 +71,11 @@ impl<'a> GenericModpackManifest<'a> {
 
         self.files.push(GenericModpackFile {
             file_type: ftype,
-            path: file.as_ref().to_path_buf(),
+            path: file
+                .as_ref()
+                .strip_prefix(&self.base_dir)
+                .unwrap()
+                .to_path_buf(),
             hash,
         });
 
