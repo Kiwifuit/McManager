@@ -6,7 +6,7 @@ members = ["modparser", "modrinth", "mpack", "mparse", "mpcli"]
 log = "0.4.21"
 thiserror = "1.0.58"
 anyhow = "1.0.86"
-sha1_smol = "1.0.0"
+sha1_smol = { version = "1.0.0", features = ["serde"] }
 serde = { version = "1.0.197", features = ["derive"] }
 zip = { version = "0.6.6", default-features = false, features = ["deflate"] }
 
