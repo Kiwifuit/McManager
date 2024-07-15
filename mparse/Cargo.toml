@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-zip.workspace = true
+zip = { workspace = true, features = ["deflate"] }
 serde.workspace = true
 thiserror.workspace = true
 log.workspace = true

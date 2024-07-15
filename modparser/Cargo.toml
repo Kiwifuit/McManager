@@ -10,7 +10,7 @@ readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-zip.workspace = true
+zip = { workspace = true, features = ["deflate"] }
 serde.workspace = true
 thiserror.workspace = true
 log.workspace = true
