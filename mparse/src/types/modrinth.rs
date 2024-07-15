@@ -28,7 +28,7 @@ impl ModpackProviderMetadata for ModrinthModpack {
 pub struct ModrinthModpackFiles {
     pub path: Box<Path>,
     pub hashes: ModpackFileHashes,
-    pub env: ModpackEnv,
+    pub env: Option<ModpackEnv>,
     pub downloads: Vec<String>,
     pub file_size: usize,
 }

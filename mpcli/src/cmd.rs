@@ -20,7 +20,7 @@ pub enum CommandError {
     Install(#[from] InstallError),
     #[error("i/o error: {0}")]
     Io(#[from] std::io::Error),
-    #[error("unzip error: {0}. file corrupted?")]
+    #[error("unzip error: {0}. file corrupted or missing?")]
     Unzip(#[from] mparse::UnzipError),
     #[error("manifest parse error: {0}. manifest corrupted?")]
     Unparsable(#[from] serde_json::Error),
