@@ -15,7 +15,7 @@ pub fn get_default_minecraft_home() -> OsString {
 }
 
 #[derive(Debug, Parser)]
-#[command(version, about, long_about = None)]
+#[command(version = format!("v{}-{}", env!("CARGO_PKG_VERSION"), env!("GIT_SHA_SHORT")), about, long_about = None)]
 pub struct Args {
     #[clap(flatten)]
     pub verbosity: clap_verbosity_flag::Verbosity,
