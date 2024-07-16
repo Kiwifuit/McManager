@@ -792,7 +792,7 @@ dependencies = [
 
 [[package]]
 name = "modparser"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "log",
  "serde",
@@ -804,7 +804,7 @@ dependencies = [
 
 [[package]]
 name = "modrinth"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "log",
  "reqwest",
@@ -815,7 +815,7 @@ dependencies = [
 
 [[package]]
 name = "mparse"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "log",
  "serde",
@@ -826,7 +826,7 @@ dependencies = [
 
 [[package]]
 name = "mpcli"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "clap",
