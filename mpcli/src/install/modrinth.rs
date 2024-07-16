@@ -1,5 +1,5 @@
 use indicatif::{ProgressBar, ProgressStyle};
-use log::info;
+use log::{debug, info};
 use reqwest::blocking::get;
 use thiserror::Error;
 
@@ -44,7 +44,7 @@ pub(super) fn download_mods<F: AsRef<Path>>(
 
         let filename = String::from(outfilepath.file_stem().unwrap().to_string_lossy());
 
-        info!("Downloading {}", filename);
+        debug!("Downloading {}", filename);
         let mut buf = Vec::new();
         let mut outfile = File::create(outfilepath.clone())?;
         resp.read_to_end(&mut buf)?;

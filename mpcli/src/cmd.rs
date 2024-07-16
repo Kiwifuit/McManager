@@ -6,8 +6,6 @@ use mparse::{
     ModpackProviderMetadata, ModrinthModpack,
 };
 use serde_json::from_str;
-use std::ffi::OsStr;
-use std::fs::read_dir;
 use std::path::PathBuf;
 use thiserror::Error;
 
@@ -54,6 +52,7 @@ pub fn install(args: InstallArgs, install_dir: PathBuf) -> Result<(), CommandErr
 
     // finalize `install_dir`
     let install_dir = std::path::absolute(install_dir)?;
+
     info!(
         "Installing pack {} to {}",
         args.file.display(),

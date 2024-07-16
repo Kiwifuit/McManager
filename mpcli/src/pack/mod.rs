@@ -5,6 +5,7 @@ use model::GenericModpackManifest;
 mod model;
 
 use dialoguer::{theme::ColorfulTheme as Theme, FuzzySelect};
+use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, error, info};
 use serde_json::to_writer;
 use std::path::{Path, PathBuf};
@@ -19,6 +20,9 @@ pub const MANIFEST_NAME: &str = "mpack-mod.json";
 
 #[derive(Debug, Error)]
 pub enum PackError {
+    #[error("error while initiating progbar: {0}\n\tNote that under normal circumstances, this message should not be visible")]
+    ProgbarTemplate(#[from] indicatif::style::TemplateError),
+
     #[error("i/o error: {0}")]
     Io(#[from] std::io::Error),
 
@@ -136,14 +140,23 @@ where
         }
 
         info!("Found {} file(s) in {} folder...", file_pool.len(), folder);
+        let progress = ProgressBar::new(file_pool.len() as u64)
+            .with_message("Progress:")
+            .with_style(
+                ProgressStyle::with_template("{msg:>15} [{wide_bar}] {percent}%")?
+                    .progress_chars("=> "),
+            );
+
         file_pool
             .iter()
             .map(|file| {
                 manifest.register_file(file, folder)?;
 
+                progress.inc(1);
                 Ok(())
             })
             .collect::<Result<Vec<()>, std::io::Error>>()?;
+        progress.finish();
     }
 
     let tempdir = TempDir::new("modpack")?;

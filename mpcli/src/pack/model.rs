@@ -33,7 +33,7 @@ impl<'a> Default for GenericModpackManifest<'a> {
 
 impl<'a> GenericModpackManifest<'a> {
     fn hash_file<P: AsRef<Path>>(file: &P) -> io::Result<Digest> {
-        info!("Hashing file {}", file.as_ref().display());
+        debug!("Hashing file {}", file.as_ref().display());
         if file.as_ref().is_dir() {
             debug!("LMAO")
         }
@@ -62,7 +62,7 @@ impl<'a> GenericModpackManifest<'a> {
     ) -> io::Result<()> {
         let ftype = ftype.into();
 
-        info!(
+        debug!(
             "Registering file {} type {:?}",
             file.as_ref().display(),
             &ftype
