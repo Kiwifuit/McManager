@@ -16,6 +16,8 @@ use zip::{
     CompressionMethod,
 };
 
+use crate::cmd::info;
+
 pub const MANIFEST_NAME: &str = "mpack-mod.json";
 
 #[derive(Debug, Error)]
@@ -132,7 +134,8 @@ where
         return Err(PackError::DoesNotExist("mods".to_string()));
     }
 
-    for folder in vec!["mods", "config", "resourcepack"] {
+    println!("Indexing modpack folders");
+    for folder in vec!["mods", "config", "resourcepacks"] {
         let base_dir = modpack_path.as_ref().join(&folder);
         let mut file_pool = vec![];
         if let Err(e) = find_files(&base_dir, &mut file_pool) {
@@ -141,7 +144,7 @@ where
 
         info!("Found {} file(s) in {} folder...", file_pool.len(), folder);
         let progress = ProgressBar::new(file_pool.len() as u64)
-            .with_message("Progress:")
+            .with_message(folder)
             .with_style(
                 ProgressStyle::with_template("{msg:>15} [{wide_bar}] {percent}%")?
                     .progress_chars("=> "),
@@ -174,6 +177,9 @@ where
         tempdir.close()?;
         return Err(zip_res.unwrap_err());
     }
+
+    info!("Exported modpack to {:?}", modpack_name.to_string_lossy());
+    println!("Exported modpack to {:?}", modpack_name.to_string_lossy());
     Ok(())
 }
 
@@ -187,10 +193,18 @@ where
         .compression_method(CompressionMethod::Bzip2)
         .compression_level(Some(9));
     let mut buf = vec![];
+    let mut files = vec![];
+    find_files_and_dirs(path, &mut files)?;
 
     info!("Zipping dir {} to modpack", path.as_ref().display());
-    for entry in read_dir(path)? {
-        let path = entry?.path();
+    let progress = ProgressBar::new(files.len() as u64)
+        .with_message("Zipping files")
+        .with_style(
+            ProgressStyle::with_template("{msg:>15} [{wide_bar}] {percent}%")?
+                .progress_chars("=> "),
+        );
+
+    for path in files {
         let arc_path = path
             .strip_prefix(&base_dir)?
             .to_str()
@@ -200,7 +214,6 @@ where
 
         if path.is_dir() {
             archive.add_directory(&arc_path, options)?;
-            zip_dir(archive, &path, base_dir)?;
             debug!("Created dir {}", arc_path);
         } else {
             archive.start_file(&arc_path, options)?;
@@ -214,7 +227,10 @@ where
 
             debug!("Written {} bytes to archive", written);
         }
+
+        progress.inc(1);
     }
+    progress.finish();
 
     Ok(())
 }
@@ -269,6 +285,23 @@ fn find_files<P: AsRef<Path>>(path: &P, pool: &mut Vec<PathBuf>) -> Result<(), P
             debug!("Found file: {}", path.display());
             pool.push(path);
         }
+    }
+
+    Ok(())
+}
+
+fn find_files_and_dirs<P: AsRef<Path>>(path: &P, pool: &mut Vec<PathBuf>) -> Result<(), PackError> {
+    info!("Indexing zipfs");
+
+    for entry in read_dir(path)? {
+        let path = entry?.path();
+
+        if path.is_dir() {
+            find_files(&path, pool)?;
+        }
+
+        debug!("Found entry: {}", path.display());
+        pool.push(path);
     }
 
     Ok(())

@@ -13,7 +13,7 @@
   - [ ] BukkitDev backend library
     - This will be one hell of a webcrawling adventure :)
 - [x]  Modpack parser
-  - [ ] :hammer_and_wrench: Modpack packer?
+  - [x] :hammer_and_wrench: Modpack packer?
     - Like a program that packs modpacks in a way that the aternos clone can parse
 - [ ] Aternos clone
   - [ ] Basic functionality
