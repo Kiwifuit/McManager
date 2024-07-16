@@ -188,7 +188,7 @@ where
 {
     let options = FileOptions::default()
         .unix_permissions(0o644)
-        .compression_method(CompressionMethod::Bzip2)
+        .compression_method(CompressionMethod::Deflated)
         .compression_level(Some(9));
     let mut buf = vec![];
     let mut files = vec![];

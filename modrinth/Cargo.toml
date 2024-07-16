@@ -9,8 +9,8 @@ edition = "2021"
 serde = { workspace = true, optional = false }
 thiserror = { workspace = true, optional = true }
 log = { workspace = true, optional = true }
-reqwest = { version = "0.12.4", features = ["json"], optional = true }
-tokio = { version = "1.37.0", features = ["full"], optional = true }
+reqwest = { workspace = true, optional = true, features = ["json"] }
+tokio = { workspace = true, features = ["full"], optional = true }
 
 [features]
 default = ["dep:thiserror", "dep:log", "dep:reqwest", "dep:tokio", "types"]

@@ -7,9 +7,11 @@ edition = "2021"
 log.workspace = true
 thiserror.workspace = true
 serde.workspace = true
+reqwest.workspace = true
+tokio.workspace = true
 
 [dev-dependencies]
-dotenv = "0.15.0"
+dotenv.workspace = true
 
 [lints]
 workspace = true

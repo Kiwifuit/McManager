@@ -10,17 +10,17 @@ thiserror.workspace = true
 anyhow.workspace = true
 serde.workspace = true
 sha1_smol.workspace = true
+serde_json.workspace = true
+reqwest = { workspace = true, features = ["stream", "blocking"] }
+zip.workspace = true
 clap = { version = "4.5.8", features = ["derive", "string"] }
-serde_json = { version = "1.0.120" }
 fern = { version = "0.6.2", features = ["colored"] }
-reqwest = { version = "0.12.5", features = ["stream", "blocking"] }
-clap-verbosity-flag = "2.2.0"
-indicatif = "0.17.8"
 dialoguer = { version = "0.11.0", default-features = false, features = [
   "fuzzy-select",
   "completion",
 ] }
-zip = { workspace = true, features = ["bzip2"] }
+clap-verbosity-flag = "2.2.0"
+indicatif = "0.17.8"
 tempdir = "0.3.7"
 
 
