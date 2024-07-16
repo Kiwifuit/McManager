@@ -5,7 +5,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use log::{debug, info};
+use log::debug;
 use serde::{Deserialize, Serialize};
 use sha1_smol::{Digest, Sha1};
 use std::io;

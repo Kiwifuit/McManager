@@ -53,5 +53,6 @@ pub(super) fn download_mods<F: AsRef<Path>>(
         mod_progress.inc(1);
     }
 
+    mod_progress.finish();
     Ok(())
 }

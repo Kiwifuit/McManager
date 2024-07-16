@@ -16,8 +16,6 @@ use zip::{
     CompressionMethod,
 };
 
-use crate::cmd::info;
-
 pub const MANIFEST_NAME: &str = "mpack-mod.json";
 
 #[derive(Debug, Error)]
