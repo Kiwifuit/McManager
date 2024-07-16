@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["modparser", "modrinth", "mparse", "mpcli"]
+members = [ "curseforge","modparser", "modrinth", "mparse", "mpcli"]
 
 [workspace.dependencies]
 log = "0.4.21"

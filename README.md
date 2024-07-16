@@ -7,13 +7,13 @@
   - [x] Plugin support
 - [ ] Plugin/Mod Backend libraries
   - [x] Modrinth backend library
-  - [ ] Curseforge backend library
+  - [ ] :hammer_and_wrench: Curseforge backend library
   - [ ] Hangar backend library
     - Dogshit search api tho :clown_face:
   - [ ] BukkitDev backend library
     - This will be one hell of a webcrawling adventure :)
 - [x]  Modpack parser
-  - [x] :hammer_and_wrench: Modpack packer?
+  - [x] Modpack packer?
     - Like a program that packs modpacks in a way that the aternos clone can parse
 - [ ] Aternos clone
   - [ ] Basic functionality

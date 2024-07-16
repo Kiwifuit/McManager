@@ -1,0 +1,15 @@
+[package]
+name = "curseforge"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+log.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+
+[dev-dependencies]
+dotenv = "0.15.0"
+
+[lints]
+workspace = true
