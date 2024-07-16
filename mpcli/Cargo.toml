@@ -22,7 +22,7 @@ dialoguer = { version = "0.11.0", default-features = false, features = [
 clap-verbosity-flag = "2.2.0"
 indicatif = "0.17.8"
 tempdir = "0.3.7"
-
+owo-colors = "4.0.0"
 
 [target.'cfg(any(target_os = "windows", target_os = "macos"))'.dependencies]
 dirs = "5.0.1"

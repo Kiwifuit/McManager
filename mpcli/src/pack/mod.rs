@@ -7,6 +7,7 @@ mod model;
 use dialoguer::{theme::ColorfulTheme as Theme, FuzzySelect};
 use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, error, info};
+use owo_colors::OwoColorize;
 use serde_json::to_writer;
 use std::path::{Path, PathBuf};
 use tempdir::TempDir;
@@ -94,7 +95,7 @@ pub fn list_modpacks<P: AsRef<Path>>(home_dir: P) -> Result<Vec<PathBuf>, PackEr
         return Err(PackError::NoModpack);
     }
 
-    info!("{} modpack(s) to select", modpacks.len());
+    info!("{} modpack(s) to select", modpacks.len().bright_cyan());
     Ok(modpacks)
 }
 
@@ -104,7 +105,12 @@ where
 {
     debug!(
         "Packing modpack at {}",
-        modpack_path.as_ref().file_name().unwrap().to_string_lossy()
+        modpack_path
+            .as_ref()
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .bright_blue()
     );
 
     let modpack_name = modpack_path.as_ref().file_name().unwrap();
@@ -137,10 +143,18 @@ where
         let base_dir = modpack_path.as_ref().join(&folder);
         let mut file_pool = vec![];
         if let Err(e) = find_files(&base_dir, &mut file_pool) {
-            error!("Failed to find files within {:?}: {}", folder, e);
+            error!(
+                "Failed to find files within {:?}: {}",
+                folder.bright_blue(),
+                e
+            );
         }
 
-        info!("Found {} file(s) in {} folder...", file_pool.len(), folder);
+        info!(
+            "Found {} file(s) in {} folder...",
+            file_pool.len().bright_cyan(),
+            folder.bright_green()
+        );
         let progress = ProgressBar::new(file_pool.len() as u64)
             .with_message(folder)
             .with_style(
@@ -176,8 +190,14 @@ where
         return Err(zip_res.unwrap_err());
     }
 
-    info!("Exported modpack to {:?}", modpack_name.to_string_lossy());
-    println!("Exported modpack to {:?}", modpack_name.to_string_lossy());
+    info!(
+        "Exported modpack to {:?}",
+        modpack_name.to_string_lossy().bright_green()
+    );
+    println!(
+        "Exported modpack to {:?}",
+        modpack_name.to_string_lossy().bright_green()
+    );
     Ok(())
 }
 
@@ -194,7 +214,10 @@ where
     let mut files = vec![];
     find_files_and_dirs(path, &mut files)?;
 
-    info!("Zipping dir {} to modpack", path.as_ref().display());
+    info!(
+        "Zipping dir {} to modpack",
+        path.as_ref().display().bright_blue()
+    );
     let progress = ProgressBar::new(files.len() as u64)
         .with_message("Zipping files")
         .with_style(
@@ -212,10 +235,10 @@ where
 
         if path.is_dir() {
             archive.add_directory(&arc_path, options)?;
-            debug!("Created dir {}", arc_path);
+            debug!("Created dir {}", arc_path.bright_blue());
         } else {
             archive.start_file(&arc_path, options)?;
-            debug!("Created file {}", arc_path);
+            debug!("Created file {}", arc_path.bright_blue());
 
             let mut file = File::open(path)?;
 
@@ -223,7 +246,7 @@ where
             archive.write_all(&buf)?;
             buf.clear();
 
-            debug!("Written {} bytes to archive", written);
+            debug!("Written {} bytes to archive", written.bright_cyan());
         }
 
         progress.inc(1);
@@ -247,7 +270,11 @@ fn make_zipfs_structure(
         let real_path = base_dir.join(&file.path);
         let dest_path = dir.path().join(&file.path);
 
-        debug!("Copying {} -> {}", real_path.display(), dest_path.display());
+        debug!(
+            "Copying {} -> {}",
+            real_path.display().bright_blue(),
+            dest_path.display().bright_blue()
+        );
 
         if !dest_path.parent().unwrap().exists() {
             debug!(
@@ -260,7 +287,11 @@ fn make_zipfs_structure(
         // Create file
         File::create_new(&dest_path)?;
         copy(&real_path, &dest_path)?;
-        debug!("Copied {} -> {}", real_path.display(), dest_path.display());
+        debug!(
+            "Copied {} -> {}",
+            real_path.display().bright_blue(),
+            dest_path.display().bright_blue()
+        );
     }
 
     info!("Dumping manifest");
@@ -272,7 +303,10 @@ fn make_zipfs_structure(
 }
 
 fn find_files<P: AsRef<Path>>(path: &P, pool: &mut Vec<PathBuf>) -> Result<(), PackError> {
-    debug!("Searching files in folder: {}", path.as_ref().display());
+    debug!(
+        "Searching files in folder: {}",
+        path.as_ref().display().bright_blue()
+    );
 
     for entry in read_dir(path)? {
         let path = entry?.path();
@@ -280,7 +314,7 @@ fn find_files<P: AsRef<Path>>(path: &P, pool: &mut Vec<PathBuf>) -> Result<(), P
         if path.is_dir() {
             find_files(&path, pool)?;
         } else {
-            debug!("Found file: {}", path.display());
+            debug!("Found file: {}", path.display().bright_blue());
             pool.push(path);
         }
     }
@@ -298,7 +332,7 @@ fn find_files_and_dirs<P: AsRef<Path>>(path: &P, pool: &mut Vec<PathBuf>) -> Res
             find_files(&path, pool)?;
         }
 
-        debug!("Found entry: {}", path.display());
+        debug!("Found entry: {}", path.display().bright_blue());
         pool.push(path);
     }
 

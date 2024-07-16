@@ -6,6 +6,7 @@ use std::{
 };
 
 use log::debug;
+use owo_colors::OwoColorize;
 use serde::{Deserialize, Serialize};
 use sha1_smol::{Digest, Sha1};
 use std::io;
@@ -33,10 +34,7 @@ impl<'a> Default for GenericModpackManifest<'a> {
 
 impl<'a> GenericModpackManifest<'a> {
     fn hash_file<P: AsRef<Path>>(file: &P) -> io::Result<Digest> {
-        debug!("Hashing file {}", file.as_ref().display());
-        if file.as_ref().is_dir() {
-            debug!("LMAO")
-        }
+        debug!("Hashing file {}", file.as_ref().display().bright_blue());
 
         let mut hash = Sha1::new();
         let mut hash_file = File::open(file).unwrap();
@@ -48,8 +46,8 @@ impl<'a> GenericModpackManifest<'a> {
         let digest = hash.digest();
         debug!(
             "SHA1 Hash of {:?}: {:?}",
-            file.as_ref().display(),
-            digest.to_string()
+            file.as_ref().display().bright_blue(),
+            digest.to_string().bright_green()
         );
 
         Ok(digest)
@@ -64,8 +62,8 @@ impl<'a> GenericModpackManifest<'a> {
 
         debug!(
             "Registering file {} type {:?}",
-            file.as_ref().display(),
-            &ftype
+            file.as_ref().display().bright_blue(),
+            &ftype.bright_yellow()
         );
         let hash = Self::hash_file(&file.as_ref())?;
 

@@ -5,6 +5,7 @@ use mparse::{
     get_modpack_manifest, unzip_modpack_to, ForgeModpack, ModpackMetadata, ModpackProvider,
     ModpackProviderMetadata, ModrinthModpack,
 };
+use owo_colors::OwoColorize;
 use serde_json::from_str;
 use std::path::PathBuf;
 use thiserror::Error;
@@ -63,7 +64,10 @@ pub fn install(args: InstallArgs, install_dir: PathBuf) -> Result<(), CommandErr
     crate::install::get_mods(&manifest, &install_dir)?;
     println!("Unpacking overrides");
     unzip_modpack_to(args.file, &install_dir, &manifest)?;
-    println!("Installed modpack at {}", install_dir.display());
+    println!(
+        "Installed modpack at {}",
+        install_dir.display().bright_purple()
+    );
 
     Ok(())
 }
@@ -80,7 +84,7 @@ pub fn export(args: ExportArgs, base_dir: PathBuf) -> Result<(), CommandError> {
     let modpack = std::path::absolute(&modpacks[modpack_selected])?;
     let outdir = std::env::current_dir()?;
 
-    debug!("Selected modpack at {:?}", &modpack.display());
+    debug!("Selected modpack at {:?}", &modpack.display().bright_blue());
     crate::pack::write_modpack(&modpack, &outdir)?;
 
     Ok(())
