@@ -16,21 +16,20 @@ use thiserror::Error;
 use dirs::config_dir;
 
 use crate::install::InstallError;
+use crate::pack::PackError;
 
 #[derive(Debug, Error)]
 pub enum CommandError {
     #[error("error while installing: {0}")]
     Install(#[from] InstallError),
+    #[error("pack error: {0}")]
+    Pack(#[from] PackError),
     #[error("i/o error: {0}")]
     Io(#[from] std::io::Error),
     #[error("unzip error: {0}. file corrupted or missing?")]
     Unzip(#[from] mparse::UnzipError),
     #[error("manifest parse error: {0}. manifest corrupted?")]
     Unparsable(#[from] serde_json::Error),
-    #[error("pack error: {0}")]
-    Pack(#[from] mpack::Error),
-    #[error("no modpacks in directory")]
-    NoModpack,
 }
 
 pub fn info(args: InfoArgs) -> Result<(), CommandError> {
@@ -49,25 +48,10 @@ pub fn install(args: InstallArgs, install_dir: PathBuf) -> Result<(), CommandErr
     let manifest = show_modpack_info(manifest_file)?;
 
     // resolve `install_dir` by OS
-    let mut install_dir = if install_dir.as_os_str() == get_default_minecraft_home() {
-        #[cfg(any(target_os = "windows", target_os = "macos"))]
-        let new_install_dir = config_dir().unwrap().as_path().join(".minecraft");
-
-        #[cfg(unix)]
-        let new_install_dir = std::path::absolute(install_dir)?;
-
-        new_install_dir
-    } else if !install_dir.ends_with(".minecraft") {
-        let mut install_dir = install_dir.to_path_buf();
-        install_dir.push(".minecraft");
-
-        std::path::absolute(install_dir)?
-    } else {
-        std::path::absolute(install_dir)?
-    };
+    let mut install_dir = get_modpack_home_dir(install_dir)?;
 
     // transform `install_dir` as required
-    install_dir.push(format!("versions/{}", manifest.modpack_name()));
+    install_dir.push(manifest.modpack_name());
 
     // finalize `install_dir`
     let install_dir = std::path::absolute(install_dir)?;
@@ -91,6 +75,29 @@ pub fn uninstall(args: UninstallArgs, install_dir: PathBuf) -> Result<(), Comman
 }
 
 pub fn export(base_dir: PathBuf) -> Result<(), CommandError> {
+    let home_dir = get_modpack_home_dir(base_dir)?;
+    let modpacks = crate::pack::list_modpacks(&home_dir)?;
+    let modpack_selected = FuzzySelect::with_theme(&Theme::default())
+        .with_prompt("Select modpack to export:")
+        .items(
+            &modpacks
+                .iter()
+                .map(|a| a.file_name().unwrap().to_str().unwrap())
+                .collect::<Vec<&str>>(),
+        )
+        .interact()
+        .unwrap();
+
+    let modpack = std::path::absolute(&modpacks[modpack_selected])?;
+    let outdir = std::env::current_dir()?;
+
+    debug!("Selected modpack at {:?}", &modpack.display());
+    crate::pack::write_modpack(&modpack, &outdir)?;
+
+    Ok(())
+}
+
+fn get_modpack_home_dir(base_dir: PathBuf) -> Result<PathBuf, CommandError> {
     let home_dir = if base_dir.as_os_str() == get_default_minecraft_home() {
         #[cfg(any(target_os = "windows", target_os = "macos"))]
         let new_base_dir = config_dir().unwrap().as_path().join(".minecraft/versions");
@@ -108,41 +115,7 @@ pub fn export(base_dir: PathBuf) -> Result<(), CommandError> {
         std::path::absolute(base_dir)?
     };
 
-    info!("Searching modpacks");
-    let modpacks = read_dir(home_dir)?
-        .into_iter()
-        .filter_map(|a| {
-            if !a.as_ref().unwrap().path().is_dir() {
-                return None;
-            }
-            Some(a.unwrap().path())
-        })
-        .collect::<Vec<PathBuf>>();
-
-    if modpacks.is_empty() {
-        error!("No modpacks to select!");
-        return Err(CommandError::NoModpack);
-    }
-
-    info!("{} modpack(s) to select", modpacks.len());
-
-    let modpack_selected = FuzzySelect::with_theme(&Theme::default())
-        .with_prompt("Select modpack to export:")
-        .items(
-            &modpacks
-                .iter()
-                .map(|a| a.file_name().unwrap().to_str().unwrap())
-                .collect::<Vec<&str>>(),
-        )
-        .interact()
-        .unwrap();
-    let modpack = std::path::absolute(&modpacks[modpack_selected])?;
-    let outdir = std::env::current_dir()?;
-
-    debug!("Selected modpack at {:?}", &modpack.display());
-    mpack::write_modpack(&modpack, &outdir)?;
-
-    Ok(())
+    Ok(home_dir)
 }
 
 fn show_modpack_info(meta: ModpackMetadata) -> Result<ManifestType, CommandError> {

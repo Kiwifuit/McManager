@@ -9,6 +9,8 @@ mpack = { path = "../mpack" }
 log.workspace = true
 thiserror.workspace = true
 anyhow.workspace = true
+serde.workspace = true
+sha1_smol.workspace = true
 clap = { version = "4.5.8", features = ["derive", "string"] }
 serde_json = { version = "1.0.120" }
 fern = { version = "0.6.2", features = ["colored"] }
@@ -19,6 +21,8 @@ dialoguer = { version = "0.11.0", default-features = false, features = [
   "fuzzy-select",
   "completion",
 ] }
+zip = { workspace = true, features = ["bzip2"] }
+tempdir = "0.3.7"
 
 
 [target.'cfg(any(target_os = "windows", target_os = "macos"))'.dependencies]

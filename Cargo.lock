@@ -855,8 +855,12 @@ dependencies = [
  "mpack",
  "mparse",
  "reqwest",
+ "serde",
  "serde_json",
+ "sha1_smol",
+ "tempdir",
  "thiserror",
+ "zip",
 ]
 
 [[package]]
