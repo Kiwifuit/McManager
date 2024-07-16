@@ -1,6 +1,5 @@
-use crate::types::get_default_minecraft_home;
+use crate::types::{get_default_minecraft_home, ExportArgs};
 use crate::types::{InfoArgs, InstallArgs, ManifestType, UninstallArgs};
-use dialoguer::{theme::ColorfulTheme as Theme, FuzzySelect};
 use log::{debug, error, info};
 use mparse::{
     get_modpack_manifest, unzip_modpack_to, ForgeModpack, ModpackMetadata, ModpackProvider,
@@ -74,19 +73,10 @@ pub fn uninstall(args: UninstallArgs, install_dir: PathBuf) -> Result<(), Comman
     todo!()
 }
 
-pub fn export(base_dir: PathBuf) -> Result<(), CommandError> {
+pub fn export(args: ExportArgs, base_dir: PathBuf) -> Result<(), CommandError> {
     let home_dir = get_modpack_home_dir(base_dir)?;
     let modpacks = crate::pack::list_modpacks(&home_dir)?;
-    let modpack_selected = FuzzySelect::with_theme(&Theme::default())
-        .with_prompt("Select modpack to export:")
-        .items(
-            &modpacks
-                .iter()
-                .map(|a| a.file_name().unwrap().to_str().unwrap())
-                .collect::<Vec<&str>>(),
-        )
-        .interact()
-        .unwrap();
+    let modpack_selected = crate::pack::select_modpack(args, &modpacks)?;
 
     let modpack = std::path::absolute(&modpacks[modpack_selected])?;
     let outdir = std::env::current_dir()?;

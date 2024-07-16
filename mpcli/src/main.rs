@@ -18,7 +18,7 @@ fn main() -> Result<()> {
         Commands::Info(args) => cmd::info(args)?,
         Commands::Install(args) => cmd::install(args, global_args.minecraft_home)?,
         Commands::Uninstall(args) => cmd::uninstall(args, global_args.minecraft_home)?,
-        Commands::Export => cmd::export(global_args.minecraft_home)?,
+        Commands::Export(args) => cmd::export(args, global_args.minecraft_home)?,
     };
 
     Ok(())

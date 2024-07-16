@@ -5,7 +5,6 @@ edition = "2021"
 
 [dependencies]
 mparse = { path = "../mparse" }
-mpack = { path = "../mpack" }
 log.workspace = true
 thiserror.workspace = true
 anyhow.workspace = true

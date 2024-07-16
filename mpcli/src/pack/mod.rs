@@ -4,6 +4,7 @@ use std::io::prelude::*;
 use model::GenericModpackManifest;
 mod model;
 
+use dialoguer::{theme::ColorfulTheme as Theme, FuzzySelect};
 use log::{debug, error, info};
 use serde_json::to_writer;
 use std::path::{Path, PathBuf};
@@ -30,8 +31,45 @@ pub enum PackError {
     #[error("{0} (code 1)")] // TODO: Devise a scheme for these dev codes
     StripPrefix(#[from] std::path::StripPrefixError),
 
-    #[error("no modpacks available")]
+    #[error("no modpacks available/no such modpack exists")]
     NoModpack,
+}
+
+pub fn select_modpack(
+    args: crate::types::ExportArgs,
+    modpacks: &Vec<PathBuf>,
+) -> Result<usize, PackError> {
+    if args.name.is_none() {
+        Ok(FuzzySelect::with_theme(&Theme::default())
+            .with_prompt("Select modpack to export:")
+            .items(
+                &modpacks
+                    .iter()
+                    .map(|a| a.file_name().unwrap().to_str().unwrap())
+                    .collect::<Vec<&str>>(),
+            )
+            .interact()
+            .unwrap())
+    } else {
+        let modpack_name = &args.name.clone().unwrap();
+        let selected = modpacks
+            .iter()
+            .enumerate()
+            .filter_map(|(index, path)| {
+                if path.ends_with(modpack_name) {
+                    Some(index)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<usize>>();
+
+        if let Some(index) = selected.first() {
+            Ok(index.to_owned())
+        } else {
+            Err(PackError::NoModpack)
+        }
+    }
 }
 
 pub fn list_modpacks<P: AsRef<Path>>(home_dir: P) -> Result<Vec<PathBuf>, PackError> {

@@ -817,19 +817,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "mpack"
-version = "0.1.0"
-dependencies = [
- "log",
- "serde",
- "serde_json",
- "sha1_smol",
- "tempdir",
- "thiserror",
- "zip",
-]
-
-[[package]]
 name = "mparse"
 version = "0.1.0"
 dependencies = [
@@ -852,7 +839,6 @@ dependencies = [
  "fern",
  "indicatif",
  "log",
- "mpack",
  "mparse",
  "reqwest",
  "serde",

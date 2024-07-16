@@ -36,7 +36,13 @@ pub enum Commands {
     /// Show modpack information
     Info(InfoArgs),
     /// Exports a modpack to an archive
-    Export,
+    Export(ExportArgs),
+}
+
+#[derive(Debug, Parser)]
+pub struct ExportArgs {
+    /// Modpack name.
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Parser)]
