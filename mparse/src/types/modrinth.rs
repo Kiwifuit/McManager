@@ -1,8 +1,8 @@
+use std::collections::HashMap;
 use std::path::Path;
 
 use super::ModpackProviderMetadata;
-use serde::Deserialize;
-
+use serde::{Deserialize, Deserializer};
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ModrinthModpack {
@@ -11,6 +11,8 @@ pub struct ModrinthModpack {
     pub name: String,
     pub summary: Option<String>,
     pub files: Vec<ModrinthModpackFiles>,
+    #[serde(deserialize_with = "deserialize_deps")]
+    pub dependencies: Vec<ModrinthModpackDependency>,
 }
 
 impl ModpackProviderMetadata for ModrinthModpack {
@@ -43,4 +45,26 @@ pub struct ModpackFileHashes {
 pub struct ModpackEnv {
     pub server: String,
     pub client: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ModrinthModpackDependency {
+    pub dependency: String,
+    pub version: String,
+}
+
+fn deserialize_deps<'de, D>(deserializer: D) -> Result<Vec<ModrinthModpackDependency>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let raw_map: HashMap<String, String> = HashMap::deserialize(deserializer)?;
+    let deps = raw_map
+        .into_iter()
+        .map(|(dependency, version)| ModrinthModpackDependency {
+            dependency,
+            version,
+        })
+        .collect();
+
+    Ok(deps)
 }

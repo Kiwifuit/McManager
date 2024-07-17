@@ -20,6 +20,7 @@ owo-colors = "4.0.0"
 
 # Modrinth/Curseforge modpack parsing
 mparse = { path = "../mparse", optional = true }
+display_tree = { version = "1.1.2", optional = true }
 
 # Packing
 serde = { workspace = true, optional = true }
@@ -39,8 +40,8 @@ workspace = true
 
 [features]
 default = ["modrinth", "forge", "packing"]
-modrinth = ["dep:mparse", "dep:serde_json"]
-forge = ["dep:mparse", "dep:serde_json"]
+modrinth = ["dep:mparse", "dep:serde_json", "dep:display_tree"]
+forge = ["dep:mparse", "dep:serde_json", "dep:display_tree"]
 packing = [
   "dep:serde",
   "dep:sha1_smol",
@@ -48,3 +49,4 @@ packing = [
   "dep:zip",
   "dep:dialoguer",
 ]
+display_tree = ["dep:display_tree"]

@@ -59,12 +59,12 @@ pub fn info(args: InfoArgs) -> Result<(), CommandError> {
     let parsed_manifest = show_modpack_info(mp_manifest)?;
 
     println!(
-        "{} {} for minecraft {}\nLoader: {} v{}\nMods: {} mod(s) listed\nStructure:\n  {}",
+        "{} {} for minecraft {}\nLoader: {} {}\nMods: {} mod(s) listed\nStructure:\n  {}",
         parsed_manifest.name().bright_magenta(),
         parsed_manifest.pack_version().bright_magenta(),
-        "game_version",
-        "loader",
-        "loader_version",
+        parsed_manifest.game_version().cyan(),
+        parsed_manifest.loader().bright_green(),
+        parsed_manifest.loader_version().bright_green(),
         parsed_manifest.mod_count().bright_yellow(),
         "structure"
     );

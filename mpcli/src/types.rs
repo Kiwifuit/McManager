@@ -110,7 +110,9 @@ impl ManifestType {
     pub fn game_version(&self) -> String {
         match self {
             ManifestType::Forge(manifest) => manifest.minecraft.version.clone(),
-            ManifestType::Modrinth(manifest) => todo!(),
+            ManifestType::Modrinth(manifest) => {
+                manifest.dependencies.first().unwrap().version.clone()
+            }
         }
     }
     pub fn loader(&self) -> String {
@@ -127,7 +129,9 @@ impl ManifestType {
 
                 raw_id.split('-').next().unwrap().to_string()
             }
-            ManifestType::Modrinth(manifest) => todo!(),
+            ManifestType::Modrinth(manifest) => {
+                manifest.dependencies.last().unwrap().dependency.clone()
+            }
         }
     }
     pub fn loader_version(&self) -> String {
@@ -144,7 +148,9 @@ impl ManifestType {
 
                 raw_id.split('-').last().unwrap().to_string()
             }
-            ManifestType::Modrinth(manifest) => todo!(),
+            ManifestType::Modrinth(manifest) => {
+                manifest.dependencies.last().unwrap().version.clone()
+            }
         }
     }
 
