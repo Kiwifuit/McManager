@@ -7,14 +7,15 @@
   - [x] Plugin support
 - [ ] Plugin/Mod Backend libraries
   - [x] Modrinth backend library
-  - [ ] :hammer_and_wrench: Curseforge backend library
+  - [ ]  Curseforge backend library
   - [ ] Hangar backend library
     - Dogshit search api tho :clown_face:
   - [ ] BukkitDev backend library
     - This will be one hell of a webcrawling adventure :)
-- [x]  Modpack parser
+- [x]  :hammer_and_wrench: Modpack parser
   - [x] Modpack packer?
     - Like a program that packs modpacks in a way that the aternos clone can parse
+    - [ ] General support (Un/Install & Info)
 - [ ] Aternos clone
   - [ ] Basic functionality
     - [ ] Server downloading
@@ -34,3 +35,30 @@
 I will not follow this roadmap in order. I will prioritize Modrinth support over Curseforge. Hangar, BukkitDev and the like will be worked on ***dead last*** for one of the following reasons:
 - Shit/Underdeveloped API
 - No API. Gotta crawl the things
+
+# Customization
+I'm not gonna provide builds for *every single possible combination of features*, that takes too much time, instead read the guides for customizing the binaries for:
+- [`mpcli`](#mpcli-minecraft-modpack-imexporter)
+- [Upcoming] `mcs`
+
+Doing this obviously requires the source code and build tools, so make sure the following are installed:
+- Git
+- Cargo/Rust
+
+> [!IMPORTANT]
+> Going further than this part assumes you have:
+> - cloned this repository, and
+> - are `cd`'ed into said repo
+
+## `mpcli`, Minecraft Modpack Im/Exporter
+The features for this binary include:
+- `modrinth` [Modrinth](https://modrinth.com/modpacks) modpack parse/install
+- `forge` [Curseforge](https://www.curseforge.com/minecraft/search?page=1&pageSize=20&sortBy=relevancy&class=modpacks) modpack parse/install
+- `packing` adds the `export` subcommand, which allows you to...well...export currently installed modpacks
+
+**All of the above features are enabled by default**
+
+Build with *only* modrinth and `export` command support:
+```
+cargo build --release --no-default-features --features modrinth,packing
+```
