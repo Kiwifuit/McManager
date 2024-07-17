@@ -94,6 +94,68 @@ pub enum ManifestType {
     Modrinth(ModrinthModpack),
 }
 
+impl ManifestType {
+    pub fn name(&self) -> String {
+        match self {
+            ManifestType::Forge(manifest) => manifest.name.clone(),
+            ManifestType::Modrinth(manifest) => manifest.name.clone(),
+        }
+    }
+    pub fn pack_version(&self) -> String {
+        match self {
+            ManifestType::Forge(manifest) => manifest.version.clone(),
+            ManifestType::Modrinth(manifest) => manifest.version_id.clone(),
+        }
+    }
+    pub fn game_version(&self) -> String {
+        match self {
+            ManifestType::Forge(manifest) => manifest.minecraft.version.clone(),
+            ManifestType::Modrinth(manifest) => todo!(),
+        }
+    }
+    pub fn loader(&self) -> String {
+        match self {
+            ManifestType::Forge(manifest) => {
+                let raw_id = &manifest
+                    .minecraft
+                    .mod_loaders
+                    .iter()
+                    .filter(|loader| loader.primary)
+                    .next()
+                    .unwrap()
+                    .id;
+
+                raw_id.split('-').next().unwrap().to_string()
+            }
+            ManifestType::Modrinth(manifest) => todo!(),
+        }
+    }
+    pub fn loader_version(&self) -> String {
+        match self {
+            ManifestType::Forge(manifest) => {
+                let raw_id = &manifest
+                    .minecraft
+                    .mod_loaders
+                    .iter()
+                    .filter(|loader| loader.primary)
+                    .next()
+                    .unwrap()
+                    .id;
+
+                raw_id.split('-').last().unwrap().to_string()
+            }
+            ManifestType::Modrinth(manifest) => todo!(),
+        }
+    }
+
+    pub fn mod_count(&self) -> usize {
+        match self {
+            ManifestType::Forge(manifest) => manifest.files.len(),
+            ManifestType::Modrinth(manifest) => manifest.files.len(),
+        }
+    }
+}
+
 #[cfg(any(feature = "forge", feature = "modrinth"))]
 impl ModpackProviderMetadata for ManifestType {
     fn overrides_dir(&self) -> &str {
