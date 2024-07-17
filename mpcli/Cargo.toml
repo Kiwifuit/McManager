@@ -4,25 +4,32 @@ version = "0.1.1"
 edition = "2021"
 
 [dependencies]
-mparse = { path = "../mparse" }
+# Workspace
 log.workspace = true
 thiserror.workspace = true
 anyhow.workspace = true
-serde.workspace = true
-sha1_smol.workspace = true
-serde_json.workspace = true
+
+# Core
 reqwest = { workspace = true, features = ["stream", "blocking"] }
-zip.workspace = true
 clap = { version = "4.5.8", features = ["derive", "string"] }
 fern = { version = "0.6.2", features = ["colored"] }
-dialoguer = { version = "0.11.0", default-features = false, features = [
-  "fuzzy-select",
-  "completion",
-] }
 clap-verbosity-flag = "2.2.0"
 indicatif = "0.17.8"
 tempdir = "0.3.7"
 owo-colors = "4.0.0"
+
+# Modrinth/Curseforge modpack parsing
+mparse = { path = "../mparse", optional = true }
+
+# Packing
+serde = { workspace = true, optional = true }
+sha1_smol = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
+zip = { workspace = true, optional = true }
+dialoguer = { version = "0.11.0", default-features = false, features = [
+  "fuzzy-select",
+  "completion",
+], optional = true }
 
 [target.'cfg(any(target_os = "windows", target_os = "macos"))'.dependencies]
 dirs = "5.0.1"
@@ -31,6 +38,13 @@ dirs = "5.0.1"
 workspace = true
 
 [features]
-default = ["modrinth", "forge"]
-modrinth = []
-forge = []
+default = ["modrinth", "forge", "packing"]
+modrinth = ["dep:mparse", "dep:serde_json"]
+forge = ["dep:mparse", "dep:serde_json"]
+packing = [
+  "dep:serde",
+  "dep:sha1_smol",
+  "dep:serde_json",
+  "dep:zip",
+  "dep:dialoguer",
+]

@@ -1,7 +1,14 @@
 use clap::{Parser, Subcommand};
-use mparse::{ForgeModpack, ModpackProviderMetadata, ModrinthModpack};
 use std::ffi::OsString;
 use std::path::PathBuf;
+
+#[cfg(any(feature = "forge", feature = "modrinth"))]
+use mparse::ModpackProviderMetadata;
+
+#[cfg(feature = "forge")]
+use mparse::ForgeModpack;
+#[cfg(feature = "modrinth")]
+use mparse::ModrinthModpack;
 
 #[cfg(unix)]
 const DEFAULT_MINECRAFT_HOME: &str = "~/.minecraft";
@@ -29,16 +36,22 @@ pub struct Args {
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
+    #[cfg(any(feature = "forge", feature = "modrinth"))]
     /// Install a modpack
     Install(InstallArgs),
+    #[cfg(any(feature = "forge", feature = "modrinth"))]
     /// Uninstall a modpack
     Uninstall(UninstallArgs),
+    #[cfg(any(feature = "forge", feature = "modrinth"))]
     /// Show modpack information
     Info(InfoArgs),
+
+    #[cfg(feature = "packing")]
     /// Exports a modpack to an archive
     Export(ExportArgs),
 }
 
+#[cfg(feature = "packing")]
 #[derive(Debug, Parser)]
 pub struct ExportArgs {
     /// Modpack name.
@@ -46,6 +59,7 @@ pub struct ExportArgs {
 }
 
 #[derive(Debug, Parser)]
+#[cfg(any(feature = "forge", feature = "modrinth"))]
 pub struct InstallArgs {
     /// Modpack name. Defaults to the filename of the modpack
     #[arg(short, long)]
@@ -56,6 +70,7 @@ pub struct InstallArgs {
 }
 
 #[derive(Debug, Parser)]
+#[cfg(any(feature = "forge", feature = "modrinth"))]
 pub struct UninstallArgs {
     /// Modpack name. Defaults to the filename of the modpack
     #[arg(short, long)]
@@ -63,6 +78,7 @@ pub struct UninstallArgs {
 }
 
 #[derive(Debug, Parser)]
+#[cfg(any(feature = "forge", feature = "modrinth"))]
 pub struct InfoArgs {
     /// File to install. Must be a ZIP archive
     pub file: PathBuf,
@@ -70,22 +86,30 @@ pub struct InfoArgs {
 
 // TODO: Deprecate this whole thing
 #[derive(Debug)]
+#[cfg(any(feature = "forge", feature = "modrinth"))]
 pub enum ManifestType {
+    #[cfg(feature = "forge")]
     Forge(ForgeModpack),
+    #[cfg(feature = "modrinth")]
     Modrinth(ModrinthModpack),
 }
 
+#[cfg(any(feature = "forge", feature = "modrinth"))]
 impl ModpackProviderMetadata for ManifestType {
     fn overrides_dir(&self) -> &str {
         match self {
+            #[cfg(feature = "forge")]
             Self::Forge(content) => content.overrides_dir(),
+            #[cfg(feature = "modrinth")]
             Self::Modrinth(content) => content.overrides_dir(),
         }
     }
 
     fn modpack_name(&self) -> String {
         match self {
+            #[cfg(feature = "forge")]
             Self::Forge(content) => content.modpack_name(),
+            #[cfg(feature = "modrinth")]
             Self::Modrinth(content) => content.modpack_name(),
         }
     }

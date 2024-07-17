@@ -3,7 +3,9 @@ use thiserror::Error;
 
 use crate::types::ManifestType;
 
+#[cfg(feature = "forge")]
 mod forge;
+#[cfg(feature = "modrinth")]
 mod modrinth;
 
 #[derive(Debug, Error)]
@@ -19,7 +21,10 @@ pub fn get_mods<F: AsRef<Path>>(
     install_dir: &F,
 ) -> Result<(), InstallError> {
     match manifest {
+        #[cfg(feature = "forge")]
         ManifestType::Forge(forge_manifest) => todo!(),
+
+        #[cfg(feature = "modrinth")]
         ManifestType::Modrinth(modrinth_manifest) => {
             modrinth::download_mods(modrinth_manifest, install_dir)?
         }

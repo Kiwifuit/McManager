@@ -1,11 +1,23 @@
-use crate::types::{get_default_minecraft_home, ExportArgs};
+#![cfg_attr(
+    not(any(feature = "modrinth", feature = "forge", feature = "packing")),
+    allow(unused_imports)
+)]
+use crate::types::get_default_minecraft_home;
+
+#[cfg(feature = "packing")]
+use crate::types::ExportArgs;
+
+#[cfg(any(feature = "forge", feature = "modrinth"))]
 use crate::types::{InfoArgs, InstallArgs, ManifestType, UninstallArgs};
 use log::{debug, error, info};
+#[cfg(any(feature = "forge", feature = "modrinth"))]
 use mparse::{
     get_modpack_manifest, unzip_modpack_to, ForgeModpack, ModpackMetadata, ModpackProvider,
     ModpackProviderMetadata, ModrinthModpack,
 };
 use owo_colors::OwoColorize;
+
+#[cfg(any(feature = "forge", feature = "modrinth"))]
 use serde_json::from_str;
 use std::path::PathBuf;
 use thiserror::Error;
@@ -13,23 +25,34 @@ use thiserror::Error;
 #[cfg(any(target_os = "windows", target_os = "macos"))]
 use dirs::config_dir;
 
+#[cfg(any(feature = "forge", feature = "modrinth"))]
 use crate::install::InstallError;
+#[cfg(feature = "packing")]
 use crate::pack::PackError;
 
 #[derive(Debug, Error)]
 pub enum CommandError {
-    #[error("error while installing: {0}")]
-    Install(#[from] InstallError),
-    #[error("pack error: {0}")]
-    Pack(#[from] PackError),
     #[error("i/o error: {0}")]
     Io(#[from] std::io::Error),
+
+    #[cfg(any(feature = "forge", feature = "modrinth"))]
+    #[error("error while installing: {0}")]
+    Install(#[from] InstallError),
+
+    #[cfg(feature = "packing")]
+    #[error("pack error: {0}")]
+    Pack(#[from] PackError),
+
+    #[cfg(any(feature = "forge", feature = "modrinth"))]
     #[error("unzip error: {0}. file corrupted or missing?")]
     Unzip(#[from] mparse::UnzipError),
+
+    #[cfg(any(feature = "forge", feature = "modrinth"))]
     #[error("manifest parse error: {0}. manifest corrupted?")]
     Unparsable(#[from] serde_json::Error),
 }
 
+#[cfg(any(feature = "forge", feature = "modrinth"))]
 pub fn info(args: InfoArgs) -> Result<(), CommandError> {
     info!("Showing info for pack {}", args.file.display());
     let mp_manifest = get_modpack_manifest(&args.file)?;
@@ -40,6 +63,7 @@ pub fn info(args: InfoArgs) -> Result<(), CommandError> {
     Ok(())
 }
 
+#[cfg(any(feature = "forge", feature = "modrinth"))]
 pub fn install(args: InstallArgs, install_dir: PathBuf) -> Result<(), CommandError> {
     debug!("Grabbing manifest...");
     let manifest_file = get_modpack_manifest(&args.file)?;
@@ -72,10 +96,12 @@ pub fn install(args: InstallArgs, install_dir: PathBuf) -> Result<(), CommandErr
     Ok(())
 }
 
+#[cfg(any(feature = "forge", feature = "modrinth"))]
 pub fn uninstall(args: UninstallArgs, install_dir: PathBuf) -> Result<(), CommandError> {
     todo!()
 }
 
+#[cfg(feature = "packing")]
 pub fn export(args: ExportArgs, base_dir: PathBuf) -> Result<(), CommandError> {
     let home_dir = get_modpack_home_dir(base_dir)?;
     let modpacks = crate::pack::list_modpacks(&home_dir)?;
@@ -111,14 +137,27 @@ fn get_modpack_home_dir(base_dir: PathBuf) -> Result<PathBuf, CommandError> {
     Ok(home_dir)
 }
 
+#[cfg(any(feature = "forge", feature = "modrinth"))]
+#[cfg_attr(
+    any(not(feature = "forge"), not(feature = "modrinth")),
+    allow(unreachable_code)
+)]
 fn show_modpack_info(meta: ModpackMetadata) -> Result<ManifestType, CommandError> {
     let meta = match meta.loader {
         ModpackProvider::Forge => {
+            #[cfg(not(feature = "forge"))]
+            return panic!("This version of mpcli is not capable of parsing forge modpacks");
+
             let forge_manifest = from_str::<ForgeModpack>(&meta.raw)?;
+            #[cfg(feature = "forge")]
             ManifestType::Forge(forge_manifest)
         }
         ModpackProvider::Modrinth => {
+            #[cfg(not(feature = "modrinth"))]
+            return panic!("This version of mpcli is not capable of parsing modrinth modpacks");
+
             let modrinth_manifest = from_str::<ModrinthModpack>(&meta.raw)?;
+            #[cfg(feature = "modrinth")]
             ManifestType::Modrinth(modrinth_manifest)
         }
         ModpackProvider::None => {
