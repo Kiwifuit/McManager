@@ -1,17 +1,27 @@
+#![cfg_attr(not(feature = "api"), allow(unused_imports, dead_code))]
+
 use std::time::Duration;
 
+#[cfg(feature = "api")]
 use log::{debug, error, info};
+#[cfg(feature = "api")]
 use reqwest::Client;
+#[cfg(feature = "api")]
 use thiserror::Error;
 
+#[cfg(feature = "api")]
 pub mod dependency;
+#[cfg(feature = "api")]
 pub mod project;
+#[cfg(feature = "api")]
 pub mod version;
 
+#[cfg(feature = "api")]
 pub use project::*;
 
 const ENDPOINT: &str = "https://api.modrinth.com";
 
+#[cfg(feature = "api")]
 #[derive(Debug, Error)]
 pub enum APIError {
     #[error("http error: {0}")]
@@ -26,6 +36,7 @@ pub enum APIError {
     UnresolvableDependency,
 }
 
+#[cfg(feature = "api")]
 pub async fn check_api() -> Result<(bool, Client), APIError> {
     debug!("building client");
     let client = Client::builder()
@@ -47,6 +58,7 @@ pub async fn check_api() -> Result<(bool, Client), APIError> {
     Ok((resp.is_ok(), client))
 }
 
+#[cfg(feature = "api")]
 pub async fn get_client() -> Option<Client> {
     info!("Checking api");
     let api_check = check_api().await;
@@ -61,6 +73,7 @@ pub async fn get_client() -> Option<Client> {
 }
 
 #[cfg(test)]
+#[cfg(feature = "api")]
 mod tests {
     use super::check_api;
 

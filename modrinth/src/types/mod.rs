@@ -1,4 +1,5 @@
 #![allow(clippy::ptr_arg)]
+#[cfg(feature = "types")]
 use serde::{Deserialize, Serialize, Serializer};
 
 #[cfg(feature = "types")]
@@ -10,6 +11,7 @@ pub mod result;
 #[cfg(feature = "types")]
 pub mod version;
 
+#[cfg(feature = "types")]
 pub use query::{Facet, FacetOp};
 
 #[cfg(feature = "types")]

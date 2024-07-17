@@ -6,15 +6,16 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = { workspace = true, optional = false }
+serde = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 log = { workspace = true, optional = true }
 reqwest = { workspace = true, optional = true, features = ["json"] }
 tokio = { workspace = true, features = ["full"], optional = true }
 
 [features]
-default = ["dep:thiserror", "dep:log", "dep:reqwest", "dep:tokio", "types"]
-types = []
+default = ["api", "types"]
+types = ["dep:serde"]
+api = ["dep:thiserror", "dep:log", "dep:reqwest", "dep:tokio"]
 
 [lints]
 workspace = true

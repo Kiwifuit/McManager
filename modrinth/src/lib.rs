@@ -1,7 +1,9 @@
+#[cfg(feature = "api")]
 pub mod api;
 #[cfg(feature = "types")]
 pub mod types;
 
+#[cfg(feature = "api")]
 pub use api::*;
 #[cfg(feature = "types")]
 pub use types::project::ModrinthProject;
