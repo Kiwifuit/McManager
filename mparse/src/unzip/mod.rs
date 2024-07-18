@@ -57,9 +57,9 @@ pub fn get_modpack_manifest<F: AsRef<Path>>(file: &F) -> Result<ModpackMetadata,
     Ok(ModpackMetadata { loader, raw })
 }
 
-pub fn unzip_modpack_to<F: AsRef<Path>, M: ModpackProviderMetadata>(
-    zipfile: F,
-    dir: &F,
+pub fn unzip_modpack_to<Fz: AsRef<Path>, Fd: AsRef<Path>, M: ModpackProviderMetadata>(
+    zipfile: Fz,
+    dir: &Fd,
     manifest: &M,
 ) -> Result<(), UnzipError> {
     let zipfile = File::open(zipfile)?;

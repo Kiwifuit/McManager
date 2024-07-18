@@ -7,6 +7,7 @@ mod install;
 mod logger;
 #[cfg(feature = "packing")]
 mod pack;
+mod tree;
 mod types;
 
 use crate::types::{Args, Commands};
