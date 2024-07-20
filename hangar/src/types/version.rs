@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use super::{DateTime, HangarVisibility};
 use details::*;
 use serde::Deserialize;
 
@@ -21,9 +21,9 @@ pub struct HangarVersionsPagination {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HangarVersion {
-    pub created_at: DateTime<Utc>,
+    pub created_at: DateTime,
     pub name: String,
-    pub visibility: HangarVersionVisibility,
+    pub visibility: HangarVisibility,
     pub description: String,
     pub author: String,
     #[serde(deserialize_with = "traits::deserialize_kv")]
@@ -40,16 +40,6 @@ pub enum HangarVersionPlatform {
     Paper,
     Waterfall,
     Velocity,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub enum HangarVersionVisibility {
-    Public,
-    New,
-    NeedsChanges,
-    NeedsApproval,
-    SoftDelete,
 }
 
 #[derive(Debug, Deserialize)]
