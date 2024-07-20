@@ -9,7 +9,7 @@
   - [x] Modrinth backend library
   - [ ]  ~~Curseforge backend library~~ **Axed until further notice**
   - [ ] :hammer_and_wrench: Hangar backend library
-    - Dogshit search api tho :clown_face:
+    - ~~Dogshit search api tho :clown_face:~~ **THEY DONT HAVE ONE** 😭🙏
   - [ ] BukkitDev backend library
     - This will be one hell of a webcrawling adventure :)
 - [x]  Modpack parser
