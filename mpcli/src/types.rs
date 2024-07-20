@@ -94,6 +94,7 @@ pub enum ManifestType {
     Modrinth(ModrinthModpack),
 }
 
+#[cfg(any(feature = "modrinth", feature = "forge"))]
 impl ManifestType {
     pub fn name(&self) -> String {
         match self {
