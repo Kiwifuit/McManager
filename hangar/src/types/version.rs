@@ -6,13 +6,13 @@ mod details;
 mod traits;
 
 #[derive(Debug, Deserialize)]
-pub struct HangarProjects {
-    pub pagination: HangarProjectsPagination,
-    pub result: Vec<HangarProject>,
+pub struct HangarVersions {
+    pub pagination: HangarVersionsPagination,
+    pub result: Vec<HangarVersion>,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct HangarProjectsPagination {
+pub struct HangarVersionsPagination {
     pub limit: u8,
     pub offset: u8,
     pub count: u8,
@@ -20,23 +20,23 @@ pub struct HangarProjectsPagination {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct HangarProject {
+pub struct HangarVersion {
     pub created_at: DateTime<Utc>,
     pub name: String,
-    pub visibility: HangarProjectVisibility,
+    pub visibility: HangarVersionVisibility,
     pub description: String,
     pub author: String,
     #[serde(deserialize_with = "traits::deserialize_kv")]
-    pub downloads: Vec<HangarProjectDownload>,
+    pub downloads: Vec<HangarVersionDownload>,
     #[serde(deserialize_with = "traits::deserialize_kv")]
-    pub plugin_dependencies: Vec<HangarProjectPluginDependencies>,
+    pub plugin_dependencies: Vec<HangarVersionPluginDependencies>,
     #[serde(deserialize_with = "traits::deserialize_kv")]
-    pub platform_dependencies: Vec<HangarProjectPlatformDependencies>,
+    pub platform_dependencies: Vec<HangarVersionPlatformDependencies>,
 }
 
 #[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
 #[serde(rename_all = "UPPERCASE")]
-pub enum HangarProjectPlatform {
+pub enum HangarVersionPlatform {
     Paper,
     Waterfall,
     Velocity,
@@ -44,7 +44,7 @@ pub enum HangarProjectPlatform {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub enum HangarProjectVisibility {
+pub enum HangarVersionVisibility {
     Public,
     New,
     NeedsChanges,
@@ -54,15 +54,15 @@ pub enum HangarProjectVisibility {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct HangarProjectDownload {
-    pub platform: HangarProjectPlatform,
+pub struct HangarVersionDownload {
+    pub platform: HangarVersionPlatform,
 
     #[serde(flatten)]
     pub details: HPDownloadDetails,
 }
 
-impl traits::KeyValueType for HangarProjectDownload {
-    type Key = HangarProjectPlatform;
+impl traits::KeyValueType for HangarVersionDownload {
+    type Key = HangarVersionPlatform;
     type Value = HPDownloadDetails;
 
     fn init(key: Self::Key, value: Self::Value) -> Self {
@@ -75,14 +75,14 @@ impl traits::KeyValueType for HangarProjectDownload {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct HangarProjectPluginDependencies {
+pub struct HangarVersionPluginDependencies {
     pub name: String,
 
     #[serde(flatten)]
     pub details: Vec<HPPluginDependencyDetails>,
 }
 
-impl traits::KeyValueType for HangarProjectPluginDependencies {
+impl traits::KeyValueType for HangarVersionPluginDependencies {
     type Key = String;
     type Value = Vec<HPPluginDependencyDetails>;
 
@@ -96,13 +96,13 @@ impl traits::KeyValueType for HangarProjectPluginDependencies {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct HangarProjectPlatformDependencies {
-    pub platform: HangarProjectPlatform,
+pub struct HangarVersionPlatformDependencies {
+    pub platform: HangarVersionPlatform,
     pub version: Vec<String>,
 }
 
-impl traits::KeyValueType for HangarProjectPlatformDependencies {
-    type Key = HangarProjectPlatform;
+impl traits::KeyValueType for HangarVersionPlatformDependencies {
+    type Key = HangarVersionPlatform;
     type Value = Vec<String>;
 
     fn init(key: Self::Key, value: Self::Value) -> Self {
@@ -257,11 +257,11 @@ mod tests {
             }
         }
         "#;
-        let project = from_str(raw);
+        let version = from_str(raw);
 
-        dbg!(&project);
-        assert!(project.is_ok());
-        let _project: HangarProject = project.unwrap();
+        dbg!(&version);
+        assert!(version.is_ok());
+        let _version: HangarVersion = version.unwrap();
     }
 
     #[test]
@@ -547,7 +547,7 @@ mod tests {
 			"createdAt": "2023-04-17T08:05:27.203321Z",
 			"name": "4.1.0",
 			"visibility": "public",
-			"description": " Changed\n* Added config option `enable-playercounthovermessage` to be able to toggle the player count hover message\n* Removed platform specific command aliases (e.g. `maintenancevelocity`)\n* Translations\n  * Moved translation editing to [Crowdin](https://crowdin.com/project/maintenance)\n  * Added Turkish translation file (thanks to Proomp)\n  * Added Swedish translation file (thanks to Sup33r)\n  * Added Ukrainian translation file (thanks to Mrlucke)\n  * Added Japanese translation file (thanks to yu-solt)\n* Added bStats metrics to Velocity and Sponge modules\n\n# Fixed\n* Fixed disabling the `enable-pingmessages` setting not working on Paper servers\n* Fixed variable replacement in messages with gradients\n* Fixed the message for cancelling proxied server timers not replacing the server argument\n* Setting `enable-pingmessages` to `false` no longer disables custom player and player hover messages",
+			"description": " Changed\n* Added config option `enable-playercounthovermessage` to be able to toggle the player count hover message\n* Removed platform specific command aliases (e.g. `maintenancevelocity`)\n* Translations\n  * Moved translation editing to [Crowdin](https://crowdin.com/Version/maintenance)\n  * Added Turkish translation file (thanks to Proomp)\n  * Added Swedish translation file (thanks to Sup33r)\n  * Added Ukrainian translation file (thanks to Mrlucke)\n  * Added Japanese translation file (thanks to yu-solt)\n* Added bStats metrics to Velocity and Sponge modules\n\n# Fixed\n* Fixed disabling the `enable-pingmessages` setting not working on Paper servers\n* Fixed variable replacement in messages with gradients\n* Fixed the message for cancelling proxied server timers not replacing the server argument\n* Setting `enable-pingmessages` to `false` no longer disables custom player and player hover messages",
 			"stats": {
 				"totalDownloads": 2040,
 				"platformDownloads": {
@@ -862,10 +862,10 @@ mod tests {
 }
         "#;
 
-        let projects = from_str(raw);
+        let versions = from_str(raw);
 
-        dbg!(&projects);
-        assert!(projects.is_ok());
-        let _projects: HangarProjects = projects.unwrap();
+        dbg!(&versions);
+        assert!(versions.is_ok());
+        let _versions: HangarVersions = versions.unwrap();
     }
 }
