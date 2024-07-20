@@ -39,7 +39,7 @@ dirs = "5.0.1"
 workspace = true
 
 [features]
-default = ["modrinth", "forge", "packing"]
+default = ["modrinth", "packing"]
 modrinth = ["dep:mparse", "dep:serde_json", "dep:termtree"]
 forge = ["dep:mparse", "dep:serde_json", "dep:termtree"]
 packing = [

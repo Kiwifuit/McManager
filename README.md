@@ -7,7 +7,7 @@
   - [x] Plugin support
 - [ ] Plugin/Mod Backend libraries
   - [x] Modrinth backend library
-  - [ ]  Curseforge backend library
+  - [ ]  ~~Curseforge backend library~~ **Axed until further notice**
   - [ ] Hangar backend library
     - Dogshit search api tho :clown_face:
   - [ ] BukkitDev backend library
@@ -52,11 +52,9 @@ Doing this obviously requires the source code and build tools, so make sure the 
 
 ## `mpcli`, Minecraft Modpack Im/Exporter
 The features for this binary include:
-- `modrinth` [Modrinth](https://modrinth.com/modpacks) modpack parse/install
+- `modrinth` [Modrinth](https://modrinth.com/modpacks) modpack parse/install. **Enabled by default**
 - `forge` [Curseforge](https://www.curseforge.com/minecraft/search?page=1&pageSize=20&sortBy=relevancy&class=modpacks) modpack parse/install
-- `packing` adds the `export` subcommand, which allows you to...well...export currently installed modpacks
-
-**All of the above features are enabled by default**
+- `packing` adds the `export` subcommand, which allows you to...well...export currently installed modpacks. **Enabled by default**
 
 Build with *only* modrinth and `export` command support:
 ```

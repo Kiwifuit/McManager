@@ -98,19 +98,23 @@ pub enum ManifestType {
 impl ManifestType {
     pub fn name(&self) -> String {
         match self {
+            #[cfg(feature = "forge")]
             ManifestType::Forge(manifest) => manifest.name.clone(),
             ManifestType::Modrinth(manifest) => manifest.name.clone(),
         }
     }
     pub fn pack_version(&self) -> String {
         match self {
+            #[cfg(feature = "forge")]
             ManifestType::Forge(manifest) => manifest.version.clone(),
             ManifestType::Modrinth(manifest) => manifest.version_id.clone(),
         }
     }
     pub fn game_version(&self) -> String {
         match self {
+            #[cfg(feature = "forge")]
             ManifestType::Forge(manifest) => manifest.minecraft.version.clone(),
+            #[cfg(feature = "modrinth")]
             ManifestType::Modrinth(manifest) => {
                 manifest.dependencies.first().unwrap().version.clone()
             }
@@ -118,6 +122,7 @@ impl ManifestType {
     }
     pub fn loader(&self) -> String {
         match self {
+            #[cfg(feature = "forge")]
             ManifestType::Forge(manifest) => {
                 let raw_id = &manifest
                     .minecraft
@@ -130,6 +135,7 @@ impl ManifestType {
 
                 raw_id.split('-').next().unwrap().to_string()
             }
+            #[cfg(feature = "modrinth")]
             ManifestType::Modrinth(manifest) => {
                 manifest.dependencies.last().unwrap().dependency.clone()
             }
@@ -137,6 +143,7 @@ impl ManifestType {
     }
     pub fn loader_version(&self) -> String {
         match self {
+            #[cfg(feature = "forge")]
             ManifestType::Forge(manifest) => {
                 let raw_id = &manifest
                     .minecraft
@@ -149,6 +156,7 @@ impl ManifestType {
 
                 raw_id.split('-').last().unwrap().to_string()
             }
+            #[cfg(feature = "modrinth")]
             ManifestType::Modrinth(manifest) => {
                 manifest.dependencies.last().unwrap().version.clone()
             }
@@ -157,7 +165,9 @@ impl ManifestType {
 
     pub fn mod_count(&self) -> usize {
         match self {
+            #[cfg(feature = "forge")]
             ManifestType::Forge(manifest) => manifest.files.len(),
+            #[cfg(feature = "modrinth")]
             ManifestType::Modrinth(manifest) => manifest.files.len(),
         }
     }
