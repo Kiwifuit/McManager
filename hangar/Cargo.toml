@@ -15,5 +15,11 @@ chrono = { version = "0.4.38", default-features = false, features = [
   "serde",
 ] }
 
+[features]
+default = ["api", "types"]
+types = ["dep:serde"]
+api = ["dep:thiserror", "dep:log", "dep:reqwest", "dep:tokio"]
+
+
 [lints]
 workspace = true
