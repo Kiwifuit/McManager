@@ -7,6 +7,39 @@ use crate::types::version::ModrinthProjectVersion;
 use crate::types::ModrinthProjectMeta;
 
 #[allow(private_bounds)]
+/// Lists versions of `project`
+/// ## Usage
+/// ```
+/// use modrinth::{
+///     get_versions, get_client, get_project, search_project, IndexBy, Loader, ProjectQueryBuilder,
+///     VersionQueryBuilder,
+/// };
+///
+/// #[tokio::main]
+/// async fn main() {
+///     let client = get_client().await.unwrap();
+///
+///     let query = ProjectQueryBuilder::new()
+///         .query("kontraption")
+///         .limit(1)
+///         .index(IndexBy::Relevance)
+///         .build();
+///
+///     let (res, _) = search_project(&client, &query).await.unwrap();
+///     let project = get_project(&client, res.first().unwrap()).await.unwrap();
+///
+///     let v_query = VersionQueryBuilder::new()
+///         .featured(true)
+///         .versions(vec!["1.20.1"])
+///         .loaders(vec![Loader::Forge])
+///         .build();
+///
+///     let version = get_versions(&client, &project, &v_query).await;
+///
+///     assert!(version.is_ok());
+///     assert!(!version.unwrap().is_empty());
+/// }
+/// ```
 pub async fn get_versions<M>(
     client: &Client,
     project: &M,

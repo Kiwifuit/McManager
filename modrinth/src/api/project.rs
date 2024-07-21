@@ -7,6 +7,36 @@ use crate::types::query::ProjectQuery;
 use crate::types::result::SearchProjectHit;
 use crate::types::result::SearchProjectResult;
 
+/// Searches Modrinth projects
+///
+/// Please refer to documentation on `ProjectQueryBuilder` for
+/// information on this function's parameters
+/// ## Usage
+/// ```
+/// use modrinth::{search_project, get_client, ProjectQueryBuilder, IndexBy, Facet, Loader};
+///
+/// #[tokio::main]
+/// async fn main() {
+///     let client = get_client().await.unwrap();
+///
+///     let query = ProjectQueryBuilder::new()
+///         .query("gravestones")
+///         .limit(3)
+///         .index(IndexBy::Relevance)
+///         .facets(vec![
+///             vec![Facet::Loader(Loader::Forge)],
+///             vec![
+///                 Facet::Category("adventure".to_string()),
+///                 Facet::Category("utility".to_string()),
+///             ],
+///         ])
+///         .build();
+///
+///     let res = search_project(&client, &query).await;
+///
+///     assert!(res.is_ok());
+/// }
+/// ```
 pub async fn search_project(
     client: &Client,
     params: &ProjectQuery,
@@ -25,6 +55,37 @@ pub async fn search_project(
     Ok((raw_res.hits, raw_res.total_hits))
 }
 
+/// Gets a specific project, returned by `search_project`
+/// ## Usage
+/// ```
+/// use modrinth::{get_project, search_project, get_client, ProjectQueryBuilder, IndexBy, Facet, Loader, ProjectType};
+///
+/// #[tokio::main]
+/// async fn main() {
+///     let client = get_client().await.unwrap();
+///
+///     let query = ProjectQueryBuilder::new()
+///         .query("kontraption")
+///         .limit(1)
+///         .index(IndexBy::Relevance)
+///         .build();
+///
+///     let (res, _) = search_project(&client, &query).await.unwrap();
+///
+///     let res = res.first().unwrap();
+///     assert_eq!(res.project_id, "5yJ5IDKm"); // https://modrinth.com/mod/kontraption
+///     assert_eq!(res.project_type, "mod");
+///
+///     let project = get_project(&client, res).await;
+///
+///     assert!(project.is_ok());
+///
+///     let project = project.unwrap();
+///
+///     assert_eq!(project.id, "5yJ5IDKm");
+///     assert_eq!(project.project_type, ProjectType::Mod);
+/// }
+/// ```
 pub async fn get_project(
     client: &Client,
     project: &SearchProjectHit,

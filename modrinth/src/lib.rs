@@ -12,6 +12,4 @@ pub use types::query::{ProjectQueryBuilder, VersionQueryBuilder};
 #[cfg(feature = "types")]
 pub use types::version::ModrinthProjectVersion;
 #[cfg(feature = "types")]
-pub use types::{Facet, FacetOp};
-#[cfg(feature = "types")]
-pub use types::{IndexBy, Loader};
+pub use types::{Facet, FacetOp, IndexBy, Loader, ProjectType};

@@ -10,6 +10,47 @@ use crate::{
 use log::{debug, info, warn};
 use reqwest::Client;
 
+/// Recursively resolves dependencies, using `resolver` as a helper function
+/// to decide how the `resolve_dependencies` picks a version among a list.
+// ## Usage
+/// ```
+/// use modrinth::{resolve_dependencies, get_versions, get_client, get_project, search_project, IndexBy, Loader, ProjectQueryBuilder, VersionQueryBuilder};
+///
+/// #[tokio::main]
+/// async fn main() {
+///     let client = get_client().await.unwrap();
+///
+///     let query = ProjectQueryBuilder::new()
+///         .query("BotaniaCombat")
+///         .limit(1)
+///         .index(IndexBy::Relevance)
+///         .build();
+///
+///     let (res, _) = search_project(&client, &query).await.unwrap();
+///     let project = get_project(&client, res.first().unwrap()).await.unwrap();
+///
+///     let v_query = VersionQueryBuilder::new()
+///         .featured(true)
+///         .versions(vec!["1.20.1"])
+///         .loaders(vec![Loader::Fabric])
+///         .build();
+///
+///     let mut versions = get_versions(&client, &project, &v_query).await.unwrap();
+///     let version = versions.get_mut(0).unwrap();
+///
+///     let _err = resolve_dependencies(&client, version, &v_query, |versions| {
+///         versions.into_iter().next().unwrap() // always select the first version listed
+///     })
+///     .await;
+///
+///     assert!(version
+///         .dependencies
+///         .as_ref()
+///         .unwrap()
+///         .iter()
+///         .all(|dep| dep.is_resolved()));
+/// }
+/// ```
 pub async fn resolve_dependencies<F>(
     client: &Client,
     project: &mut ModrinthProjectVersion,
@@ -125,12 +166,6 @@ mod test {
             versions.into_iter().next().unwrap()
         })
         .await;
-
-        // if _err.is_err() {
-        //     dbg!(_err.unwrap_err());
-        // } else {
-        //     dbg!(&version);
-        // }
 
         assert!(version
             .dependencies

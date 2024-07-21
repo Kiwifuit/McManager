@@ -17,7 +17,11 @@ pub mod project;
 pub mod version;
 
 #[cfg(feature = "api")]
-pub use project::*;
+pub use dependency::resolve_dependencies;
+#[cfg(feature = "api")]
+pub use project::{get_project, search_project};
+#[cfg(feature = "api")]
+pub use version::get_versions;
 
 const ENDPOINT: &str = "https://api.modrinth.com";
 
@@ -38,6 +42,29 @@ pub enum APIError {
 }
 
 #[cfg(feature = "api")]
+/// Checks Modrinth's availability.
+/// This function returns a `Client`, but it is up to
+/// you to see if the ping to [Modrinth's API Endpoint](https://api.modrinth.com)
+///
+/// Please use `get_client`, which does the same thing as
+/// this function but also checks if the request went through.
+///
+/// ## Errors
+/// This function only fails if the client failed to build
+///
+/// ## Usage
+/// ```
+/// use modrinth::check_api;
+///
+/// #[tokio::main]
+/// async fn main() {
+///     let api_check = check_api().await;
+///     assert!(api_check.is_ok());
+///
+///     let (labrinth_responding, _client) = api_check.unwrap();
+///     assert!(labrinth_responding);
+/// }
+/// ```
 pub async fn check_api() -> Result<(bool, Client), APIError> {
     debug!("building client");
     let client = Client::builder()
@@ -60,6 +87,21 @@ pub async fn check_api() -> Result<(bool, Client), APIError> {
 }
 
 #[cfg(feature = "api")]
+/// Checks if Modrinth is available and returns a `Client` if it does
+///
+/// ## Errors
+/// Returns `None` if the underlying function `check_api` fails,
+/// or if modrinth isnt available
+///
+/// ## Usage
+/// ```
+/// use modrinth::get_client;
+///
+/// #[tokio::main]
+/// async fn main() {
+///     let client = get_client().await.unwrap();
+/// }
+/// ```
 pub async fn get_client() -> Option<Client> {
     info!("Checking api");
     let api_check = check_api().await;
