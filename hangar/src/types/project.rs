@@ -54,7 +54,20 @@ bitflags! {
 }
 
 #[derive(Debug, Deserialize)]
-pub enum HangarProjectCategory {}
+#[serde(rename_all = "snake_case")]
+pub enum HangarProjectCategory {
+    AdminTools,
+    Chat,
+    DevTools,
+    Economy,
+    Gameplay,
+    Games,
+    Protection,
+    RolePlaying,
+    WorldManagement,
+    Misc,
+    Undefined,
+}
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
