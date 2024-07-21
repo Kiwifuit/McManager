@@ -27,12 +27,13 @@ pub enum APIError {
     #[error("http error: {0}")]
     Http(#[from] reqwest::Error),
 
-    #[error("http error: {0}")]
+    #[error("dependency already resolved: {0}")]
     ResolvedDependency(String),
-    #[error("http error")]
+
+    #[error("provided mod has no dependencies")]
     NoDependencies,
 
-    #[error("http error")]
+    #[error("provided mod has unresolvable dependencies")]
     UnresolvableDependency,
 }
 
