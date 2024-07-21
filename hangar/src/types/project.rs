@@ -22,6 +22,7 @@ struct HangarProjectSettings {
     pub links: Option<Vec<HangarProjectLinks>>,
     pub tags: HangarProjectTags,
     pub license: HangarProjectLicense,
+    pub keywords: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
