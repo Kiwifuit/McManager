@@ -1,4 +1,5 @@
 mod search;
+mod version;
 
 #[derive(Debug)]
 pub struct GenericPagination {
