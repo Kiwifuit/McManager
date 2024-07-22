@@ -14,7 +14,7 @@ use reqwest::Client;
 /// to decide how the `resolve_dependencies` picks a version among a list.
 // ## Usage
 /// ```
-/// use modrinth::{resolve_dependencies, get_versions, get_client, get_project, search_project, IndexBy, Loader, ProjectQueryBuilder, VersionQueryBuilder};
+/// use modrinth::{resolve_dependencies, get_versions , get_client, get_project, search_project, IndexBy, Loader, ProjectQueryBuilder, VersionQueryBuilder};
 ///
 /// #[tokio::main]
 /// async fn main() {
