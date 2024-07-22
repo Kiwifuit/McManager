@@ -71,13 +71,3 @@ pub enum Status {
     Private,
     Unknown,
 }
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum RequestedStatus {
-    Approved,
-    Archived,
-    Unlisted,
-    Private,
-    Draft,
-}
