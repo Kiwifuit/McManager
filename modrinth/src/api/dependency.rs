@@ -14,7 +14,7 @@ use reqwest::Client;
 /// to decide how the `resolve_dependencies` picks a version among a list.
 // ## Usage
 /// ```
-/// use modrinth::{resolve_dependencies, get_versions , get_client, get_project, search_project, IndexBy, Loader, ProjectQueryBuilder, VersionQueryBuilder};
+/// use modrinth::{resolve_dependencies, get_versions, get_project, get_client, search_project, IndexBy, Loader, ProjectQueryBuilder, VersionQueryBuilder};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -26,8 +26,8 @@ use reqwest::Client;
 ///         .index(IndexBy::Relevance)
 ///         .build();
 ///
-///     let (res, _) = search_project(&client, &query).await.unwrap();
-///     let project = get_project(&client, res.first().unwrap()).await.unwrap();
+///     let res = search_project(&client, &query).await.unwrap();
+///     let project = res.hits.first().unwrap();
 ///
 ///     let v_query = VersionQueryBuilder::new()
 ///         .featured(true)
@@ -136,8 +136,7 @@ where
 mod test {
     use super::*;
     use crate::{
-        get_client, get_project, search_project, IndexBy, Loader, ProjectQueryBuilder,
-        VersionQueryBuilder,
+        get_client, search_project, IndexBy, Loader, ProjectQueryBuilder, VersionQueryBuilder,
     };
 
     #[tokio::test]
@@ -150,8 +149,8 @@ mod test {
             .index(IndexBy::Relevance)
             .build();
 
-        let (res, _) = search_project(&client, &query).await.unwrap();
-        let project = get_project(&client, res.first().unwrap()).await.unwrap();
+        let res = search_project(&client, &query).await.unwrap();
+        let project = res.hits.first().unwrap();
 
         let v_query = VersionQueryBuilder::new()
             .featured(true)

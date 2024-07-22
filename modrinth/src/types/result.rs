@@ -1,14 +1,12 @@
-use super::{Gallery, License, ModRequirement};
+use super::{Gallery, License, ModRequirement, ModrinthProjectMeta};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
-pub(crate) struct SearchProjectResult {
-    pub(crate) hits: Vec<SearchProjectHit>,
-    // #[serde(rename = "offset")]
-    // _offset: u8,
-    // #[serde(rename = "limit")]
-    // _limit: u8,
-    pub total_hits: usize,
+pub struct SearchProjectResult {
+    pub hits: Vec<SearchProjectHit>,
+    pub offset: u8,
+    pub limit: u8,
+    pub total_hits: u16,
 }
 
 #[derive(Debug, Deserialize)]
@@ -34,4 +32,16 @@ pub struct SearchProjectHit {
     pub gallery: Gallery,
     pub featured_gallery: Option<String>,
     pub color: u32,
+}
+
+impl ModrinthProjectMeta for SearchProjectHit {
+    fn project_id(&self) -> Option<&String> {
+        Some(&self.project_id)
+    }
+}
+
+impl ModrinthProjectMeta for &SearchProjectHit {
+    fn project_id(&self) -> Option<&String> {
+        Some(&self.project_id)
+    }
 }

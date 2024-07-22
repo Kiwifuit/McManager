@@ -40,9 +40,9 @@ use crate::types::result::SearchProjectResult;
 pub async fn search_project(
     client: &Client,
     params: &ProjectQuery,
-) -> Result<(Vec<SearchProjectHit>, usize), APIError> {
+) -> Result<SearchProjectResult, APIError> {
     info!("Searching for project with params: {:?}", params);
-    let raw_res: SearchProjectResult = client
+    let resp: SearchProjectResult = client
         .get(format!("{}/v2/search", ENDPOINT))
         .query(params)
         .send()
@@ -51,8 +51,8 @@ pub async fn search_project(
         .json()
         .await?;
 
-    assert_eq!(raw_res.hits.len(), params.limit as usize);
-    Ok((raw_res.hits, raw_res.total_hits))
+    assert_eq!(resp.hits.len(), params.limit as usize);
+    Ok(resp)
 }
 
 /// Gets a specific project, returned by `search_project`
@@ -70,9 +70,9 @@ pub async fn search_project(
 ///         .index(IndexBy::Relevance)
 ///         .build();
 ///
-///     let (res, _) = search_project(&client, &query).await.unwrap();
+///     let res = search_project(&client, &query).await.unwrap();
 ///
-///     let res = res.first().unwrap();
+///     let res = res.hits.first().unwrap();
 ///     assert_eq!(res.project_id, "5yJ5IDKm"); // https://modrinth.com/mod/kontraption
 ///     assert_eq!(res.project_type, "mod");
 ///
@@ -141,9 +141,9 @@ mod test {
             .index(IndexBy::Relevance)
             .build();
 
-        let (res, _) = search_project(&client, &query).await.unwrap();
+        let res = search_project(&client, &query).await.unwrap();
 
-        let res = res.first().unwrap();
+        let res = res.hits.first().unwrap();
         assert_eq!(res.project_id, "5yJ5IDKm"); // https://modrinth.com/mod/kontraption
         assert_eq!(res.project_type, "mod");
 

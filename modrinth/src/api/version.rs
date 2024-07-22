@@ -11,7 +11,7 @@ use crate::types::ModrinthProjectMeta;
 /// ## Usage
 /// ```
 /// use modrinth::{
-///     get_versions, get_client, get_project, search_project, IndexBy, Loader, ProjectQueryBuilder,
+///     get_versions, get_client, search_project, IndexBy, Loader, ProjectQueryBuilder,
 ///     VersionQueryBuilder,
 /// };
 ///
@@ -25,8 +25,8 @@ use crate::types::ModrinthProjectMeta;
 ///         .index(IndexBy::Relevance)
 ///         .build();
 ///
-///     let (res, _) = search_project(&client, &query).await.unwrap();
-///     let project = get_project(&client, res.first().unwrap()).await.unwrap();
+///     let res = search_project(&client, &query).await.unwrap();
+///     let project = res.hits.first().unwrap();
 ///
 ///     let v_query = VersionQueryBuilder::new()
 ///         .featured(true)
@@ -97,8 +97,7 @@ where
 mod test {
     use super::*;
     use crate::{
-        get_client, get_project, search_project, IndexBy, Loader, ProjectQueryBuilder,
-        VersionQueryBuilder,
+        get_client, search_project, IndexBy, Loader, ProjectQueryBuilder, VersionQueryBuilder,
     };
 
     #[tokio::test]
@@ -111,8 +110,8 @@ mod test {
             .index(IndexBy::Relevance)
             .build();
 
-        let (res, _) = search_project(&client, &query).await.unwrap();
-        let project = get_project(&client, res.first().unwrap()).await.unwrap();
+        let res = search_project(&client, &query).await.unwrap();
+        let project = res.hits.first().unwrap();
 
         let v_query = VersionQueryBuilder::new()
             .featured(true)
