@@ -5,6 +5,7 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct VersionQuery {
+    #[serde(flatten)]
     pub(crate) pagination: GenericPagination,
     pub(crate) include_hidden_channels: bool,
     pub(crate) platform: HangarPlatform,

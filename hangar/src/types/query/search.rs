@@ -6,6 +6,7 @@ use serde::Serialize;
 #[serde(rename_all = "camelCase")]
 pub struct SearchQuery {
     pub(crate) prioritize_exact_match: bool,
+    #[serde(flatten)]
     pub(crate) pagination: GenericPagination,
     pub(crate) sort: SortBy,
     pub(crate) category: String,

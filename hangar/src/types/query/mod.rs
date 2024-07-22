@@ -2,25 +2,14 @@ mod search;
 mod version;
 
 pub use search::SearchQueryBuilder;
-use serde::Serialize;
-use serde_json::to_string;
 pub use version::VersionQueryBuilder;
 
-#[derive(Debug)]
+use serde::Serialize;
+
+#[derive(Debug, Serialize)]
 pub struct GenericPagination {
     pub(crate) limit: u8,
     pub(crate) offset: u8,
-}
-
-impl Serialize for GenericPagination {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let serialized = to_string(self).unwrap();
-
-        serializer.serialize_str(serialized.as_str())
-    }
 }
 
 impl Default for GenericPagination {
@@ -39,5 +28,19 @@ impl GenericPagination {
 
     pub fn set_offset(&mut self, offset: u8) {
         self.offset = offset;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_urlencoded::to_string;
+
+    #[test]
+    fn pagination_serialization() {
+        let pagination = GenericPagination::default();
+        let res = to_string(&pagination);
+
+        assert_eq!(&res.unwrap(), "limit=25&offset=0");
     }
 }
