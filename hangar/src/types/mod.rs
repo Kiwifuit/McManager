@@ -1,7 +1,10 @@
 use serde::Deserialize;
 
-mod project;
-mod version;
+pub mod project;
+pub mod version;
+
+pub use project::HangarProjects;
+pub use version::HangarVersions;
 
 type DateTime = chrono::DateTime<chrono::Utc>;
 
