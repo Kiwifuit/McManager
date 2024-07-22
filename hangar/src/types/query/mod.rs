@@ -1,6 +1,9 @@
 mod search;
 mod version;
 
+pub use search::SearchQueryBuilder;
+pub use version::VersionQueryBuilder;
+
 #[derive(Debug)]
 pub struct GenericPagination {
     pub(crate) limit: u8,
