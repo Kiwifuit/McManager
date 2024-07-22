@@ -1,5 +1,4 @@
 use super::{DateTime, HangarTags, HangarVisibility};
-use bitflags::bitflags;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -11,7 +10,7 @@ pub struct HangarProjects {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct HangarProjectsPagination {
+pub struct HangarProjectsPagination {
     pub limit: u8,
     pub offset: u8,
     pub count: u16,
@@ -81,11 +80,11 @@ pub enum HangarProjectCategory {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HangarProjectLicense {
-    name: Option<String>,
-    url: Option<String>,
+    pub name: Option<String>,
+    pub url: Option<String>,
 
     #[serde(rename = "type")]
-    license_type: String,
+    pub license_type: String,
 }
 
 fn deserialize_links<'de, D>(deserializer: D) -> Result<Vec<HangarProjectLink>, D::Error>

@@ -20,3 +20,30 @@ pub async fn search_project(
         .json()
         .await?)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::SearchQueryBuilder;
+
+    #[tokio::test]
+    async fn test_search_project() {
+        let client = Client::new();
+        let query = SearchQueryBuilder::default()
+            .query("ViaVersion")
+            .version("1.20.1")
+            .build();
+
+        let projects = search_project(&client, &query).await;
+
+        let req = client
+            .get(format!("{}/api/v1/projects", crate::api::HANGAR_ENDPOINT))
+            .query(&query)
+            .build()
+            .unwrap();
+
+        dbg!(req.url());
+        dbg!(&projects);
+        assert!(projects.is_ok());
+    }
+}

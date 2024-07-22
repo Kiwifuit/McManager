@@ -3,7 +3,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(super) struct HPDownloadDetails {
+pub struct HPDownloadDetails {
     pub file_info: HangarVersionDownloadFile,
     pub external_url: Option<String>,
     pub download_url: Option<String>,
@@ -11,7 +11,7 @@ pub(super) struct HPDownloadDetails {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(super) struct HPPluginDependencyDetails {
+pub struct HPPluginDependencyDetails {
     pub required: bool,
     pub external_url: Option<String>,
     pub platform: HangarPlatform,
@@ -19,7 +19,7 @@ pub(super) struct HPPluginDependencyDetails {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct HangarVersionDownloadFile {
+pub struct HangarVersionDownloadFile {
     pub name: String,
     pub size_bytes: usize,
     pub sha_256_hash: String,

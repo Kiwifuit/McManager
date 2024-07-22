@@ -22,9 +22,10 @@ pub enum HangarVisibility {
     SoftDelete,
 }
 
-#[derive(Debug, Deserialize, Serialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Deserialize, Serialize, Hash, PartialEq, Eq)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum HangarPlatform {
+    #[default]
     Paper,
     Waterfall,
     Velocity,
@@ -45,7 +46,7 @@ impl Display for HangarPlatform {
 }
 
 bitflags! {
-    #[derive(Debug, Serialize)]
+    #[derive(Debug, Serialize, Default)]
     pub struct HangarTags: u8 {
         const ADDON          = 1;
         const LIBRARY        = 2;

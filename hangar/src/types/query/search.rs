@@ -9,19 +9,26 @@ pub struct SearchQuery {
     #[serde(flatten)]
     pub(crate) pagination: GenericPagination,
     pub(crate) sort: SortBy,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub(crate) category: String,
     pub(crate) platform: HangarPlatform,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub(crate) owner: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub(crate) query: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub(crate) license: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub(crate) version: String,
+    #[serde(skip_serializing_if = "HangarTags::is_empty")]
     pub(crate) tag: HangarTags,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum SortBy {
     Views,
+    #[default]
     Downloads,
     Newest,
     Stars,
@@ -31,6 +38,7 @@ pub enum SortBy {
     Slugs,
 }
 
+#[derive(Debug, Default)]
 pub struct SearchQueryBuilder {
     prioritize_exact_match: Option<bool>,
     pagination: Option<GenericPagination>,
@@ -63,38 +71,38 @@ impl SearchQueryBuilder {
         self
     }
 
-    pub fn category(mut self, category: String) -> Self {
-        self.category = Some(category);
+    pub fn category<T: ToString>(mut self, category: T) -> Self {
+        self.category = Some(category.to_string());
 
         self
     }
 
-    pub fn platform(mut self, platform: HangarPlatform) -> Self {
+    pub fn platform<T: ToString>(mut self, platform: HangarPlatform) -> Self {
         self.platform = Some(platform);
 
         self
     }
 
-    pub fn owner(mut self, owner: String) -> Self {
-        self.owner = Some(owner);
+    pub fn owner<T: ToString>(mut self, owner: T) -> Self {
+        self.owner = Some(owner.to_string());
 
         self
     }
 
-    pub fn query(mut self, query: String) -> Self {
-        self.query = Some(query);
+    pub fn query<T: ToString>(mut self, query: T) -> Self {
+        self.query = Some(query.to_string());
 
         self
     }
 
-    pub fn license(mut self, license: String) -> Self {
-        self.license = Some(license);
+    pub fn license<T: ToString>(mut self, license: T) -> Self {
+        self.license = Some(license.to_string());
 
         self
     }
 
-    pub fn version(mut self, version: String) -> Self {
-        self.version = Some(version);
+    pub fn version<T: ToString>(mut self, version: T) -> Self {
+        self.version = Some(version.to_string());
 
         self
     }
@@ -107,16 +115,16 @@ impl SearchQueryBuilder {
 
     pub fn build(self) -> SearchQuery {
         SearchQuery {
-            prioritize_exact_match: self.prioritize_exact_match.unwrap(),
-            pagination: self.pagination.unwrap(),
-            sort: self.sort.unwrap(),
-            category: self.category.unwrap(),
-            platform: self.platform.unwrap(),
-            owner: self.owner.unwrap(),
-            query: self.query.unwrap(),
-            license: self.license.unwrap(),
-            version: self.version.unwrap(),
-            tag: self.tag.unwrap(),
+            prioritize_exact_match: self.prioritize_exact_match.unwrap_or(true),
+            pagination: self.pagination.unwrap_or_default(),
+            sort: self.sort.unwrap_or_default(),
+            category: self.category.unwrap_or_default(),
+            platform: self.platform.unwrap_or_default(),
+            owner: self.owner.unwrap_or_default(),
+            query: self.query.unwrap_or_default(),
+            license: self.license.unwrap_or_default(),
+            version: self.version.unwrap_or_default(),
+            tag: self.tag.unwrap_or_default(),
         }
     }
 }

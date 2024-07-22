@@ -8,13 +8,13 @@
 - [ ] Plugin/Mod Backend libraries
   - [x] Modrinth backend library
   - [ ]  ~~Curseforge backend library~~ **Axed until further notice**
-  - [ ] :hammer_and_wrench: Hangar backend library
+  - [x] Hangar backend library
   - [ ] BukkitDev backend library
     - This will be one hell of a webcrawling adventure :)
 - [x]  Modpack parser
   - [x] Modpack packer?
     - Like a program that packs modpacks in a way that the aternos clone can parse
-    - [ ] General support (Un/Install & Info)
+    - [ ] :hammer_and_wrench: General support (Un/Install & Info)
 - [ ] Aternos clone
   - [ ] Basic functionality
     - [ ] Server downloading
