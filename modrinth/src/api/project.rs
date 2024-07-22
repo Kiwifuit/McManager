@@ -74,7 +74,7 @@ pub async fn search_project(
 ///
 ///     let res = res.hits.first().unwrap();
 ///     assert_eq!(res.project_id, "5yJ5IDKm"); // https://modrinth.com/mod/kontraption
-///     assert_eq!(res.project_type, "mod");
+///     assert_eq!(res.project_type, ProjectType::Mod);
 ///
 ///     let project = get_project(&client, res).await;
 ///
@@ -145,7 +145,7 @@ mod test {
 
         let res = res.hits.first().unwrap();
         assert_eq!(res.project_id, "5yJ5IDKm"); // https://modrinth.com/mod/kontraption
-        assert_eq!(res.project_type, "mod");
+        assert_eq!(res.project_type, ProjectType::Mod);
 
         let project = get_project(&client, res).await;
 
