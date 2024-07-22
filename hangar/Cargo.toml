@@ -10,7 +10,7 @@ thiserror = { workspace = true, optional = true }
 log = { workspace = true, optional = true }
 reqwest = { workspace = true, optional = true, features = ["json"] }
 tokio = { workspace = true, features = ["full"], optional = true }
-bitflags = { version = "2.6.0" }
+bitflags = { version = "2.6.0", features = ["serde"] }
 chrono = { version = "0.4.38", default-features = false, features = [
   "std",
   "serde",

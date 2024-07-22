@@ -1,6 +1,9 @@
 use super::GenericPagination;
 use crate::types::{HangarPlatform, HangarTags};
+use serde::Serialize;
 
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SearchQuery {
     pub(crate) prioritize_exact_match: bool,
     pub(crate) pagination: GenericPagination,
@@ -14,6 +17,8 @@ pub struct SearchQuery {
     pub(crate) tag: HangarTags,
 }
 
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SortBy {
     Views,
     Downloads,

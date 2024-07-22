@@ -1,6 +1,9 @@
 use super::GenericPagination;
 use crate::types::HangarPlatform;
+use serde::Serialize;
 
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct VersionQuery {
     pub(crate) pagination: GenericPagination,
     pub(crate) include_hidden_channels: bool,

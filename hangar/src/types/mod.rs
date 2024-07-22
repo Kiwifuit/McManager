@@ -1,5 +1,5 @@
 use bitflags::bitflags;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 pub mod project;
 pub mod query;
@@ -20,7 +20,7 @@ pub enum HangarVisibility {
     SoftDelete,
 }
 
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Hash, PartialEq, Eq)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum HangarPlatform {
     Paper,
@@ -29,7 +29,7 @@ pub enum HangarPlatform {
 }
 
 bitflags! {
-    #[derive(Debug)]
+    #[derive(Debug, Serialize)]
     pub struct HangarTags: u8 {
         const ADDON          = 1;
         const LIBRARY        = 2;
