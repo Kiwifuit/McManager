@@ -1,4 +1,4 @@
-use super::HangarVersionPlatform;
+use super::HangarPlatform;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -14,7 +14,7 @@ pub(super) struct HPDownloadDetails {
 pub(super) struct HPPluginDependencyDetails {
     pub required: bool,
     pub external_url: Option<String>,
-    pub platform: HangarVersionPlatform,
+    pub platform: HangarPlatform,
 }
 
 #[derive(Debug, Deserialize)]

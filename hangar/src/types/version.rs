@@ -1,4 +1,4 @@
-use super::{DateTime, HangarVisibility};
+use super::{DateTime, HangarPlatform, HangarVisibility};
 use details::*;
 use serde::Deserialize;
 
@@ -34,25 +34,17 @@ pub struct HangarVersion {
     pub platform_dependencies: Vec<HangarVersionPlatformDependencies>,
 }
 
-#[derive(Debug, Deserialize, Hash, PartialEq, Eq)]
-#[serde(rename_all = "UPPERCASE")]
-pub enum HangarVersionPlatform {
-    Paper,
-    Waterfall,
-    Velocity,
-}
-
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HangarVersionDownload {
-    pub platform: HangarVersionPlatform,
+    pub platform: HangarPlatform,
 
     #[serde(flatten)]
     pub details: HPDownloadDetails,
 }
 
 impl traits::KeyValueType for HangarVersionDownload {
-    type Key = HangarVersionPlatform;
+    type Key = HangarPlatform;
     type Value = HPDownloadDetails;
 
     fn init(key: Self::Key, value: Self::Value) -> Self {
@@ -87,12 +79,12 @@ impl traits::KeyValueType for HangarVersionPluginDependencies {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HangarVersionPlatformDependencies {
-    pub platform: HangarVersionPlatform,
+    pub platform: HangarPlatform,
     pub version: Vec<String>,
 }
 
 impl traits::KeyValueType for HangarVersionPlatformDependencies {
-    type Key = HangarVersionPlatform;
+    type Key = HangarPlatform;
     type Value = Vec<String>;
 
     fn init(key: Self::Key, value: Self::Value) -> Self {

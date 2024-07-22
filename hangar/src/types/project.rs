@@ -1,4 +1,4 @@
-use super::{DateTime, HangarVisibility};
+use super::{DateTime, HangarTags, HangarVisibility};
 use bitflags::bitflags;
 use serde::Deserialize;
 
@@ -35,7 +35,7 @@ pub struct HangarProject {
 #[serde(rename_all = "camelCase")]
 struct HangarProjectSettings {
     pub links: Option<Vec<HangarProjectLinks>>,
-    pub tags: HangarProjectTags,
+    pub tags: HangarTags,
     pub license: HangarProjectLicense,
     pub keywords: Vec<String>,
 }
@@ -60,41 +60,6 @@ struct HangarProjectLink {
     pub name: String,
     #[serde(deserialize_with = "deserialize_null_default")]
     pub url: String,
-}
-
-bitflags! {
-    #[derive(Debug)]
-    pub struct HangarProjectTags: u8 {
-        const ADDON          = 1;
-        const LIBRARY        = 2;
-        const SUPPORTS_FOLIA = 3;
-    }
-}
-
-impl<'de> Deserialize<'de> for HangarProjectTags {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let tags: Vec<String> = Vec::deserialize(deserializer)?;
-        let mut flags = Self::empty();
-
-        for tag in tags {
-            match tag.as_str() {
-                "ADDON" => flags |= Self::ADDON,
-                "LIBRARY" => flags |= Self::LIBRARY,
-                "SUPPORTS_FOLIA" => flags |= Self::SUPPORTS_FOLIA,
-                other => {
-                    return Err(serde::de::Error::unknown_variant(
-                        other,
-                        &["ADDON", "LIBRARY", "SUPPORTS_FOLIA"],
-                    ))
-                }
-            }
-        }
-
-        Ok(flags)
-    }
 }
 
 #[derive(Debug, Deserialize)]
