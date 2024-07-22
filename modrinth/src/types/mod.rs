@@ -25,11 +25,17 @@ pub(crate) trait ModrinthProjectMeta {
 #[cfg(feature = "types")]
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
+/// The license of a project. Can be
+/// a `Single` or `Detailed` license
 pub enum License {
+    /// License Type
     Single(String),
     Detailed {
+        /// License ID
         id: String,
+        /// License pretty name
         name: String,
+        /// URL where the license can be found
         url: Option<String>,
     },
 }
@@ -47,6 +53,7 @@ pub enum ModRequirement {
 #[cfg(feature = "types")]
 #[derive(Debug, Serialize, Default, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
+/// The mode to index by
 pub enum IndexBy {
     #[default]
     Relevance,
@@ -59,6 +66,7 @@ pub enum IndexBy {
 #[cfg(feature = "types")]
 #[derive(Debug, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
+/// The loaders Modrinth supports
 pub enum Loader {
     Bukkit,
     Bungeecord,

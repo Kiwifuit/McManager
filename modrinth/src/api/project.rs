@@ -116,7 +116,7 @@ mod test {
         let query = ProjectQueryBuilder::new()
             .query("gravestones")
             .limit(3)
-            .index(IndexBy::Relevance)
+            .index_by(IndexBy::Relevance)
             .facets(vec![
                 vec![Facet::Loader(Loader::Forge)],
                 vec![
@@ -138,7 +138,7 @@ mod test {
         let query = ProjectQueryBuilder::new()
             .query("kontraption")
             .limit(1)
-            .index(IndexBy::Relevance)
+            .index_by(IndexBy::Relevance)
             .build();
 
         let res = search_project(&client, &query).await.unwrap();

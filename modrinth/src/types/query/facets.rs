@@ -3,12 +3,25 @@ use crate::types::ProjectType;
 use serde::Serialize;
 
 #[derive(Debug)]
+/// Represents the facets used by
+/// Modrinth's Search API to filter
+/// results.
+///
+/// More information on how this,
+/// and the `Custom` variant works
+/// can be found [here](https://docs.modrinth.com/#tag/projects)
 pub enum Facet {
+    /// Project must be of type...
     ProjectType(ProjectType),
+    /// Project must be categorized as...
     Category(String),
+    /// Project must be loadable by...
     Loader(Loader),
+    /// Project must be supported by minecraft version...
     Version(String),
+    /// Project must be open source?
     OpenSource(bool),
+    /// Project must be licensed under...
     License(String),
     Custom {
         _type: String,

@@ -3,6 +3,8 @@ use crate::types::IndexBy;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
+/// Represents a built complex search query for
+/// `search_projects`
 pub struct ProjectQuery {
     pub(crate) query: String,
     #[serde(
@@ -20,20 +22,24 @@ pub struct ProjectQuery {
     pub(crate) limit: u8,
 }
 #[derive(Debug, Default)]
+/// Represents a complex search query for
+/// `search_projects`. Use `.build()` to build
+/// the query
 pub struct ProjectQueryBuilder {
-    pub query: Option<String>,
-    pub facets: Option<Vec<Vec<Facet>>>,
-    pub index: Option<IndexBy>,
-    pub offset: Option<u8>,
-    pub limit: Option<u8>,
+    query: Option<String>,
+    facets: Option<Vec<Vec<Facet>>>,
+    index_by: Option<IndexBy>,
+    offset: Option<u8>,
+    limit: Option<u8>,
 }
 
 impl ProjectQueryBuilder {
+    /// Creates a new query
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// The query to search for
+    /// The project to search for
     pub fn query<S: ToString>(mut self, query: S) -> Self {
         self.query = Some(query.to_string());
         self
@@ -83,15 +89,15 @@ impl ProjectQueryBuilder {
         self
     }
 
-    /// The sorting method used for sorting search results
+    /// TThe offset into the search. Skips this number of results
     pub fn offset(mut self, offset: u8) -> Self {
         self.offset = Some(offset);
         self
     }
 
-    /// TThe offset into the search. Skips this number of results
-    pub fn index(mut self, index: IndexBy) -> Self {
-        self.index = Some(index);
+    /// The sorting method used for sorting search results
+    pub fn index_by(mut self, index_by: IndexBy) -> Self {
+        self.index_by = Some(index_by);
         self
     }
 
@@ -106,11 +112,12 @@ impl ProjectQueryBuilder {
         self
     }
 
+    /// Builds the query
     pub fn build(self) -> ProjectQuery {
         ProjectQuery {
             query: self.query.unwrap_or_default(),
             facets: self.facets.unwrap_or_default(),
-            index: self.index.unwrap_or_default(),
+            index: self.index_by.unwrap_or_default(),
             offset: self.offset.unwrap_or_default(),
             limit: self.limit.unwrap_or(10),
         }

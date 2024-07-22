@@ -146,7 +146,7 @@ mod test {
         let query = ProjectQueryBuilder::new()
             .query("BotaniaCombat")
             .limit(1)
-            .index(IndexBy::Relevance)
+            .index_by(IndexBy::Relevance)
             .build();
 
         let res = search_project(&client, &query).await.unwrap();
