@@ -1,9 +1,18 @@
 mod search;
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct GenericPagination {
     pub(crate) limit: u8,
     pub(crate) offset: u8,
+}
+
+impl Default for GenericPagination {
+    fn default() -> Self {
+        Self {
+            limit: 25,
+            offset: 0,
+        }
+    }
 }
 
 impl GenericPagination {
