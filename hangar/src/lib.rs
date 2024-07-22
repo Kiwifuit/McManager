@@ -1,8 +1,11 @@
 #[cfg(feature = "api")]
-mod api;
+pub mod api;
 #[cfg(feature = "types")]
-mod types;
+pub mod types;
 
-pub use types::query::*;
+#[cfg(feature = "api")]
+pub use api::{get_download_link, get_version, get_versions, search_project};
+#[cfg(feature = "types")]
+pub use types::query::{GenericPagination, SearchQueryBuilder, VersionQueryBuilder};
 #[cfg(feature = "types")]
 pub use types::{HangarProjects, HangarVersions, HangarVisibility};

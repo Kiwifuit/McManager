@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use bitflags::bitflags;
 use serde::{Deserialize, Serialize};
 
@@ -26,6 +28,20 @@ pub enum HangarPlatform {
     Paper,
     Waterfall,
     Velocity,
+}
+
+impl Display for HangarPlatform {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Self::Paper => "PAPER",
+                Self::Waterfall => "WATERFALL",
+                Self::Velocity => "VELOCITY",
+            }
+        )
+    }
 }
 
 bitflags! {

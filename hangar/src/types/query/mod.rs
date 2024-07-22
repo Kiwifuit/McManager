@@ -1,5 +1,5 @@
-mod search;
-mod version;
+pub(crate) mod search;
+pub(crate) mod version;
 
 pub use search::SearchQueryBuilder;
 pub use version::VersionQueryBuilder;

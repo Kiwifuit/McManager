@@ -33,7 +33,7 @@ pub struct HangarProject {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct HangarProjectSettings {
+pub struct HangarProjectSettings {
     pub links: Option<Vec<HangarProjectLinks>>,
     pub tags: HangarTags,
     pub license: HangarProjectLicense,
@@ -42,20 +42,20 @@ struct HangarProjectSettings {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct HangarProjectNamespace {
+pub struct HangarProjectNamespace {
     pub owner: String,
     pub slug: String,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct HangarProjectLinks {
+pub struct HangarProjectLinks {
     #[serde(deserialize_with = "deserialize_links")]
     pub links: Vec<HangarProjectLink>,
 }
 
 #[derive(Debug, Deserialize)]
-struct HangarProjectLink {
+pub struct HangarProjectLink {
     pub id: u8,
     pub name: String,
     #[serde(deserialize_with = "deserialize_null_default")]
