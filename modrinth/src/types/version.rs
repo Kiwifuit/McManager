@@ -12,8 +12,6 @@ pub struct ModrinthProjectVersion {
     pub version_type: VersionType,
     pub loaders: Option<Vec<Loader>>,
     pub featured: bool,
-    pub status: Option<VersionStatus>,
-    pub requrested_status: Option<VersionRequestedStatus>,
     pub id: String,
     pub project_id: String,
     pub author_id: String,
@@ -28,26 +26,6 @@ pub enum VersionType {
     Release,
     Beta,
     Alpha,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum VersionStatus {
-    Listed,
-    Archived,
-    Draft,
-    Unlisted,
-    Scheduled,
-    Unknown,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum VersionRequestedStatus {
-    Listed,
-    Archived,
-    Draft,
-    Unlisted,
 }
 
 #[derive(Debug, Deserialize)]
