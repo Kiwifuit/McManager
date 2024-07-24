@@ -1,1 +1,0 @@
-This project's kinda weird since there is both a bin and lib crate, just know that *the bin crate is self-contained*, meaning it has no modules. All the modules within `src/` are all for the lib crate
