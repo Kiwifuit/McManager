@@ -1,34 +1,35 @@
+// I am sorry
+
 #![cfg_attr(
     not(any(feature = "modrinth", feature = "forge", feature = "packing")),
     allow(unused_imports)
 )]
 use crate::types::get_default_minecraft_home;
+use log::{debug, error, info};
+use owo_colors::OwoColorize;
+use std::path::PathBuf;
+use thiserror::Error;
 
+#[cfg(feature = "packing")]
+use crate::pack::PackError;
 #[cfg(feature = "packing")]
 use crate::types::ExportArgs;
 
 #[cfg(any(feature = "forge", feature = "modrinth"))]
 use crate::types::{InfoArgs, InstallArgs, ManifestType, UninstallArgs};
-use log::{debug, error, info};
 #[cfg(any(feature = "forge", feature = "modrinth"))]
 use mparse::{
     get_modpack_manifest, unzip_modpack_to, ForgeModpack, ModpackMetadata, ModpackProvider,
     ModpackProviderMetadata, ModrinthModpack,
 };
-use owo_colors::OwoColorize;
-
 #[cfg(any(feature = "forge", feature = "modrinth"))]
 use serde_json::from_str;
-use std::path::PathBuf;
-use thiserror::Error;
-
-#[cfg(any(target_os = "windows", target_os = "macos"))]
-use dirs::config_dir;
 
 #[cfg(any(feature = "forge", feature = "modrinth"))]
 use crate::install::InstallError;
-#[cfg(feature = "packing")]
-use crate::pack::PackError;
+
+#[cfg(any(target_os = "windows", target_os = "macos"))]
+use dirs::config_dir;
 
 #[derive(Debug, Error)]
 pub enum CommandError {
