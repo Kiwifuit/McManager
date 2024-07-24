@@ -15,7 +15,7 @@ pub struct HangarVersions {
 pub struct HangarVersionsPagination {
     pub limit: u8,
     pub offset: u8,
-    pub count: u8,
+    pub count: u16,
 }
 
 #[derive(Debug, Deserialize)]

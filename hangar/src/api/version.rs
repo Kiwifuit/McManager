@@ -60,3 +60,28 @@ pub fn get_download_link<T: Display>(slug: T, name: T, platform: HangarPlatform)
         platform
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{search_project, SearchQueryBuilder, VersionQueryBuilder};
+
+    #[tokio::test]
+    async fn test_get_versions() {
+        let client = Client::new();
+        let pquery = SearchQueryBuilder::default()
+            .query("ViaVersion")
+            .version("1.20.1")
+            .build();
+
+        let projects = search_project(&client, &pquery).await.unwrap();
+        let project = projects.result.first().unwrap();
+
+        let vquery = VersionQueryBuilder::default()
+            .platform(HangarPlatform::Paper)
+            .build();
+        let versions = get_versions(&client, project, &vquery).await;
+
+        assert!(versions.is_ok_and(|v| !v.result.is_empty()))
+    }
+}

@@ -9,6 +9,7 @@ pub struct VersionQuery {
     pub(crate) pagination: GenericPagination,
     pub(crate) include_hidden_channels: bool,
     pub(crate) platform: HangarPlatform,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub(crate) platform_version: String,
 }
 
@@ -47,10 +48,10 @@ impl VersionQueryBuilder {
 
     pub fn build(self) -> VersionQuery {
         VersionQuery {
-            include_hidden_channels: self.include_hidden_channels.unwrap(),
-            pagination: self.pagination.unwrap(),
-            platform: self.platform.unwrap(),
-            platform_version: self.platform_version.unwrap(),
+            include_hidden_channels: self.include_hidden_channels.unwrap_or(true),
+            pagination: self.pagination.unwrap_or_default(),
+            platform: self.platform.unwrap_or_default(),
+            platform_version: self.platform_version.unwrap_or_default(),
         }
     }
 }

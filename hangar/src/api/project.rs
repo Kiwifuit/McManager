@@ -35,15 +35,6 @@ mod tests {
             .build();
 
         let projects = search_project(&client, &query).await;
-
-        let req = client
-            .get(format!("{}/api/v1/projects", crate::api::HANGAR_ENDPOINT))
-            .query(&query)
-            .build()
-            .unwrap();
-
-        dbg!(req.url());
-        dbg!(&projects);
         assert!(projects.is_ok());
     }
 }
