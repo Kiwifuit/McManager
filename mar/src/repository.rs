@@ -20,12 +20,12 @@ pub async fn get_versions(
     artifact: &MavenArtifact,
     base_url: String,
 ) -> Result<MavenArtifactVersions, RepositoryError> {
-    let raw = get(dbg!(format!(
+    let raw = get(format!(
         "{}/{}/{}/maven-metadata.xml",
         base_url,
         artifact.group_id.replace('.', "/"),
         artifact.artifact_id
-    )))
+    ))
     .await?
     .text()
     .await?;
@@ -41,11 +41,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_versions() {
-        let artifact = MavenArtifact {
-            artifact_id: "forge".to_string(),
-            group_id: "net.minecraftforge".to_string(),
-            version: None,
-        };
+        let artifact = MavenArtifact::new("forge", "net.minecraftforge");
 
         let versions =
             get_versions(&artifact, "https://maven.minecraftforge.net".to_string()).await;
