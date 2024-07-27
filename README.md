@@ -9,6 +9,7 @@
   - [x] Modrinth backend library
   - [ ]  ~~Curseforge backend library~~ **Axed until further notice**
   - [x] Hangar backend library
+  - [ ] [PocketMine](https://github.com/poggit/support/blob/master/api.md) backend library
   - [ ] BukkitDev backend library
     - This will be one hell of a webcrawling adventure :)
 - [x]  Modpack parser
@@ -17,7 +18,9 @@
     - [ ] :hammer_and_wrench: General support (Un/Install & Info)
 - [ ] Aternos clone
   - [ ] Basic functionality
-    - [ ] Server downloading
+    - [ ] Server downloading/starting
+      - [ ] Bedrock Server support
+      - [ ] Java Server support
     - [ ] Mod downloading
     - [ ] Interfaces (settings/blacklist/players/etc.)
   - [ ] World switching
