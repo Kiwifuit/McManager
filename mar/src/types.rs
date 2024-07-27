@@ -13,14 +13,6 @@ pub struct MavenArtifact {
     pub(crate) version: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MavenArtifactVersions {
-    group_id: String,
-    artifact_id: String,
-    versioning: MavenArtifactVersionVersioning,
-}
-
 impl MavenArtifact {
     pub fn new<T: ToString>(artifact_id: T, group_id: T) -> Self {
         Self {
@@ -37,6 +29,18 @@ impl MavenArtifact {
             version: Some(version.to_string()),
         }
     }
+
+    pub(crate) fn set_version<T: ToString>(&mut self, version: T) {
+        self.version = Some(version.to_string());
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MavenArtifactVersions {
+    pub group_id: String,
+    pub artifact_id: String,
+    pub versioning: MavenArtifactVersionVersioning,
 }
 
 #[derive(Debug, Deserialize)]
@@ -47,7 +51,38 @@ pub struct MavenArtifactVersionVersioning {
     last_updated: u64,
     versions: MAVersioningVersions,
 }
+
+impl MavenArtifactVersionVersioning {
+    pub fn release(&self) -> String {
+        self.release.clone()
+    }
+
+    pub fn latest(&self) -> String {
+        self.latest.clone()
+    }
+
+    pub fn last_updated(&self) -> u64 {
+        self.last_updated.clone()
+    }
+
+    pub fn versions(&self) -> Vec<String> {
+        (&self.versions).into()
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct MAVersioningVersions {
     version: Vec<String>,
+}
+
+impl Into<Vec<String>> for MAVersioningVersions {
+    fn into(self) -> Vec<String> {
+        self.version
+    }
+}
+
+impl Into<Vec<String>> for &MAVersioningVersions {
+    fn into(self) -> Vec<String> {
+        self.version.clone()
+    }
 }
