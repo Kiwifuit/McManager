@@ -17,7 +17,7 @@
   - [x] Modpack packer?
     - Like a program that packs modpacks in a way that the aternos clone can parse
     - [ ] General support (Un/Install & Info)
-- [ ] :hammer_and_wrench: **M**aven **A**rtifact **R**esolver
+- [x] **M**aven **A**rtifact **R**esolver
 - [ ] Aternos clone
   - [ ] Basic functionality
     - [ ] Server downloading/starting
