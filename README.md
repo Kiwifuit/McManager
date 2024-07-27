@@ -15,8 +15,8 @@
 - [x]  Modpack parser
   - [x] Modpack packer?
     - Like a program that packs modpacks in a way that the aternos clone can parse
-    - [ ] :hammer_and_wrench: General support (Un/Install & Info)
-- [ ] Aternos clone
+    - [ ] General support (Un/Install & Info)
+- [ ] :hammer_and_wrench: Aternos clone
   - [ ] Basic functionality
     - [ ] Server downloading/starting
       - [ ] Bedrock Server support
