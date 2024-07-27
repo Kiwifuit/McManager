@@ -24,7 +24,7 @@ impl MavenArtifact {
         }
     }
 
-    pub(crate) fn set_version<T: ToString>(&mut self, version: T) {
+    pub fn set_version<T: ToString>(&mut self, version: T) {
         self.version = Some(version.to_string());
     }
 }
