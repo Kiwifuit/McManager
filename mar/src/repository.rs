@@ -67,7 +67,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_versions() {
-        let artifact = MavenArtifact::new("forge", "net.minecraftforge");
+        let mut artifact = MavenArtifact::new("forge", "net.minecraftforge");
 
         let versions =
             get_versions(&artifact, "https://maven.minecraftforge.net".to_string()).await;

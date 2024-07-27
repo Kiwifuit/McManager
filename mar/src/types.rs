@@ -1,12 +1,6 @@
 use serde::Deserialize;
 
 #[derive(Debug)]
-pub struct MavenRepository {
-    base_url: String,
-    artifacts: Vec<MavenArtifact>,
-}
-
-#[derive(Debug)]
 pub struct MavenArtifact {
     pub(crate) group_id: String,
     pub(crate) artifact_id: String,
