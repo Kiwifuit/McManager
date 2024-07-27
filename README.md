@@ -5,18 +5,20 @@
   - [x] Modrinth Support
   - [x] Forge Support
   - [x] Plugin support
-- [ ] Plugin/Mod Backend libraries
+- [x] Plugin/Mod Backend libraries
   - [x] Modrinth backend library
   - [ ]  ~~Curseforge backend library~~ **Axed until further notice**
   - [x] Hangar backend library
-  - [ ] [PocketMine](https://github.com/poggit/support/blob/master/api.md) backend library
+  - [ ] [Poggit](https://github.com/poggit/support/blob/master/api.md) backend library
+    - Will only begin development once PocketMine support has been added
   - [ ] BukkitDev backend library
     - This will be one hell of a webcrawling adventure :)
 - [x]  Modpack parser
   - [x] Modpack packer?
     - Like a program that packs modpacks in a way that the aternos clone can parse
     - [ ] General support (Un/Install & Info)
-- [ ] :hammer_and_wrench: Aternos clone
+- [ ] :hammer_and_wrench: **M**aven **A**rtifact **R**esolver
+- [ ] Aternos clone
   - [ ] Basic functionality
     - [ ] Server downloading/starting
       - [ ] Bedrock Server support
