@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:�-jre-alpine
 
 WORKDIR /srv/minecraft
 COPY dockerfs .

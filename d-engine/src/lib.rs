@@ -12,7 +12,7 @@ mod tests {
     fn test_dockerfile() {
         assert_eq!(
             DOCKERFILE,
-            r#"FROM eclipse-temurin:17-jre-alpine
+            r#"FROM eclipse-temurin:�-jre-alpine
 
 WORKDIR /srv/minecraft
 COPY dockerfs .
