@@ -4,14 +4,27 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-thiserror.workspace = true
-serde.workspace = true
-log.workspace = true
-reqwest = { workspace = true, features = ["stream"] }
-quick-xml = { version = "0.36.1", features = ["serialize"] }
+thiserror = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
+log = { workspace = true, optional = true }
+reqwest = { workspace = true, features = ["stream"], optional = true }
+quick-xml = { version = "0.36.1", features = ["serialize"], optional = true }
 
 [dev-dependencies]
 tokio.workspace = true
 
 [lints]
 workspace = true
+
+[features]
+default = ["all"]
+all = [
+  "dep:thiserror",
+  "dep:serde",
+  "dep:log",
+  "dep:reqwest",
+  "dep:quick-xml",
+  "types",
+]
+types = ["dep:serde", "type-maven-artifact"]
+type-maven-artifact = []

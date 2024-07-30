@@ -1,3 +1,4 @@
+#[cfg(feature = "types")]
 use serde::Deserialize;
 
 #[derive(Debug)]
@@ -29,6 +30,7 @@ impl MavenArtifact {
     }
 }
 
+#[cfg(feature = "types")]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MavenArtifactVersions {
@@ -37,6 +39,7 @@ pub struct MavenArtifactVersions {
     pub versioning: MavenArtifactVersionVersioning,
 }
 
+#[cfg(feature = "types")]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MavenArtifactVersionVersioning {
@@ -46,6 +49,7 @@ pub struct MavenArtifactVersionVersioning {
     versions: MAVersioningVersions,
 }
 
+#[cfg(feature = "types")]
 impl MavenArtifactVersionVersioning {
     pub fn release(&self) -> String {
         self.release.clone()
@@ -64,17 +68,20 @@ impl MavenArtifactVersionVersioning {
     }
 }
 
+#[cfg(feature = "types")]
 #[derive(Debug, Deserialize)]
 pub struct MAVersioningVersions {
     version: Vec<String>,
 }
 
+#[cfg(feature = "types")]
 impl Into<Vec<String>> for MAVersioningVersions {
     fn into(self) -> Vec<String> {
         self.version
     }
 }
 
+#[cfg(feature = "types")]
 impl Into<Vec<String>> for &MAVersioningVersions {
     fn into(self) -> Vec<String> {
         self.version.clone()

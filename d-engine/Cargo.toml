@@ -8,6 +8,9 @@ tempdir = "0.3.7"
 anyhow.workspace = true
 thiserror.workspace = true
 log.workspace = true
+mar = { path = "../mar", default-features = false, features = [
+  "type-maven-artifact",
+] }
 
 [lints]
 workspace = true

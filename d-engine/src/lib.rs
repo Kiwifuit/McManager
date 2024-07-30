@@ -2,6 +2,7 @@ pub mod docker;
 pub mod shell;
 
 pub use docker::build_docker_image;
+pub use shell::ServerSoftware;
 
 use std::process::Command;
 
