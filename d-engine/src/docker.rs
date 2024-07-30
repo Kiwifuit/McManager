@@ -3,9 +3,6 @@ use std::io::BufReader;
 use std::process::{Command, Stdio};
 use std::sync::mpsc::Sender;
 
-#[cfg(unix)]
-use std::os::unix::process::ExitStatusExt;
-
 use anyhow::Context;
 use log::{debug, error};
 use thiserror::Error;

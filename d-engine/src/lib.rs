@@ -1,9 +1,9 @@
 pub mod docker;
+pub mod shell;
 
-use std::{
-    fmt::{format, Display},
-    process::Command,
-};
+pub use docker::build_docker_image;
+
+use std::process::Command;
 
 const DOCKERFILE: &str = include_str!("../res/Dockerfile");
 
