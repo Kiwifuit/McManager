@@ -61,14 +61,17 @@ pub fn get_artifact<T: ToString>(
     if artifact_data.version.is_none() {
         Err(RepositoryError::NoVersion)
     } else {
-        Ok(format!(
+        let artifact_url = format!(
             "{}/{}/{}/{}/{}",
             base_url.to_string(),
             artifact_data.group_id.replace('.', "/"),
             artifact_data.artifact_id,
             artifact_data.version.clone().unwrap(),
             artifact_name.to_string()
-        ))
+        );
+
+        debug!("artifact url: {}", artifact_url);
+        Ok(artifact_url)
     }
 }
 
