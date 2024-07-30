@@ -1,20 +1,20 @@
 use anyhow::Context;
 use std::io::prelude::*;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use thiserror::Error;
 
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 
 #[derive(Debug, Error)]
-pub(super) enum PostInstallationError {
+pub enum PostInstallationError {
     #[error("i/o error: {0}")]
     Io(#[from] std::io::Error),
     // #[error("{0}")]
     // Generic(#[from] anyhow::Error),
 }
 
-pub(super) fn add_run_sh(root_dir: PathBuf) -> Result<(), PostInstallationError> {
+pub fn add_run_sh(root_dir: PathBuf) -> Result<(), PostInstallationError> {
     let filename = root_dir.join("run.sh");
     let mut lines = get_lines(&filename).unwrap_or(
         vec!["java", "-jar", "server.jar", "@user_jvm_args.txt", "\"$@\""]

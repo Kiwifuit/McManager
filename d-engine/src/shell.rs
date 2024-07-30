@@ -3,6 +3,7 @@ use std::fmt::Display;
 use std::path::PathBuf;
 
 mod post;
+pub use post::*;
 
 #[derive(Debug, Clone)]
 pub enum ServerSoftware {
