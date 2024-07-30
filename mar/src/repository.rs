@@ -1,5 +1,6 @@
 use crate::types::*;
 
+use log::debug;
 use quick_xml::de::from_str;
 use reqwest::get;
 use thiserror::Error;
@@ -26,6 +27,16 @@ pub async fn get_versions<T: ToString>(
     if artifact.version.is_some() {
         Err(RepositoryError::VersionAvailable)
     } else {
+        debug!(
+            "got url: {}",
+            format!(
+                "{}/{}/{}/maven-metadata.xml",
+                base_url.to_string(),
+                artifact.group_id.replace('.', "/"),
+                artifact.artifact_id
+            )
+        );
+
         let raw = get(format!(
             "{}/{}/{}/maven-metadata.xml",
             base_url.to_string(),

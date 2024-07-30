@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 thiserror.workspace = true
 serde.workspace = true
+log.workspace = true
 reqwest = { workspace = true, features = ["stream"] }
 quick-xml = { version = "0.36.1", features = ["serialize"] }
 
