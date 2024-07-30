@@ -1,12 +1,21 @@
 pub mod docker;
 
-use std::process::Command;
+use std::{
+    fmt::{format, Display},
+    process::Command,
+};
 
 const DOCKERFILE: &str = include_str!("../res/Dockerfile");
-const REPLACEMENT_CHAR: char = '�';
 
 pub fn test_docker() -> bool {
     Command::new("docker").spawn().is_ok()
+}
+
+fn generate_dockerfile<V: ToString>(java_version: V) -> String {
+    DOCKERFILE.replace(
+        char::REPLACEMENT_CHARACTER,
+        java_version.to_string().as_str(),
+    )
 }
 
 #[cfg(test)]
@@ -23,7 +32,21 @@ WORKDIR /srv/minecraft
 COPY dockerfs .
 
 EXPOSE 25565 25575
-ENTRYPOINT [ "./run-server.sh" ]"#
+ENTRYPOINT [ "./run.sh" ]"#
         )
+    }
+
+    #[test]
+    fn test_dockergen() {
+        assert_eq!(
+            generate_dockerfile(17),
+            r#"FROM eclipse-temurin:17-jre-alpine
+
+WORKDIR /srv/minecraft
+COPY dockerfs .
+
+EXPOSE 25565 25575
+ENTRYPOINT [ "./run.sh" ]"#
+        );
     }
 }

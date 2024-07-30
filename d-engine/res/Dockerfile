@@ -4,4 +4,4 @@ WORKDIR /srv/minecraft
 COPY dockerfs .
 
 EXPOSE 25565 25575
-ENTRYPOINT [ "./run-server.sh" ]
+ENTRYPOINT [ "./run.sh" ]
