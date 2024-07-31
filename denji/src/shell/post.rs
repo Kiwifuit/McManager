@@ -1,65 +1,67 @@
 use anyhow::Context;
+use log::{debug, info};
 use std::io::prelude::*;
-use std::path::PathBuf;
-use thiserror::Error;
+use std::path::{Path, PathBuf};
 
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 
-#[derive(Debug, Error)]
-pub enum PostInstallationError {
-    #[error("i/o error: {0}")]
-    Io(#[from] std::io::Error),
-    // #[error("{0}")]
-    // Generic(#[from] anyhow::Error),
-}
+pub(super) fn add_run_sh<P: AsRef<Path>>(root_dir: P) -> anyhow::Result<()> {
+    let filename = root_dir.as_ref().join("run.sh");
 
-pub fn add_run_sh(root_dir: PathBuf) -> Result<(), PostInstallationError> {
-    let filename = root_dir.join("run.sh");
-    let mut lines = get_lines(&filename).unwrap_or(
-        vec!["java", "-jar", "server.jar", "@user_jvm_args.txt", "\"$@\""]
-            .iter()
-            .map(|s| s.to_string())
-            .collect::<Vec<String>>(),
-    );
+    info!("writing initializer script at {:?}", filename.display());
+    let mut lines = get_lines(&filename).unwrap_or(vec![
+        "java -jar server.jar @user_jvm_args.txt \"$@\"".to_string(),
+    ]);
 
     if let Some(line) = lines.last_mut() {
         *line = get_modded_line(&line);
     }
 
-    let mut write_file = BufWriter::new(File::create(filename)?);
+    let mut write_file =
+        BufWriter::new(File::create(filename).context("while creating run.sh file")?);
 
     for line in lines {
-        writeln!(write_file, "{}", line)?;
+        writeln!(write_file, "{}", line).context("while writing run.sh file")?;
     }
 
     Ok(())
 }
 
-pub fn agree_eula(base_dir: PathBuf) -> usize {
-    let mut file = File::create(base_dir.join("eula.txt"))
-        .context("while creating file")
-        .unwrap();
+pub fn agree_eula<P: AsRef<Path>>(base_dir: P) -> anyhow::Result<usize> {
+    let mut file =
+        File::create(base_dir.as_ref().join("eula.txt")).context("while eula.txt creating file")?;
 
     file.write(b"eula=true")
-        .context("while writing to file")
-        .unwrap()
+        .context("while writing eula.txt to file")
 }
 
-pub fn write_user_jvm_args<T: ToString>(base_dir: PathBuf, args: T) {
-    let mut file = File::create(base_dir.join("user_jvm_args.txt")).unwrap();
+pub(super) fn write_user_jvm_args<T: ToString, P: AsRef<Path>>(
+    base_dir: P,
+    args: T,
+) -> anyhow::Result<()> {
+    let filename = base_dir.as_ref().join("user_jvm_args.txt");
+    info!("writing JVM args at {:?}", filename.display());
 
-    let _ = file.write_all(args.to_string().as_bytes());
+    let mut file = File::create(filename).context("while creating jvm args file")?;
+
+    file.write_all(args.to_string().as_bytes())
+        .context("while writing jvm args file")
 }
 
-fn get_lines(filename: &PathBuf) -> Result<Vec<String>, PostInstallationError> {
-    let read_file = BufReader::new(File::open(&filename)?);
-    let lines: Vec<String> = read_file.lines().collect::<Result<_, _>>()?;
+fn get_lines(filename: &PathBuf) -> anyhow::Result<Vec<String>> {
+    let read_file = BufReader::new(File::open(&filename).context("while reading run.sh lines")?);
+    let lines: Vec<String> = read_file
+        .lines()
+        .collect::<Result<_, _>>()
+        .context("while reading run.sh lines")?;
 
     Ok(lines)
 }
 
 fn get_modded_line(line: &String) -> String {
+    debug!("recieved line: {}", line);
+
     let mut args = line.split(' ').collect::<Vec<&str>>();
     // index of the second to the last argument, typically a `"$@"`
     let sttl_arg_index = args.len() - 1;

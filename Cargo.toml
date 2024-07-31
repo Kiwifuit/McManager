@@ -12,7 +12,7 @@ dotenv = "0.15.0"
 sha1_smol = { version = "1.0.0", features = ["serde"] }
 serde = { version = "1.0.197", features = ["derive"] }
 zip = { version = "0.6.6", default-features = false, features = ["deflate"] }
-reqwest = { version = "0.12.4", features = ["json", "stream", "blocking"] }
+reqwest = { version = "0.12.4", features = ["json", "stream"] }
 tokio = { version = "1.37.0", features = ["full"] }
 
 [workspace.lints.clippy]
