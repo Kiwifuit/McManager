@@ -1,4 +1,5 @@
 use denji::{ServerSoftware, ServerSoftwareOptions};
+use humantime::format_duration;
 use log::{error, info};
 use tempdir::TempDir;
 use tokio::task::spawn;
@@ -16,8 +17,8 @@ async fn main() {
         .unwrap()
         .into_path();
     let install_server_opts = ServerSoftwareOptions::with(
-        ServerSoftware::Fabric,
-        "1.0.1",
+        ServerSoftware::Quilt,
+        "0.9.2",
         "1.20.4",
         root_dir,
         "dockerfs",
@@ -25,6 +26,10 @@ async fn main() {
     let (tx, rx) = channel();
     let install_task = spawn(async move { install_server_opts.build(tx).await });
 
+    info!(
+        "started installer (timeout: {})",
+        format_duration(CHANNEL_TIMEOUT)
+    );
     loop {
         match rx.recv_timeout(CHANNEL_TIMEOUT) {
             Err(_e) => {
