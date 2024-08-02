@@ -1,25 +1,50 @@
 use anyhow::Context;
-use log::{debug, info};
+use log::{debug, error, info, warn};
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 
-pub(super) fn add_run_sh<P: AsRef<Path>>(root_dir: P) -> anyhow::Result<()> {
+use super::ServerSoftware;
+#[cfg(unix)]
+use std::os::unix::fs::OpenOptionsExt;
+
+pub(super) fn add_run_sh<P: AsRef<Path>>(
+    root_dir: P,
+    server_type: &ServerSoftware,
+) -> anyhow::Result<()> {
     let filename = root_dir.as_ref().join("run.sh");
 
     info!("writing initializer script at {:?}", filename.display());
-    let mut lines = get_lines(&filename).unwrap_or(vec![
-        "java -jar server.jar @user_jvm_args.txt \"$@\"".to_string(),
-    ]);
+    let mut lines = get_lines(&filename).unwrap_or_else(|e| {
+        let selected_default = match server_type {
+            ServerSoftware::Fabric | ServerSoftware::Quilt => vec![format!(
+                "java -jar {}-server-launch.jar @user_jvm_args.txt \"$@\"",
+                server_type.to_string().to_lowercase()
+            )],
+            _ => vec!["java -jar server.jar @user_jvm_args.txt \"$@\"".to_string()],
+        };
+        error!("failed to get lines: {}", e);
+        warn!("run.sh opts will be defaulted to: {:?}", selected_default);
+
+        selected_default
+    });
 
     if let Some(line) = lines.last_mut() {
         *line = get_modded_line(&line);
     }
 
-    let mut write_file =
-        BufWriter::new(File::create(filename).context("while creating run.sh file")?);
+    // dunno what to name this, plus it looks really
+    // dirty inside `BufWriter::new` 🤡
+    let write_file_handle = File::options()
+        .mode(0o755)
+        .create(true)
+        .write(true)
+        .open(filename)
+        .context("while creating run.sh file")?;
+
+    let mut write_file = BufWriter::new(write_file_handle);
 
     for line in lines {
         writeln!(write_file, "{}", line).context("while writing run.sh file")?;

@@ -6,9 +6,9 @@ use reqwest::get;
 use thiserror::Error;
 
 use std::fmt::Display;
-use std::fs::File;
+use std::fs::{create_dir, File};
 use std::io::{BufRead, BufReader, BufWriter, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::mpsc::Sender;
 
@@ -89,26 +89,25 @@ impl ServerSoftware {
         }
     }
 
-    fn get_args<'a>(&self, game_version: &'a str, install_dir: &'a str) -> Vec<&'a str> {
+    fn get_args(&self, game_version: &str, install_dir: &str) -> Vec<String> {
         match self {
-            Self::Forge => vec!["--installServer", install_dir],
-            Self::Neoforge => vec!["--installServer", install_dir],
+            Self::Forge => vec!["--installServer".to_string(), install_dir.to_string()],
+            Self::Neoforge => vec!["--installServer".to_string(), install_dir.to_string()],
             Self::Quilt => vec![
-                "install",
-                "server",
-                game_version,
-                "--install-dir",
-                install_dir,
-                "--create-scripts",
-                "--download-server",
+                "install".to_string(),
+                "server".to_string(),
+                game_version.to_string(),
+                format!("--install-dir={}", install_dir),
+                "--create-scripts".to_string(),
+                "--download-server".to_string(),
             ],
             Self::Fabric => vec![
-                "server",
-                "-dir",
-                install_dir,
-                "-mcversion",
-                game_version,
-                "-downloadMinecraft",
+                "server".to_string(),
+                "-dir".to_string(),
+                install_dir.to_string(),
+                "-mcversion".to_string(),
+                game_version.to_string(),
+                "-downloadMinecraft".to_string(),
             ],
             Self::Glowstone => todo!(), // TODO: Also this
         }
@@ -129,24 +128,27 @@ pub enum InstallError {
     Contextual(#[from] anyhow::Error),
 }
 
-pub struct ServerSoftwareOptions {
+pub struct ServerSoftwareOptions<P> {
     server_type: ServerSoftware,
     software_version: String,
     game_version: String,
-    install_dir: PathBuf,
+    root_dir: PathBuf,
+    install_dir: P,
 }
 
-impl ServerSoftwareOptions {
+impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
     pub fn with<T: ToString>(
         server_type: ServerSoftware,
         software_version: T,
         game_version: T,
-        install_dir: PathBuf,
+        root_dir: PathBuf,
+        install_dir: P,
     ) -> Self {
         Self {
             server_type,
             software_version: software_version.to_string(),
             game_version: game_version.to_string(),
+            root_dir,
             install_dir,
         }
     }
@@ -157,20 +159,22 @@ impl ServerSoftwareOptions {
             self.server_type.clone(),
             self.software_version,
             self.game_version,
-            self.install_dir.display()
+            self.root_dir.display()
         );
 
         self.download_artifact().await?;
         info!("spawning installer");
+
+        let install_dir = self.root_dir.join(&self.install_dir);
         let mut install_command = Command::new("java");
         let install_command = install_command
             .args(vec![
                 "-jar",
-                self.install_dir.join("installer.jar").to_str().unwrap(),
+                self.root_dir.join("installer.jar").to_str().unwrap(),
             ])
             .args(
                 self.server_type
-                    .get_args(&self.game_version, self.install_dir.to_str().unwrap()),
+                    .get_args(&self.game_version, &install_dir.to_str().unwrap()),
             )
             .stdout(Stdio::piped());
 
@@ -179,6 +183,10 @@ impl ServerSoftwareOptions {
             install_command.get_program().to_string_lossy(),
             install_command.get_args()
         );
+
+        if !install_dir.exists() {
+            create_dir(&install_dir)?;
+        }
 
         let mut install_command = install_command.spawn()?;
         {
@@ -195,8 +203,9 @@ impl ServerSoftwareOptions {
 
             // post install
             info!("post-install");
-            post::add_run_sh(&self.install_dir).context("while preparing run script")?;
-            post::write_user_jvm_args(&self.install_dir, "-Xms2G -Xmx8G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true").context("while preparing User JVM args")?;
+            post::add_run_sh(&install_dir, &self.server_type)
+                .context("while preparing run script")?;
+            post::write_user_jvm_args(&install_dir, "-Xms2G -Xmx8G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true").context("while preparing User JVM args")?;
         } else {
             error!("install exited with code {}", status_code);
         }
@@ -224,7 +233,7 @@ impl ServerSoftwareOptions {
 
         info!("resolved artifact to: {:?}", artifact_url);
         let mut outfile = BufWriter::new(
-            File::create_new(self.install_dir.join("installer.jar"))
+            File::create_new(self.root_dir.join("installer.jar"))
                 .context("while initializing download")?,
         );
         let mut resp = get(artifact_url).await?.bytes_stream();

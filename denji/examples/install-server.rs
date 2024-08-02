@@ -12,12 +12,15 @@ const CHANNEL_TIMEOUT: Duration = Duration::from_secs(90);
 async fn main() {
     env_logger::init();
 
-    let root_dir = TempDir::new("test.denji.serverInstall").unwrap();
+    let root_dir = TempDir::new("test.denji.serverInstall")
+        .unwrap()
+        .into_path();
     let install_server_opts = ServerSoftwareOptions::with(
-        ServerSoftware::Neoforge,
-        "20.4.237",
+        ServerSoftware::Fabric,
+        "1.0.1",
         "1.20.4",
-        root_dir.into_path(),
+        root_dir,
+        "dockerfs",
     );
     let (tx, rx) = channel();
     let install_task = spawn(async move { install_server_opts.build(tx).await });
