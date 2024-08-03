@@ -1,10 +1,11 @@
 use anyhow::{Context, Result};
+use denji::shell::DockerBuilderCommandOutput;
 use humantime::format_duration;
 use log::info;
 use tempdir::TempDir;
 use tokio::task::spawn;
 
-use denji::{ServerSoftware, ServerSoftwareOptions};
+use denji::{CommandOutput, ServerSoftware, ServerSoftwareOptions};
 
 use std::sync::mpsc::channel;
 use std::time::Duration;
@@ -22,7 +23,6 @@ async fn main() -> Result<()> {
         "1.20.4",
         root_dir,
         "dockerfs",
-        true,
     );
     let (tx, rx) = channel();
     let install_task = spawn(async move { install_server_opts.build(tx).await });
@@ -36,8 +36,16 @@ async fn main() -> Result<()> {
             Err(_e) => {
                 break;
             }
-            Ok(line) => {
-                info!("{:?}", line)
+            Ok(CommandOutput::Message(line)) => {
+                info!("{}", line)
+            }
+            Ok(CommandOutput::DockerImageBuilder(DockerBuilderCommandOutput {
+                vertexes,
+                statuses: _statuses,
+            })) => {
+                for vertex in vertexes {
+                    info!("{}", vertex.name);
+                }
             }
         }
     }

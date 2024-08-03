@@ -1,6 +1,6 @@
 use anyhow::Context;
 use futures_util::StreamExt;
-use log::{error, info};
+use log::{error, info, warn};
 use mar::{get_artifact, get_versions, MavenArtifact};
 use reqwest::get;
 use thiserror::Error;
@@ -138,7 +138,6 @@ pub struct ServerSoftwareOptions<P> {
     game_version: String,
     root_dir: PathBuf,
     install_dir: P,
-    with_docker: bool,
 }
 
 impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
@@ -148,7 +147,6 @@ impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
         game_version: T,
         root_dir: PathBuf,
         install_dir: P,
-        with_docker: bool,
     ) -> Self {
         Self {
             server_type,
@@ -156,7 +154,6 @@ impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
             game_version: game_version.to_string(),
             root_dir,
             install_dir,
-            with_docker,
         }
     }
 
@@ -220,7 +217,9 @@ impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
             error!("install exited with code {}", status_code);
         }
 
-        if self.with_docker {
+        info!("checking if docker is available");
+        if crate::test_docker() {
+            info!("docker seems to be available, building docker image");
             crate::docker::build_docker_image(
                 self.server_type.to_string().to_lowercase(),
                 self.software_version.clone(),
@@ -228,6 +227,9 @@ impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
                 &self.root_dir,
                 tx,
             )?;
+        } else {
+            warn!("docker not found, docker image will not be built");
+            warn!("if this is not the intended behavior, please install docker into this system");
         }
 
         Ok(())
