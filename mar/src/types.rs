@@ -28,6 +28,18 @@ impl MavenArtifact {
     pub fn set_version<T: ToString>(&mut self, version: T) {
         self.version = Some(version.to_string());
     }
+
+    pub fn group_id(&self) -> String {
+        self.group_id.clone()
+    }
+
+    pub fn artifact_id(&self) -> String {
+        self.artifact_id.clone()
+    }
+
+    pub fn version(&self) -> Option<String> {
+        self.version.clone()
+    }
 }
 
 #[cfg(feature = "types")]

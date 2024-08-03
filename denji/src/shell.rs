@@ -244,7 +244,11 @@ impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
             .versions()
             .contains(&self.software_version)
         {
+            info!("version {} resolved", &self.software_version);
             artifact.set_version(self.software_version.clone());
+        } else {
+            error!("unable to resolve version {}", &self.software_version);
+            unreachable!();
         }
 
         let artifact_url = get_artifact(

@@ -18,8 +18,8 @@ async fn main() -> Result<()> {
 
     let root_dir = TempDir::new("test.denji.serverInstall")?.into_path();
     let install_server_opts = ServerSoftwareOptions::with(
-        ServerSoftware::Quilt,
-        "0.9.2",
+        ServerSoftware::Forge,
+        "1.20.4-49.1.4",
         "1.20.4",
         root_dir,
         "dockerfs",
