@@ -20,9 +20,8 @@ pub enum RepositoryError {
     XmlParse(#[from] quick_xml::DeError),
 }
 
-pub async fn get_versions<T: ToString>(
+pub async fn get_versions(
     artifact: &MavenArtifact,
-    base_url: T,
 ) -> Result<MavenArtifactVersions, RepositoryError> {
     if artifact.version.is_some() {
         Err(RepositoryError::VersionAvailable)
@@ -31,7 +30,7 @@ pub async fn get_versions<T: ToString>(
             "got url: {}",
             format!(
                 "{}/{}/{}/maven-metadata.xml",
-                base_url.to_string(),
+                artifact.base_url,
                 artifact.group_id.replace('.', "/"),
                 artifact.artifact_id
             )
@@ -39,7 +38,7 @@ pub async fn get_versions<T: ToString>(
 
         let raw = get(format!(
             "{}/{}/{}/maven-metadata.xml",
-            base_url.to_string(),
+            artifact.base_url,
             artifact.group_id.replace('.', "/"),
             artifact.artifact_id
         ))
@@ -55,7 +54,6 @@ pub async fn get_versions<T: ToString>(
 
 pub fn get_artifact<T: ToString>(
     artifact_data: &MavenArtifact,
-    base_url: T,
     artifact_name: T,
 ) -> Result<String, RepositoryError> {
     if artifact_data.version.is_none() {
@@ -63,7 +61,7 @@ pub fn get_artifact<T: ToString>(
     } else {
         let artifact_url = format!(
             "{}/{}/{}/{}/{}",
-            base_url.to_string(),
+            artifact_data.base_url,
             artifact_data.group_id.replace('.', "/"),
             artifact_data.artifact_id,
             artifact_data.version.clone().unwrap(),
@@ -81,24 +79,28 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_versions() {
-        let artifact = MavenArtifact::new("forge", "net.minecraftforge");
+        let artifact = MavenArtifactBuilder::default()
+            .with_base_url("https://maven.minecraftforge.net")
+            .with_artifact_id("forge")
+            .with_group_id("net.minecraftforge")
+            .build()
+            .unwrap();
 
-        let versions =
-            get_versions(&artifact, "https://maven.minecraftforge.net".to_string()).await;
+        let versions = get_versions(&artifact).await;
 
         assert!(versions.is_ok());
     }
 
     #[tokio::test]
     async fn test_get_version() {
-        let mut artifact = MavenArtifact::new("forge", "net.minecraftforge");
-        let base_url = "https://maven.minecraftforge.net".to_string();
+        let mut artifact = MavenArtifactBuilder::default()
+            .with_base_url("https://maven.minecraftforge.net")
+            .with_artifact_id("forge")
+            .with_group_id("net.minecraftforge")
+            .build()
+            .unwrap();
 
-        let selected_version = get_versions(&artifact, &base_url)
-            .await
-            .unwrap()
-            .versioning
-            .latest();
+        let selected_version = get_versions(&artifact).await.unwrap().versioning.latest();
 
         artifact.set_version(&selected_version);
         let artifact_name = format!("forge-{}-installer.jar", selected_version);
@@ -106,7 +108,7 @@ mod tests {
             "https://maven.minecraftforge.net/net/minecraftforge/forge/{0}/forge-{0}-installer.jar",
             selected_version
         );
-        let artifact_url = get_artifact(&artifact, base_url, artifact_name);
+        let artifact_url = get_artifact(&artifact, artifact_name);
 
         assert!(artifact_url.is_ok());
         let artifact_url = artifact_url.unwrap();

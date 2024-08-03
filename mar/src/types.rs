@@ -1,101 +1,135 @@
-#[cfg(feature = "types")]
-use serde::Deserialize;
+use std::str::FromStr;
+use thiserror::Error;
+
+mod deserialize;
+pub use deserialize::*;
+
+#[derive(Default)]
+pub struct MavenArtifactBuilder<T> {
+    pub(crate) base_url: Option<T>,
+    pub(crate) group_id: Option<T>,
+    pub(crate) artifact_id: Option<T>,
+    pub(crate) version: Option<T>,
+}
 
 #[derive(Debug)]
 pub struct MavenArtifact {
+    pub(crate) base_url: String,
     pub(crate) group_id: String,
     pub(crate) artifact_id: String,
     pub(crate) version: Option<String>,
 }
 
+#[derive(Debug, Error)]
+pub enum MavenArtifactParseError {
+    #[error("input string is malformed: expected 3 semicolons, got {0}")]
+    TooLittleSemiColons(usize),
+    #[error("input string is malformed: expected at least 3 components")]
+    NotEnoughComponents,
+    #[error("input string is malformed")]
+    Malformed,
+}
+
+impl FromStr for MavenArtifact {
+    type Err = MavenArtifactParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.find(':') {
+            Some(3) => (),
+            Some(other) => return Err(MavenArtifactParseError::TooLittleSemiColons(other)),
+            None => return Err(MavenArtifactParseError::TooLittleSemiColons(0)),
+        };
+
+        let mut parts = s.split_terminator(':');
+
+        if parts.clone().count() < 3 {
+            return Err(MavenArtifactParseError::NotEnoughComponents);
+        }
+
+        let base_url = parts
+            .nth(0)
+            .ok_or(MavenArtifactParseError::Malformed)?
+            .to_string();
+        let group_id = parts
+            .nth(1)
+            .ok_or(MavenArtifactParseError::Malformed)?
+            .to_string();
+        let artifact_id = parts
+            .nth(2)
+            .ok_or(MavenArtifactParseError::Malformed)?
+            .to_string();
+        let version = parts.nth(3).map(|v| v.to_string());
+
+        Ok(Self {
+            base_url,
+            group_id,
+            artifact_id,
+            version,
+        })
+    }
+}
+
 impl MavenArtifact {
-    pub fn new<T: ToString>(artifact_id: T, group_id: T) -> Self {
-        Self {
-            group_id: group_id.to_string(),
-            artifact_id: artifact_id.to_string(),
-            version: None,
-        }
-    }
-
-    pub fn new_with_version<T: ToString>(artifact_id: T, group_id: T, version: T) -> Self {
-        Self {
-            group_id: group_id.to_string(),
-            artifact_id: artifact_id.to_string(),
-            version: Some(version.to_string()),
-        }
-    }
-
     pub fn set_version<T: ToString>(&mut self, version: T) {
         self.version = Some(version.to_string());
     }
-
-    pub fn group_id(&self) -> String {
-        self.group_id.clone()
-    }
-
-    pub fn artifact_id(&self) -> String {
-        self.artifact_id.clone()
-    }
-
-    pub fn version(&self) -> Option<String> {
-        self.version.clone()
-    }
 }
 
-#[cfg(feature = "types")]
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MavenArtifactVersions {
-    pub group_id: String,
-    pub artifact_id: String,
-    pub versioning: MavenArtifactVersionVersioning,
+#[derive(Debug, Error)]
+pub enum MavenArtifactBuildError {
+    #[error("missing field: base_url. run with_base_url to fix")]
+    BaseURL,
+    #[error("missing field: group_id. run with_group_id to fix")]
+    GroupID,
+    #[error("missing field: artifact_id. run with_artifact_id to fix")]
+    ArtifactID,
 }
 
-#[cfg(feature = "types")]
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MavenArtifactVersionVersioning {
-    release: String,
-    latest: String,
-    last_updated: u64,
-    versions: MAVersioningVersions,
-}
+impl<T: ToString> MavenArtifactBuilder<T> {
+    pub fn with_base_url(mut self, base_url: T) -> Self {
+        self.base_url = Some(base_url);
 
-#[cfg(feature = "types")]
-impl MavenArtifactVersionVersioning {
-    pub fn release(&self) -> String {
-        self.release.clone()
+        self
     }
 
-    pub fn latest(&self) -> String {
-        self.latest.clone()
+    pub fn with_group_id(mut self, group_id: T) -> Self {
+        self.group_id = Some(group_id);
+
+        self
     }
 
-    pub fn last_updated(&self) -> u64 {
-        self.last_updated.clone()
+    pub fn with_artifact_id(mut self, artifact_id: T) -> Self {
+        self.artifact_id = Some(artifact_id);
+
+        self
     }
 
-    pub fn versions(&self) -> Vec<String> {
-        (&self.versions).into()
+    pub fn with_version(mut self, version: T) -> Self {
+        self.version = Some(version);
+
+        self
     }
-}
 
-#[cfg(feature = "types")]
-#[derive(Debug, Deserialize)]
-pub struct MAVersioningVersions {
-    version: Vec<String>,
-}
+    pub fn build(self) -> Result<MavenArtifact, MavenArtifactBuildError> {
+        let base_url = self
+            .base_url
+            .ok_or(MavenArtifactBuildError::BaseURL)
+            .map(|base_url| base_url.to_string())?;
+        let group_id = self
+            .group_id
+            .ok_or(MavenArtifactBuildError::GroupID)
+            .map(|group_id| group_id.to_string())?;
+        let artifact_id = self
+            .artifact_id
+            .ok_or(MavenArtifactBuildError::ArtifactID)
+            .map(|artifact_id| artifact_id.to_string())?;
+        let version = self.version.map(|version| version.to_string());
 
-#[cfg(feature = "types")]
-impl Into<Vec<String>> for MAVersioningVersions {
-    fn into(self) -> Vec<String> {
-        self.version
-    }
-}
-
-#[cfg(feature = "types")]
-impl Into<Vec<String>> for &MAVersioningVersions {
-    fn into(self) -> Vec<String> {
-        self.version.clone()
+        Ok(MavenArtifact {
+            base_url,
+            group_id,
+            artifact_id,
+            version,
+        })
     }
 }
