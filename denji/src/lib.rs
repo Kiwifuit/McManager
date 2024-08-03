@@ -1,14 +1,13 @@
 pub mod docker;
 pub mod shell;
 
-pub use docker::build_docker_image;
 pub use shell::{ServerSoftware, ServerSoftwareOptions};
 
 use std::process::Command;
 
 const DOCKERFILE: &str = include_str!("../res/Dockerfile");
 
-pub fn test_docker() -> bool {
+fn test_docker() -> bool {
     Command::new("docker").spawn().is_ok()
 }
 

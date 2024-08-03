@@ -1,9 +1,10 @@
 use anyhow::{Context, Result};
-use denji::{ServerSoftware, ServerSoftwareOptions};
 use humantime::format_duration;
-use log::{error, info};
+use log::info;
 use tempdir::TempDir;
 use tokio::task::spawn;
+
+use denji::{ServerSoftware, ServerSoftwareOptions};
 
 use std::sync::mpsc::channel;
 use std::time::Duration;

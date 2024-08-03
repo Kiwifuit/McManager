@@ -1,9 +1,12 @@
+use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
+use std::path::Path;
 use std::process::{Command, Stdio};
 use std::sync::mpsc::Sender;
 
 use anyhow::Context;
+use log::info;
 use log::{debug, error};
 use thiserror::Error;
 
@@ -16,18 +19,28 @@ pub enum DockerError {
     Channel(#[from] anyhow::Error),
 }
 
-// enum Status {
-//     Exited,
-//     Running,
-// }
-
-pub fn build_docker_image(
+pub(crate) fn build_docker_image<P: AsRef<Path>>(
     server_name: String,
     server_version: String,
     game_version: String,
+    build_dir: P,
     tx: Sender<String>,
 ) -> Result<String, DockerError> {
-    let (args, image_name) = build_docker_args(&server_name, &server_version, &game_version);
+    write_dockerfile(build_dir.as_ref())?;
+
+    let (args, image_name) = build_docker_args(
+        &server_name,
+        &server_version,
+        &game_version,
+        build_dir.as_ref(),
+    );
+
+    info!(
+        "building docker image at {} into {:?}",
+        build_dir.as_ref().display(),
+        image_name
+    );
+
     let mut docker = Command::new("docker")
         .args(args)
         .stdout(Stdio::piped())
@@ -62,17 +75,27 @@ pub fn build_docker_image(
     Ok(image_name)
 }
 
+fn write_dockerfile(build_dir: &Path) -> Result<usize, DockerError> {
+    let mut dockerfile = File::create(build_dir.join("Dockerfile"))?;
+    let dockerfile_content = crate::generate_dockerfile(17);
+
+    Ok(dockerfile.write(dockerfile_content.as_bytes())?)
+}
+
 fn build_docker_args(
     server_name: &String,
     server_version: &String,
     game_version: &String,
+    build_dir: &Path,
 ) -> (Vec<String>, String) {
     (
         vec![
             "build".to_string(),
             "-t".to_string(),
             build_image_name(server_name, server_version, game_version),
-            ".".to_string(),
+            "--progress".to_string(),
+            "rawjson".to_string(),
+            build_dir.to_string_lossy().to_string(),
         ],
         build_image_name(server_name, server_version, game_version),
     )
@@ -83,5 +106,5 @@ fn build_image_name(
     server_version: &String,
     game_version: &String,
 ) -> String {
-    format!("mcs/{}:{}-{}", server_name, game_version, server_version)
+    format!("mcs/{}-{}:{}", server_name, server_version, game_version)
 }

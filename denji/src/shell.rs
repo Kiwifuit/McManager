@@ -124,6 +124,8 @@ pub enum InstallError {
     MavenResolve(#[from] mar::RepositoryError),
     #[error("error while resolving maven artifact: {0}")]
     Http(#[from] reqwest::Error),
+    #[error("error while building docker image: {0}")]
+    DockerBuild(#[from] crate::docker::DockerError),
     #[error("{0}")]
     Contextual(#[from] anyhow::Error),
 }
@@ -134,6 +136,7 @@ pub struct ServerSoftwareOptions<P> {
     game_version: String,
     root_dir: PathBuf,
     install_dir: P,
+    with_docker: bool,
 }
 
 impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
@@ -143,6 +146,7 @@ impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
         game_version: T,
         root_dir: PathBuf,
         install_dir: P,
+        with_docker: bool,
     ) -> Self {
         Self {
             server_type,
@@ -150,6 +154,7 @@ impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
             game_version: game_version.to_string(),
             root_dir,
             install_dir,
+            with_docker,
         }
     }
 
@@ -203,11 +208,22 @@ impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
 
             // post install
             info!("post-install");
+            post::agree_eula(&install_dir)?;
             post::add_run_sh(&install_dir, &self.server_type)
                 .context("while preparing run script")?;
             post::write_user_jvm_args(&install_dir, "-Xms2G -Xmx8G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true").context("while preparing User JVM args")?;
         } else {
             error!("install exited with code {}", status_code);
+        }
+
+        if self.with_docker {
+            crate::docker::build_docker_image(
+                self.server_type.to_string().to_lowercase(),
+                self.software_version.clone(),
+                self.game_version.clone(),
+                &self.root_dir,
+                tx,
+            )?;
         }
 
         Ok(())

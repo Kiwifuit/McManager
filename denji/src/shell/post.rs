@@ -19,11 +19,17 @@ pub(super) fn add_run_sh<P: AsRef<Path>>(
     info!("writing initializer script at {:?}", filename.display());
     let mut lines = get_lines(&filename).unwrap_or_else(|e| {
         let selected_default = match server_type {
-            ServerSoftware::Fabric | ServerSoftware::Quilt => vec![format!(
-                "java -jar {}-server-launch.jar @user_jvm_args.txt \"$@\"",
-                server_type.to_string().to_lowercase()
-            )],
-            _ => vec!["java -jar server.jar @user_jvm_args.txt \"$@\"".to_string()],
+            ServerSoftware::Fabric | ServerSoftware::Quilt => vec![
+                "#!/usr/bin/env sh".to_string(),
+                format!(
+                    "java -jar {}-server-launch.jar @user_jvm_args.txt \"$@\"",
+                    server_type.to_string().to_lowercase()
+                ),
+            ],
+            _ => vec![
+                "#!/usr/bin/env sh".to_string(),
+                "java -jar server.jar @user_jvm_args.txt \"$@\"".to_string(),
+            ],
         };
         error!("failed to get lines: {}", e);
         warn!("run.sh opts will be defaulted to: {:?}", selected_default);
