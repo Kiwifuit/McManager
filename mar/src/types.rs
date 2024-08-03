@@ -34,31 +34,34 @@ impl FromStr for MavenArtifact {
     type Err = MavenArtifactParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.find(':') {
-            Some(3) => (),
-            Some(other) => return Err(MavenArtifactParseError::TooLittleSemiColons(other)),
-            None => return Err(MavenArtifactParseError::TooLittleSemiColons(0)),
+        match s.chars().filter(|c| *c == ':').count() {
+            0 => return Err(MavenArtifactParseError::TooLittleSemiColons(0)),
+            3 => (),
+            other => return Err(MavenArtifactParseError::TooLittleSemiColons(other)),
         };
 
-        let mut parts = s.split_terminator(':');
+        let mut parts = s.split_terminator(':').collect::<Vec<&str>>();
 
-        if parts.clone().count() < 3 {
+        if parts.len() < 3 {
             return Err(MavenArtifactParseError::NotEnoughComponents);
         }
 
-        let base_url = parts
-            .nth(0)
-            .ok_or(MavenArtifactParseError::Malformed)?
-            .to_string();
+        let base_url = format!(
+            "https://{}",
+            parts
+                .first()
+                .ok_or(MavenArtifactParseError::Malformed)?
+                .to_string()
+        );
         let group_id = parts
-            .nth(1)
+            .get(1)
             .ok_or(MavenArtifactParseError::Malformed)?
             .to_string();
         let artifact_id = parts
-            .nth(2)
+            .get(2)
             .ok_or(MavenArtifactParseError::Malformed)?
             .to_string();
-        let version = parts.nth(3).map(|v| v.to_string());
+        let version = parts.get(3).map(|v| v.to_string());
 
         Ok(Self {
             base_url,
@@ -111,10 +114,12 @@ impl<T: ToString> MavenArtifactBuilder<T> {
     }
 
     pub fn build(self) -> Result<MavenArtifact, MavenArtifactBuildError> {
-        let base_url = self
-            .base_url
-            .ok_or(MavenArtifactBuildError::BaseURL)
-            .map(|base_url| base_url.to_string())?;
+        let base_url = format!(
+            "https://{}",
+            self.base_url
+                .ok_or(MavenArtifactBuildError::BaseURL)
+                .map(|base_url| base_url.to_string())?
+        );
         let group_id = self
             .group_id
             .ok_or(MavenArtifactBuildError::GroupID)
@@ -131,5 +136,28 @@ impl<T: ToString> MavenArtifactBuilder<T> {
             artifact_id,
             version,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_artifact_parsing() {
+        // Assert that all of these are valid artifact strings
+        assert!([
+            "maven.minecraftforge.net:net.minecraftforge:forge:",
+            "maven.fabricmc.net:net.fabricmc:fabric-installer:",
+            "maven.quiltmc.org/repository/release:org.quiltm:quilt-installer:",
+            "maven.neoforged.net/releases:net.neoforged:neoforge:",
+            "repo.glowstone.net/content/repositories/snapshots:net.glowstone:glowstone:",
+        ]
+        .iter()
+        .map(|artifact| artifact.parse::<MavenArtifact>())
+        .inspect(|artifact| {
+            dbg!(artifact);
+        })
+        .all(|artifact: Result<_, _>| artifact.is_ok()));
     }
 }

@@ -3,5 +3,5 @@
   "lldb.showDisassembly": "never",
   "lldb.dereferencePointers": true,
   "lldb.consoleMode": "commands",
-  "rust-analyzer.check.command": "check"
+  // "rust-analyzer.check.command": "check"
 }

@@ -31,7 +31,7 @@ impl MavenArtifactVersionVersioning {
     }
 
     pub fn last_updated(&self) -> u64 {
-        self.last_updated.clone()
+        self.last_updated
     }
 
     pub fn versions(&self) -> Vec<String> {
@@ -46,15 +46,15 @@ pub struct MAVersioningVersions {
 }
 
 #[cfg(feature = "types")]
-impl Into<Vec<String>> for MAVersioningVersions {
-    fn into(self) -> Vec<String> {
-        self.version
+impl From<MAVersioningVersions> for Vec<String> {
+    fn from(value: MAVersioningVersions) -> Self {
+        value.version
     }
 }
 
 #[cfg(feature = "types")]
-impl Into<Vec<String>> for &MAVersioningVersions {
-    fn into(self) -> Vec<String> {
-        self.version.clone()
+impl From<&MAVersioningVersions> for Vec<String> {
+    fn from(value: &MAVersioningVersions) -> Self {
+        value.version.clone()
     }
 }
