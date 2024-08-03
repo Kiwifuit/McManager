@@ -213,9 +213,7 @@ mod tests {
 		}
 	}
 }"#;
-        let project = from_str(&raw);
-
-        dbg!(&project);
+        let project = from_str(raw);
         assert!(project.is_ok());
 
         let _project: HangarProject = project.unwrap();
@@ -2262,9 +2260,8 @@ mod tests {
 }
         "#;
 
-        let projects = from_str(&raw);
+        let projects = from_str(raw);
 
-        dbg!(&projects);
         assert!(projects.is_ok());
 
         let _projects: HangarProjects = projects.unwrap();

@@ -40,7 +40,7 @@ impl FromStr for MavenArtifact {
             other => return Err(MavenArtifactParseError::TooLittleSemiColons(other)),
         };
 
-        let mut parts = s.split_terminator(':').collect::<Vec<&str>>();
+        let parts = s.split_terminator(':').collect::<Vec<&str>>();
 
         if parts.len() < 3 {
             return Err(MavenArtifactParseError::NotEnoughComponents);
@@ -48,10 +48,7 @@ impl FromStr for MavenArtifact {
 
         let base_url = format!(
             "https://{}",
-            parts
-                .first()
-                .ok_or(MavenArtifactParseError::Malformed)?
-                .to_string()
+            parts.first().ok_or(MavenArtifactParseError::Malformed)?
         );
         let group_id = parts
             .get(1)
@@ -155,9 +152,6 @@ mod tests {
         ]
         .iter()
         .map(|artifact| artifact.parse::<MavenArtifact>())
-        .inspect(|artifact| {
-            dbg!(artifact);
-        })
         .all(|artifact: Result<_, _>| artifact.is_ok()));
     }
 }

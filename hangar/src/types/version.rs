@@ -241,7 +241,6 @@ mod tests {
         "#;
         let version = from_str(raw);
 
-        dbg!(&version);
         assert!(version.is_ok());
         let _version: HangarVersion = version.unwrap();
     }
@@ -846,7 +845,6 @@ mod tests {
 
         let versions = from_str(raw);
 
-        dbg!(&versions);
         assert!(versions.is_ok());
         let _versions: HangarVersions = versions.unwrap();
     }
