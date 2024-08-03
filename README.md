@@ -9,8 +9,6 @@
   - [ ] Curseforge
 - [x] Maven Artifact Resolver
 - [ ] Server backend architecture
-  - [ ] Docker image manager/runner
-  - [ ] Docker image builder
 - [ ] Aternos Clone
 
 # What happened?
