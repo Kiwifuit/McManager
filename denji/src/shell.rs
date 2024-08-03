@@ -159,7 +159,7 @@ impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
 
     pub async fn build(&self, tx: Sender<types::CommandOutput>) -> Result<(), InstallError> {
         info!(
-            "installing {}v{} for mc{} to {}",
+            "installing {} v{} for minecraft {} to {}",
             self.server_type.clone(),
             self.software_version,
             self.game_version,
