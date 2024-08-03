@@ -211,6 +211,8 @@ dependencies = [
  "log",
  "mar",
  "reqwest",
+ "serde",
+ "serde_json",
  "tempdir",
  "thiserror",
  "tokio",

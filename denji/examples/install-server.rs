@@ -37,7 +37,7 @@ async fn main() -> Result<()> {
                 break;
             }
             Ok(line) => {
-                info!("{}", line)
+                info!("{:?}", line)
             }
         }
     }

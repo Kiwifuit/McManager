@@ -1,7 +1,7 @@
 pub mod docker;
 pub mod shell;
 
-pub use shell::{ServerSoftware, ServerSoftwareOptions};
+pub use shell::{CommandOutput, ServerSoftware, ServerSoftwareOptions};
 
 use std::process::Command;
 

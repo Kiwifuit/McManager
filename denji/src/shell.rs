@@ -13,7 +13,9 @@ use std::process::{Command, Stdio};
 use std::sync::mpsc::Sender;
 
 mod post;
-pub use post::*;
+mod types;
+
+pub use types::*;
 
 #[derive(Debug, Clone)]
 pub enum ServerSoftware {
@@ -119,7 +121,7 @@ pub enum InstallError {
     #[error("i/o error: {0}")]
     Io(#[from] std::io::Error),
     #[error("error while sending data to main thread: {0}")]
-    MainThreadSender(#[from] std::sync::mpsc::SendError<String>),
+    MainThreadSender(#[from] std::sync::mpsc::SendError<CommandOutput>),
     #[error("error while resolving maven artifact: {0}")]
     MavenResolve(#[from] mar::RepositoryError),
     #[error("error while resolving maven artifact: {0}")]
@@ -158,7 +160,7 @@ impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
         }
     }
 
-    pub async fn build(&self, tx: Sender<String>) -> Result<(), InstallError> {
+    pub async fn build(&self, tx: Sender<types::CommandOutput>) -> Result<(), InstallError> {
         info!(
             "installing {}v{} for mc{} to {}",
             self.server_type.clone(),
@@ -198,7 +200,9 @@ impl<P: AsRef<Path>> ServerSoftwareOptions<P> {
             let stdout = BufReader::new(install_command.stdout.as_mut().unwrap());
 
             for line in stdout.lines() {
-                tx.send(line.unwrap_or_else(|e| format!("internal error: {}", e)))?;
+                tx.send(types::CommandOutput::Message(
+                    line.unwrap_or_else(|e| format!("internal error: {}", e)),
+                ))?;
             }
         }
 
