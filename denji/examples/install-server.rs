@@ -1,11 +1,10 @@
 use anyhow::{Context, Result};
-use denji::shell::DockerBuilderCommandOutput;
 use humantime::format_duration;
 use log::info;
 use tempdir::TempDir;
 use tokio::task::spawn;
 
-use denji::{CommandOutput, ServerSoftware, ServerSoftwareOptions};
+use denji::{ServerSoftware, ServerSoftwareOptions};
 
 use std::sync::mpsc::channel;
 use std::time::Duration;
@@ -36,16 +35,8 @@ async fn main() -> Result<()> {
             Err(_e) => {
                 break;
             }
-            Ok(CommandOutput::Message(line)) => {
+            Ok(line) => {
                 info!("{}", line)
-            }
-            Ok(CommandOutput::DockerImageBuilder(DockerBuilderCommandOutput {
-                vertexes,
-                statuses: _statuses,
-            })) => {
-                for vertex in vertexes {
-                    info!("{}", vertex.name);
-                }
             }
         }
     }
