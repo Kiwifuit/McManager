@@ -145,9 +145,9 @@ mod tests {
         // Assert that all of these are valid artifact strings
         assert!([
             "maven.minecraftforge.net:net.minecraftforge:forge:",
+            "maven.neoforged.net/releases:net.neoforged:neoforge:",
             "maven.fabricmc.net:net.fabricmc:fabric-installer:",
             "maven.quiltmc.org/repository/release:org.quiltm:quilt-installer:",
-            "maven.neoforged.net/releases:net.neoforged:neoforge:",
             "repo.glowstone.net/content/repositories/snapshots:net.glowstone:glowstone:",
         ]
         .iter()
