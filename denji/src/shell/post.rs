@@ -6,31 +6,19 @@ use std::path::{Path, PathBuf};
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 
-use super::ServerSoftware;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
 
-pub(super) fn add_run_sh<P: AsRef<Path>>(
+pub(super) fn add_run_sh<P: AsRef<Path>, S: super::ServerSoftwareMeta>(
     root_dir: P,
-    server_type: &ServerSoftware,
+    server_type: S,
 ) -> anyhow::Result<()> {
     let filename = root_dir.as_ref().join("run.sh");
 
     info!("writing initializer script at {:?}", filename.display());
     let mut lines = get_lines(&filename).unwrap_or_else(|e| {
-        let selected_default = match server_type {
-            ServerSoftware::Fabric | ServerSoftware::Quilt => vec![
-                "#!/usr/bin/env sh".to_string(),
-                format!(
-                    "java -jar {}-server-launch.jar @user_jvm_args.txt \"$@\"",
-                    server_type.to_string().to_lowercase()
-                ),
-            ],
-            _ => vec![
-                "#!/usr/bin/env sh".to_string(),
-                "java -jar server.jar @user_jvm_args.txt \"$@\"".to_string(),
-            ],
-        };
+        let selected_default = server_type.run_sh_content();
+
         error!("failed to get lines: {}", e);
         warn!("run.sh opts will be defaulted to: {:?}", selected_default);
 
@@ -38,7 +26,7 @@ pub(super) fn add_run_sh<P: AsRef<Path>>(
     });
 
     if let Some(line) = lines.last_mut() {
-        *line = get_modded_line(&line);
+        *line = get_modded_line(line);
     }
 
     // dunno what to name this, plus it looks really
@@ -46,6 +34,7 @@ pub(super) fn add_run_sh<P: AsRef<Path>>(
     let write_file_handle = File::options()
         .mode(0o755)
         .create(true)
+        .truncate(true)
         .write(true)
         .open(filename)
         .context("while creating run.sh file")?;
