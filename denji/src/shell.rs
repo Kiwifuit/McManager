@@ -53,6 +53,15 @@ pub struct MinecraftServer<S, I> {
 }
 
 impl<I: AsRef<Path>, S: ServerSoftwareMeta> MinecraftServer<S, I> {
+    pub fn new(server: S, server_version: String, game_version: String, root_dir: I) -> Self {
+        Self {
+            server,
+            server_version,
+            game_version,
+            root_dir,
+        }
+    }
+
     pub async fn build_server(&self, tx: Sender<String>) -> Result<(), ServerInstallError> {
         info!(
             "installing {} v{} for minecraft {} to {}",
