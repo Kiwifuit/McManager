@@ -1,5 +1,13 @@
 use mar::types::MavenArtifact;
-use std::{borrow::Cow, fmt::Display, path::Path};
+use std::ffi::OsStr;
+use std::fmt::Display;
+use std::path::Path;
+
+macro_rules! args {
+    ($ ( $arg:expr ),+ $(,)?) => {
+        vec![$($arg.as_ref(), )+]
+    }
+}
 
 pub enum ServerSoftware {
     Forge,
@@ -20,9 +28,9 @@ impl<I: AsRef<Path>, S: ServerSoftwareMeta> MinecraftServer<S, I> {}
 
 trait ServerSoftwareMeta: Display + Into<MavenArtifact> {
     fn artifact_name<V: Display>(&self, version: V) -> String;
-    fn installer_args<'a, I>(&self, installer_dir: I, game_version: String) -> Vec<Cow<'a, str>>
+    fn installer_args<'a, I>(&self, installer_dir: &'a I, game_version: &'a str) -> Vec<&'a OsStr>
     where
-        I: AsRef<Path> + 'a;
+        I: AsRef<OsStr> + 'a;
 }
 
 impl Display for ServerSoftware {
@@ -70,41 +78,29 @@ impl ServerSoftwareMeta for ServerSoftware {
         }
     }
 
-    fn installer_args<'a, I>(&self, install_dir: I, game_version: String) -> Vec<Cow<'a, str>>
+    fn installer_args<'a, I>(&self, install_dir: &'a I, game_version: &'a str) -> Vec<&'a OsStr>
     where
-        I: AsRef<Path> + 'a,
+        I: AsRef<OsStr> + 'a,
     {
-        // Massive hacky solution. I don't
-        // like it, I really don't, but
-        // Rust lowkey just had to be a
-        // bitch, huh
         match self {
-            Self::Forge => vec![
-                Cow::from("--installServer"),
-                Cow::from(install_dir.as_ref().to_string_lossy().to_string()),
+            Self::Forge => args!["--installServer", install_dir],
+            Self::Neoforge => args!["--installServer", install_dir],
+            Self::Quilt => args![
+                "install",
+                "server",
+                game_version,
+                "--install-dir",
+                install_dir,
+                "--create-scripts",
+                "--download-server"
             ],
-            Self::Neoforge => vec![
-                Cow::from("--installServer"),
-                Cow::from(install_dir.as_ref().to_string_lossy().to_string()),
-            ],
-            Self::Quilt => vec![
-                Cow::from("install"),
-                Cow::from("server"),
-                Cow::from(game_version),
-                Cow::from(format!(
-                    "--install-dir={}",
-                    install_dir.as_ref().to_string_lossy()
-                )),
-                Cow::from("--create-scripts"),
-                Cow::from("--download-server"),
-            ],
-            Self::Fabric => vec![
-                Cow::from("server"),
-                Cow::from("-dir"),
-                Cow::from(install_dir.as_ref().to_string_lossy().to_string()),
-                Cow::from("-mcversion"),
-                Cow::from(game_version),
-                Cow::from("-downloadMinecraft"),
+            Self::Fabric => args![
+                "server",
+                "-dir",
+                install_dir,
+                "-mcversion",
+                game_version,
+                "-downloadMinecraft",
             ],
             Self::Glowstone => todo!(), // TODO: Also this
         }
