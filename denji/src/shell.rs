@@ -95,7 +95,8 @@ trait ServerSoftwareMeta: Display + Into<MavenArtifact> + Copy {
     fn artifact_name<V: Display>(&self, version: V) -> String;
     fn installer_args<'a, I>(&self, installer_dir: &'a I, game_version: &'a str) -> Vec<&'a OsStr>
     where
-        I: AsRef<OsStr> + 'a;
+        I: AsRef<OsStr> + ?Sized + 'a;
+    fn run_sh_content(&self) -> Vec<String>;
 }
 
 impl Display for ServerSoftware {
@@ -168,6 +169,22 @@ impl ServerSoftwareMeta for ServerSoftware {
                 "-downloadMinecraft",
             ],
             Self::Glowstone => todo!(), // TODO: Also this
+        }
+    }
+
+    fn run_sh_content(&self) -> Vec<String> {
+        match self {
+            ServerSoftware::Fabric | ServerSoftware::Quilt => vec![
+                "#!/usr/bin/env sh".to_string(),
+                format!(
+                    "java -jar {}-server-launch.jar @user_jvm_args.txt \"$@\"",
+                    self.to_string()
+                ),
+            ],
+            _ => vec![
+                "#!/usr/bin/env sh".to_string(),
+                "java -jar server.jar @user_jvm_args.txt \"$@\"".to_string(),
+            ],
         }
     }
 }
