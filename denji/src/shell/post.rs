@@ -70,7 +70,7 @@ pub(super) fn write_user_jvm_args<T: ToString, P: AsRef<Path>>(
 }
 
 fn get_lines(filename: &PathBuf) -> anyhow::Result<Vec<String>> {
-    let read_file = BufReader::new(File::open(&filename).context("while reading run.sh lines")?);
+    let read_file = BufReader::new(File::open(filename).context("while reading run.sh lines")?);
     let lines: Vec<String> = read_file
         .lines()
         .collect::<Result<_, _>>()
