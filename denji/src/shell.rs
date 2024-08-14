@@ -1,7 +1,16 @@
+use anyhow::Context;
+use futures_util::StreamExt;
+use log::{error, info};
 use mar::types::MavenArtifact;
+use mar::{get_artifact, get_versions};
+use reqwest::get;
 use std::ffi::OsStr;
 use std::fmt::Display;
+use std::fs::File;
+use std::io::{BufWriter, Write};
 use std::path::Path;
+use std::sync::mpsc::Sender;
+use thiserror::Error;
 
 macro_rules! args {
     ($ ( $arg:expr ),+ $(,)?) => {
@@ -9,12 +18,25 @@ macro_rules! args {
     }
 }
 
+#[derive(Clone, Copy)]
 pub enum ServerSoftware {
     Forge,
     Neoforge,
     Fabric,
     Quilt,
     Glowstone,
+}
+
+#[derive(Debug, Error)]
+pub enum ServerInstallError {
+    #[error("error while trying to fetch artifact data: {0}")]
+    Artifact(#[from] mar::RepositoryError),
+    #[error("version for artifact not found: {0}")]
+    Version(String),
+    #[error("net error: {0}")]
+    Net(#[from] reqwest::Error),
+    #[error("{0}")]
+    Contextual(#[from] anyhow::Error),
 }
 
 pub struct MinecraftServer<S, I> {
@@ -24,9 +46,52 @@ pub struct MinecraftServer<S, I> {
     root_dir: I,
 }
 
-impl<I: AsRef<Path>, S: ServerSoftwareMeta> MinecraftServer<S, I> {}
+impl<I: AsRef<Path>, S: ServerSoftwareMeta> MinecraftServer<S, I> {
+    pub async fn build_server(&self, tx: Sender<String>) -> Result<(), ServerInstallError> {
+        Ok(())
+    }
 
-trait ServerSoftwareMeta: Display + Into<MavenArtifact> {
+    async fn download_server(&self) -> Result<(), ServerInstallError> {
+        let mut artifact: MavenArtifact = self.server.into();
+        let versions = get_versions(&artifact).await?;
+
+        if !versions
+            .versioning
+            .versions()
+            .contains(&self.server_version)
+        {
+            error!("unable to find version {}", self.server_version);
+
+            return Err(ServerInstallError::Version(
+                self.server.artifact_name(&self.server_version),
+            ));
+        }
+
+        info!("version {} resolved!", self.server_version);
+        artifact.set_version(self.server_version.clone());
+
+        let artifact_url =
+            get_artifact(&artifact, self.server.artifact_name(&self.server_version))?;
+
+        info!("resolved artifact to {:?}", artifact_url);
+        info!("starting download...");
+        let mut file = BufWriter::new(
+            File::create_new(self.root_dir.as_ref().join("installer.jar"))
+                .context("while creating file")?,
+        );
+        let mut stream = get(artifact_url).await?.bytes_stream();
+
+        let mut total = 0;
+        while let Some(chunk) = stream.next().await {
+            total += file.write(&chunk?).context("while downloading file")?;
+        }
+
+        info!("finished download (downloaded {} bytes)", total);
+        Ok(())
+    }
+}
+
+trait ServerSoftwareMeta: Display + Into<MavenArtifact> + Copy {
     fn artifact_name<V: Display>(&self, version: V) -> String;
     fn installer_args<'a, I>(&self, installer_dir: &'a I, game_version: &'a str) -> Vec<&'a OsStr>
     where
