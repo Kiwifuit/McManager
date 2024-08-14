@@ -1,16 +1,20 @@
 use anyhow::Context;
 use futures_util::StreamExt;
-use log::{error, info};
+use log::{debug, error, info};
 use mar::types::MavenArtifact;
 use mar::{get_artifact, get_versions};
 use reqwest::get;
 use std::ffi::OsStr;
 use std::fmt::Display;
-use std::fs::File;
-use std::io::{BufWriter, Write};
+use std::fs::{create_dir, File};
+use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::Path;
+use std::process::{Command, Stdio};
 use std::sync::mpsc::Sender;
 use thiserror::Error;
+
+mod post;
+pub use post::agree_eula;
 
 macro_rules! args {
     ($ ( $arg:expr ),+ $(,)?) => {
@@ -35,6 +39,8 @@ pub enum ServerInstallError {
     Version(String),
     #[error("net error: {0}")]
     Net(#[from] reqwest::Error),
+    #[error("i/o error: {0}")]
+    Io(#[from] std::io::Error),
     #[error("{0}")]
     Contextual(#[from] anyhow::Error),
 }
@@ -48,6 +54,64 @@ pub struct MinecraftServer<S, I> {
 
 impl<I: AsRef<Path>, S: ServerSoftwareMeta> MinecraftServer<S, I> {
     pub async fn build_server(&self, tx: Sender<String>) -> Result<(), ServerInstallError> {
+        info!(
+            "installing {} v{} for minecraft {} to {}",
+            self.server,
+            self.server_version,
+            self.game_version,
+            self.root_dir.as_ref().display()
+        );
+
+        self.download_server().await?;
+        info!("installing server");
+
+        let mut installer = Command::new("java");
+        let installer = installer
+            .args(vec![
+                "-jar",
+                self.root_dir
+                    .as_ref()
+                    .join("installer.jar")
+                    .to_str()
+                    .unwrap(),
+            ])
+            .args(
+                self.server
+                    .installer_args(self.root_dir.as_ref(), &self.game_version),
+            )
+            .stdout(Stdio::piped());
+
+        debug!("installing with args: {:?}", installer.get_args());
+
+        if !self.root_dir.as_ref().exists() {
+            error!(
+                "{} does not exist! creating dir",
+                self.root_dir.as_ref().display()
+            );
+            create_dir(&self.root_dir)?;
+        }
+
+        let mut installer = installer.spawn()?;
+        {
+            let stdout = BufReader::new(installer.stdout.as_mut().unwrap());
+
+            for line in stdout.lines() {
+                tx.send(line?)
+                    .context("while installing server (tx -> rx)")?;
+            }
+        }
+
+        let stat = installer.wait()?;
+        if !stat.success() {
+            error!("installer exited with code {}", stat);
+        }
+
+        info!("installer exited with code {}", stat);
+        info!("running post-install utilities");
+
+        post::add_run_sh(&self.root_dir, self.server)?;
+        post::write_user_jvm_args(&self.root_dir, "-Xms2G -Xmx8G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true")
+            .context("while writing user_jvm_args.txt")?;
         Ok(())
     }
 
@@ -91,7 +155,7 @@ impl<I: AsRef<Path>, S: ServerSoftwareMeta> MinecraftServer<S, I> {
     }
 }
 
-trait ServerSoftwareMeta: Display + Into<MavenArtifact> + Copy {
+pub trait ServerSoftwareMeta: Display + Into<MavenArtifact> + Copy {
     fn artifact_name<V: Display>(&self, version: V) -> String;
     fn installer_args<'a, I>(&self, installer_dir: &'a I, game_version: &'a str) -> Vec<&'a OsStr>
     where
@@ -146,7 +210,7 @@ impl ServerSoftwareMeta for ServerSoftware {
 
     fn installer_args<'a, I>(&self, install_dir: &'a I, game_version: &'a str) -> Vec<&'a OsStr>
     where
-        I: AsRef<OsStr> + 'a,
+        I: AsRef<OsStr> + ?Sized + 'a,
     {
         match self {
             Self::Forge => args!["--installServer", install_dir],
