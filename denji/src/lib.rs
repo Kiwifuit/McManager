@@ -1,3 +1,3 @@
-pub mod shell;
+mod shell;
 
-// pub use shell::{ServerSoftware, ServerSoftwareOptions};
+pub use shell::{agree_eula, MinecraftServer, ServerInstallError, ServerSoftware};
