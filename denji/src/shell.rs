@@ -53,11 +53,11 @@ pub struct MinecraftServer<S, I> {
 }
 
 impl<I: AsRef<Path>, S: ServerSoftwareMeta> MinecraftServer<S, I> {
-    pub fn new(server: S, server_version: String, game_version: String, root_dir: I) -> Self {
+    pub fn new<V: ToString>(server: S, server_version: V, game_version: V, root_dir: I) -> Self {
         Self {
             server,
-            server_version,
-            game_version,
+            server_version: server_version.to_string(),
+            game_version: game_version.to_string(),
             root_dir,
         }
     }
