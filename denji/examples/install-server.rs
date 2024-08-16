@@ -1,10 +1,10 @@
 use anyhow::{Context, Result};
 use humantime::format_duration;
-use log::info;
+use log::{info, warn};
 use tempdir::TempDir;
 use tokio::task::spawn;
 
-// use denji::{ServerSoftware, ServerSoftwareOptions};
+use denji::{MinecraftServer, ServerSoftware};
 
 use std::sync::mpsc::channel;
 use std::time::Duration;
@@ -16,37 +16,31 @@ async fn main() -> Result<()> {
     env_logger::init();
 
     let root_dir = TempDir::new("test.denji.serverInstall")?.into_path();
-    // let install_server_opts = ServerSoftwareOptions::with(
-    //     ServerSoftware::Forge,
-    //     "1.20.4-49.1.4",
-    //     "1.20.4",
-    //     root_dir,
-    //     "dockerfs",
-    // );
-    // let (tx, rx) = channel();
-    // let install_task = spawn(async move { install_server_opts.build(tx).await });
+    let server_installer =
+        MinecraftServer::new(ServerSoftware::Forge, "1.20.4-49.1.4", "1.20.4", root_dir);
+    let (tx, rx) = channel();
+    let server_build = spawn(async move { server_installer.build_server(tx).await });
 
-    // info!(
-    //     "started installer (timeout: {})",
-    //     format_duration(CHANNEL_TIMEOUT)
-    // );
-    // loop {
-    //     match rx.recv_timeout(CHANNEL_TIMEOUT) {
-    //         Err(_e) => {
-    //             break;
-    //         }
-    //         Ok(line) => {
-    //             info!("{}", line)
-    //         }
-    //     }
-    // }
+    info!(
+        "started installer (timeout: {})",
+        format_duration(CHANNEL_TIMEOUT)
+    );
 
-    // install_task
-    //     .await // Returns a Result<Result<(), InstallError>, JoinError>
-    //     .context("while tryinig to join install task")? // JoinError Context
-    //     .context("while installing minecraft server")?; // InstallError Context
+    loop {
+        match rx.recv_timeout(CHANNEL_TIMEOUT) {
+            Ok(line) => info!("{}", line),
+            Err(e) => {
+                warn!("{}. closing installer", e);
+                break;
+            }
+        }
+    }
 
-    // println!("you may test the channel and close this program when finished");
+    server_build
+        .await
+        .context("while trying to finish installer")?
+        .context("while trying to install server")?;
 
+    info!("you may test the channel and close this program when finished");
     Result::Ok(())
 }
