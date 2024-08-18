@@ -21,3 +21,11 @@ allow_attributes = "forbid"
 collection_is_never_read = "forbid"
 module_inception = "allow"
 to_string_trait_impl = "allow"
+
+# Defines a size-optimized profile for the WASM bundle in release mode
+[profile.wasm-release]
+inherits = "release"
+opt-level = 'z'
+lto = true
+codegen-units = 1
+panic = "abort"
