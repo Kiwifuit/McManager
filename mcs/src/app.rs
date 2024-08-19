@@ -2,8 +2,11 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 
-mod dashboard;
 mod components;
+mod dashboard;
+
+// Dashboard routes
+use dashboard::*;
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -23,6 +26,10 @@ pub fn App() -> impl IntoView {
             <main>
                 <Routes>
                     <Route path="" view=HomePage/>
+                    <Route path="/servers" view=ServerList>
+                        <Route path=":id" view=Dashboard>
+                        </Route>
+                    </Route>
                     <Route path="/*any" view=NotFound/>
                 </Routes>
             </main>

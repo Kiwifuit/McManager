@@ -1,7 +1,7 @@
 use leptos::*;
 
 #[component]
-fn OwnedServers(server_list: Vec<(String, String)>) -> impl IntoView {
+pub fn OwnedServers(server_list: Vec<(String, String)>) -> impl IntoView {
     view! {
         <ul>
             {
