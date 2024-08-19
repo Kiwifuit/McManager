@@ -3,6 +3,7 @@ use leptos_meta::*;
 use leptos_router::*;
 
 mod dashboard;
+mod components;
 
 #[component]
 pub fn App() -> impl IntoView {
