@@ -111,12 +111,10 @@ impl<T: ToString> MavenArtifactBuilder<T> {
     }
 
     pub fn build(self) -> Result<MavenArtifact, MavenArtifactBuildError> {
-        let base_url = format!(
-            "https://{}",
-            self.base_url
-                .ok_or(MavenArtifactBuildError::BaseURL)
-                .map(|base_url| base_url.to_string())?
-        );
+        let base_url = self
+            .base_url
+            .ok_or(MavenArtifactBuildError::BaseURL)
+            .map(|base_url| base_url.to_string())?;
         let group_id = self
             .group_id
             .ok_or(MavenArtifactBuildError::GroupID)
