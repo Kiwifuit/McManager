@@ -1,4 +1,4 @@
-name: Clippy code lint
+name: Clippy
 # didnt write this btw 🤡
 
 on:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   clippy:
-    name: Run rust-clippy analyzing
+    name: Code Lint
     runs-on: ubuntu-latest
     permissions:
       contents: read
