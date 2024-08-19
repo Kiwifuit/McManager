@@ -1,0 +1,32 @@
+name: Clippy code lint
+# didnt write this btw 🤡
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  clippy:
+    name: Run rust-clippy analyzing
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1 #@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          components: clippy
+          override: true
+
+      - name: Run rust-clippy
+        run:
+          cargo clippy
+          --all-features
+          --message-format=json
+
