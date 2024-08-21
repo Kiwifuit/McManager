@@ -1,12 +1,14 @@
 #[cfg(feature = "types")]
 use serde::Deserialize;
 
+use std::rc::Rc;
+
 #[cfg(feature = "types")]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MavenArtifactVersions {
-    pub group_id: String,
-    pub artifact_id: String,
+    pub group_id: Rc<str>,
+    pub artifact_id: Rc<str>,
     pub versioning: MavenArtifactVersionVersioning,
 }
 
@@ -14,47 +16,33 @@ pub struct MavenArtifactVersions {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MavenArtifactVersionVersioning {
-    release: String,
-    latest: String,
+    release: Rc<str>,
+    latest: Rc<str>,
     last_updated: u64,
     versions: MAVersioningVersions,
 }
 
 #[cfg(feature = "types")]
 impl MavenArtifactVersionVersioning {
-    pub fn release(&self) -> String {
-        self.release.clone()
+    pub fn release(&self) -> &str {
+        &self.release
     }
 
-    pub fn latest(&self) -> String {
-        self.latest.clone()
+    pub fn latest(&self) -> &str {
+        &self.latest
     }
 
     pub fn last_updated(&self) -> u64 {
         self.last_updated
     }
 
-    pub fn versions(&self) -> Vec<String> {
-        (&self.versions).into()
+    pub fn versions(&self) -> Rc<Vec<Rc<str>>> {
+        self.versions.version.clone()
     }
 }
 
 #[cfg(feature = "types")]
 #[derive(Debug, Deserialize)]
 pub struct MAVersioningVersions {
-    version: Vec<String>,
-}
-
-#[cfg(feature = "types")]
-impl From<MAVersioningVersions> for Vec<String> {
-    fn from(value: MAVersioningVersions) -> Self {
-        value.version
-    }
-}
-
-#[cfg(feature = "types")]
-impl From<&MAVersioningVersions> for Vec<String> {
-    fn from(value: &MAVersioningVersions) -> Self {
-        value.version.clone()
-    }
+    version: Rc<Vec<Rc<str>>>,
 }
