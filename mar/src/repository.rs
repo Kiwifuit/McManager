@@ -100,9 +100,10 @@ mod tests {
             .build()
             .unwrap();
 
-        let selected_version = get_versions(&artifact).await.unwrap().versioning.latest();
+        let versions_list = get_versions(&artifact).await.unwrap();
+        let selected_version = versions_list.versioning.latest();
 
-        artifact.set_version(&selected_version);
+        artifact.set_version(selected_version);
         let artifact_name = format!("forge-{}-installer.jar", selected_version);
         let expected_artifact_url = format!(
             "https://maven.minecraftforge.net/net/minecraftforge/forge/{0}/forge-{0}-installer.jar",
