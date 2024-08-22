@@ -11,6 +11,7 @@ use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::Path;
 use std::process::{Command, Stdio};
 use std::sync::mpsc::Sender;
+use std::sync::Arc;
 use thiserror::Error;
 
 mod post;
@@ -47,8 +48,8 @@ pub enum ServerInstallError {
 
 pub struct MinecraftServer<S, I> {
     server: S,
-    server_version: String,
-    game_version: String,
+    server_version: Arc<str>,
+    game_version: Arc<str>,
     root_dir: I,
 }
 
@@ -56,8 +57,8 @@ impl<I: AsRef<Path>, S: ServerSoftwareMeta> MinecraftServer<S, I> {
     pub fn new<V: ToString>(server: S, server_version: V, game_version: V, root_dir: I) -> Self {
         Self {
             server,
-            server_version: server_version.to_string(),
-            game_version: game_version.to_string(),
+            server_version: server_version.to_string().into(),
+            game_version: game_version.to_string().into(),
             root_dir,
         }
     }
@@ -131,12 +132,12 @@ impl<I: AsRef<Path>, S: ServerSoftwareMeta> MinecraftServer<S, I> {
         if !versions
             .versioning
             .versions()
-            .contains(&self.server_version)
+            .contains(&self.server_version.clone())
         {
             error!("unable to find version {}", self.server_version);
 
             return Err(ServerInstallError::Version(
-                self.server.artifact_name(&self.server_version),
+                self.server.artifact_name(self.server_version.clone()),
             ));
         }
 
