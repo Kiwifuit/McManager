@@ -1,14 +1,14 @@
 #[cfg(feature = "types")]
 use serde::Deserialize;
 
-use std::rc::Rc;
+use std::sync::Arc;
 
 #[cfg(feature = "types")]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MavenArtifactVersions {
-    pub group_id: Rc<str>,
-    pub artifact_id: Rc<str>,
+    pub group_id: Arc<str>,
+    pub artifact_id: Arc<str>,
     pub versioning: MavenArtifactVersionVersioning,
 }
 
@@ -16,8 +16,8 @@ pub struct MavenArtifactVersions {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MavenArtifactVersionVersioning {
-    release: Rc<str>,
-    latest: Rc<str>,
+    release: Arc<str>,
+    latest: Arc<str>,
     last_updated: u64,
     versions: MAVersioningVersions,
 }
@@ -36,7 +36,7 @@ impl MavenArtifactVersionVersioning {
         self.last_updated
     }
 
-    pub fn versions(&self) -> Rc<Vec<Rc<str>>> {
+    pub fn versions(&self) -> Arc<[Arc<str>]> {
         self.versions.version.clone()
     }
 }
@@ -44,5 +44,5 @@ impl MavenArtifactVersionVersioning {
 #[cfg(feature = "types")]
 #[derive(Debug, Deserialize)]
 pub struct MAVersioningVersions {
-    version: Rc<Vec<Rc<str>>>,
+    version: Arc<[Arc<str>]>,
 }
