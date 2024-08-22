@@ -2,6 +2,8 @@ use super::GenericPagination;
 use crate::types::HangarPlatform;
 use serde::Serialize;
 
+use std::rc::Rc;
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct VersionQuery {
@@ -9,8 +11,8 @@ pub struct VersionQuery {
     pub(crate) pagination: GenericPagination,
     pub(crate) include_hidden_channels: bool,
     pub(crate) platform: HangarPlatform,
-    #[serde(skip_serializing_if = "String::is_empty")]
-    pub(crate) platform_version: String,
+    #[serde(skip_serializing_if = "str::is_empty")]
+    pub(crate) platform_version: Rc<str>,
 }
 
 #[derive(Debug, Default)]
@@ -18,7 +20,7 @@ pub struct VersionQueryBuilder {
     pagination: Option<GenericPagination>,
     include_hidden_channels: Option<bool>,
     platform: Option<HangarPlatform>,
-    platform_version: Option<String>,
+    platform_version: Option<Rc<str>>,
 }
 
 impl VersionQueryBuilder {
@@ -40,7 +42,7 @@ impl VersionQueryBuilder {
         self
     }
 
-    pub fn platform_version(mut self, platform_version: String) -> Self {
+    pub fn platform_version(mut self, platform_version: Rc<str>) -> Self {
         self.platform_version = Some(platform_version);
 
         self

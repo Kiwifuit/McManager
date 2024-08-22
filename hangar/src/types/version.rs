@@ -1,6 +1,7 @@
 use super::{DateTime, HangarPlatform, HangarVisibility};
 use details::*;
 use serde::Deserialize;
+use std::rc::Rc;
 
 mod details;
 mod traits;
@@ -22,10 +23,10 @@ pub struct HangarVersionsPagination {
 #[serde(rename_all = "camelCase")]
 pub struct HangarVersion {
     pub created_at: DateTime,
-    pub name: String,
+    pub name: Rc<str>,
     pub visibility: HangarVisibility,
-    pub description: String,
-    pub author: String,
+    pub description: Rc<str>,
+    pub author: Rc<str>,
     #[serde(deserialize_with = "traits::deserialize_kv")]
     pub downloads: Vec<HangarVersionDownload>,
     #[serde(deserialize_with = "traits::deserialize_kv")]
@@ -58,15 +59,15 @@ impl traits::KeyValueType for HangarVersionDownload {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HangarVersionPluginDependencies {
-    pub name: String,
+    pub name: Rc<str>,
 
     #[serde(flatten)]
-    pub details: Vec<HPPluginDependencyDetails>,
+    pub details: Rc<[HPPluginDependencyDetails]>,
 }
 
 impl traits::KeyValueType for HangarVersionPluginDependencies {
-    type Key = String;
-    type Value = Vec<HPPluginDependencyDetails>;
+    type Key = Rc<str>;
+    type Value = Rc<[HPPluginDependencyDetails]>;
 
     fn init(key: Self::Key, value: Self::Value) -> Self {
         Self {
@@ -80,12 +81,12 @@ impl traits::KeyValueType for HangarVersionPluginDependencies {
 #[serde(rename_all = "camelCase")]
 pub struct HangarVersionPlatformDependencies {
     pub platform: HangarPlatform,
-    pub version: Vec<String>,
+    pub version: Vec<Rc<str>>,
 }
 
 impl traits::KeyValueType for HangarVersionPlatformDependencies {
     type Key = HangarPlatform;
-    type Value = Vec<String>;
+    type Value = Vec<Rc<str>>;
 
     fn init(key: Self::Key, value: Self::Value) -> Self {
         Self {
