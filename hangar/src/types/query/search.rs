@@ -2,6 +2,8 @@ use super::GenericPagination;
 use crate::types::{HangarPlatform, HangarTags};
 use serde::Serialize;
 
+use std::rc::Rc;
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SearchQuery {
@@ -9,17 +11,17 @@ pub struct SearchQuery {
     #[serde(flatten)]
     pub(crate) pagination: GenericPagination,
     pub(crate) sort: SortBy,
-    #[serde(skip_serializing_if = "String::is_empty")]
-    pub(crate) category: String,
+    #[serde(skip_serializing_if = "str::is_empty")]
+    pub(crate) category: Rc<str>,
     pub(crate) platform: HangarPlatform,
-    #[serde(skip_serializing_if = "String::is_empty")]
-    pub(crate) owner: String,
-    #[serde(skip_serializing_if = "String::is_empty")]
-    pub(crate) query: String,
-    #[serde(skip_serializing_if = "String::is_empty")]
-    pub(crate) license: String,
-    #[serde(skip_serializing_if = "String::is_empty")]
-    pub(crate) version: String,
+    #[serde(skip_serializing_if = "str::is_empty")]
+    pub(crate) owner: Rc<str>,
+    #[serde(skip_serializing_if = "str::is_empty")]
+    pub(crate) query: Rc<str>,
+    #[serde(skip_serializing_if = "str::is_empty")]
+    pub(crate) license: Rc<str>,
+    #[serde(skip_serializing_if = "str::is_empty")]
+    pub(crate) version: Rc<str>,
     #[serde(skip_serializing_if = "HangarTags::is_empty")]
     pub(crate) tag: HangarTags,
 }
@@ -43,12 +45,12 @@ pub struct SearchQueryBuilder {
     prioritize_exact_match: Option<bool>,
     pagination: Option<GenericPagination>,
     sort: Option<SortBy>,
-    category: Option<String>,
+    category: Option<Rc<str>>,
     platform: Option<HangarPlatform>,
-    owner: Option<String>,
-    query: Option<String>,
-    license: Option<String>,
-    version: Option<String>,
+    owner: Option<Rc<str>>,
+    query: Option<Rc<str>>,
+    license: Option<Rc<str>>,
+    version: Option<Rc<str>>,
     tag: Option<HangarTags>,
 }
 
@@ -72,37 +74,37 @@ impl SearchQueryBuilder {
     }
 
     pub fn category<T: ToString>(mut self, category: T) -> Self {
-        self.category = Some(category.to_string());
+        self.category = Some(Rc::from(category.to_string().into_boxed_str()));
 
         self
     }
 
-    pub fn platform<T: ToString>(mut self, platform: HangarPlatform) -> Self {
+    pub fn platform(mut self, platform: HangarPlatform) -> Self {
         self.platform = Some(platform);
 
         self
     }
 
     pub fn owner<T: ToString>(mut self, owner: T) -> Self {
-        self.owner = Some(owner.to_string());
+        self.owner = Some(Rc::from(owner.to_string().into_boxed_str()));
 
         self
     }
 
     pub fn query<T: ToString>(mut self, query: T) -> Self {
-        self.query = Some(query.to_string());
+        self.query = Some(Rc::from(query.to_string().into_boxed_str()));
 
         self
     }
 
     pub fn license<T: ToString>(mut self, license: T) -> Self {
-        self.license = Some(license.to_string());
+        self.license = Some(Rc::from(license.to_string().into_boxed_str()));
 
         self
     }
 
     pub fn version<T: ToString>(mut self, version: T) -> Self {
-        self.version = Some(version.to_string());
+        self.version = Some(Rc::from(version.to_string().into_boxed_str()));
 
         self
     }
