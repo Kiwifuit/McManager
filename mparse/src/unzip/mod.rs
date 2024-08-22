@@ -57,11 +57,13 @@ pub fn get_modpack_manifest<F: AsRef<Path>>(file: &F) -> Result<ModpackMetadata,
     Ok(ModpackMetadata { loader, raw })
 }
 
-pub fn unzip_modpack_to<Fz: AsRef<Path>, Fd: AsRef<Path>, M: ModpackProviderMetadata>(
-    zipfile: Fz,
-    dir: &Fd,
-    manifest: &M,
-) -> Result<(), UnzipError> {
+pub fn unzip_modpack_to<Fz, Fd, M>(zipfile: Fz, dir: &Fd, manifest: &M) -> Result<(), UnzipError>
+where
+    Fz: AsRef<Path>,
+    Fd: AsRef<Path>,
+    M: ModpackProviderMetadata,
+    <M as ModpackProviderMetadata>::Out: ToString,
+{
     let zipfile = File::open(zipfile)?;
     let mut archive = ZipArchive::new(zipfile)?;
     let overrides_dir = manifest.overrides_dir();
@@ -79,7 +81,7 @@ pub fn unzip_modpack_to<Fz: AsRef<Path>, Fd: AsRef<Path>, M: ModpackProviderMeta
 
         let outpath = absolute(dir.as_ref().join(&arcfile))?;
 
-        if !infile.name().starts_with(overrides_dir) {
+        if !infile.name().starts_with(&overrides_dir.to_string()) {
             continue;
         }
 
