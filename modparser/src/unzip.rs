@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+use std::rc::Rc;
 
 use log::{debug, error, info};
 use thiserror::Error;
@@ -11,7 +12,7 @@ const FABRIC_META: &str = "fabric.mod.json";
 
 pub struct ModMeta {
     pub loader: ModLoader,
-    pub raw: String,
+    pub raw: Rc<str>,
 }
 
 pub enum ModLoader {
@@ -62,7 +63,10 @@ pub fn grab_meta_file<F: AsRef<Path>>(file: F) -> Result<ModMeta, UnzipError> {
     let len = file.read_to_string(&mut raw)?;
     debug!("Read {} bytes to buffer", len);
 
-    Ok(ModMeta { loader, raw })
+    Ok(ModMeta {
+        loader,
+        raw: Rc::from(raw.into_boxed_str()),
+    })
 }
 
 #[cfg(test)]
@@ -71,7 +75,7 @@ mod tests {
 
     #[test]
     fn meta_get_forge() {
-        let file = "samples/forge/tisadvanced-1.19.2-0.3.0.jar";
+        let file = "samples/forge/architectury-6.6.92-forge.jar";
         let res = grab_meta_file(file);
 
         assert!(res.is_ok());
@@ -89,7 +93,7 @@ mod tests {
 
     #[test]
     fn meta_readable() {
-        let forge_mod = grab_meta_file("samples/forge/tisadvanced-1.19.2-0.3.0.jar");
+        let forge_mod = grab_meta_file("samples/forge/architectury-6.6.92-forge.jar");
         let fabric_mod = grab_meta_file("samples/fabric/antique-atlas-2.5.0+1.20.jar");
 
         assert!(forge_mod.is_ok());

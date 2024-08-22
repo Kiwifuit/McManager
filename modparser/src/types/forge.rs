@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::rc::Rc;
 use std::str::FromStr;
 
 use serde::de::{Deserializer, MapAccess, Visitor};
@@ -9,34 +10,60 @@ use thiserror::Error;
 #[derive(Deserialize, Debug)]
 pub struct ForgeMod {
     #[serde(rename = "modLoader")]
-    pub mod_loader: String,
+    pub mod_loader: Rc<str>,
     #[serde(rename = "loaderVersion")]
     pub loader_version: ForgeModVersion,
-    pub license: String,
+    pub license: Rc<str>,
     #[serde(rename = "issueTrackerURL")]
-    pub issue_tracker: Option<String>,
+    pub issue_tracker: Option<Rc<str>>,
     #[serde(rename = "displayURL")]
-    pub homepage_url: Option<String>,
-    pub mods: Vec<ForgeModMetadata>,
-    pub dependencies: Option<HashMap<String, Vec<ForgeModDependency>>>,
+    pub homepage_url: Option<Rc<str>>,
+    pub mods: Rc<[ForgeModMetadata]>,
+    pub dependencies: Option<HashMap<Rc<str>, Rc<[ForgeModDependency]>>>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct ForgeModMetadata {
     #[serde(rename = "modId")]
-    pub id: String,
-    pub version: String,
+    pub id: Rc<str>,
+    pub version: Rc<str>,
     #[serde(rename = "displayName")]
-    pub display_name: String,
+    pub display_name: Rc<str>,
     pub authors: Option<ForgeModAuthors>,
-    pub credits: Option<String>,
-    pub description: String,
+    pub credits: Option<Rc<str>>,
+    pub description: Rc<str>,
     #[serde(rename = "updateJSONURL")]
-    pub update_url: Option<String>,
+    pub update_url: Option<Rc<str>>,
     #[serde(rename = "displayURL")]
-    pub homepage_url: Option<String>,
+    pub homepage_url: Option<Rc<str>>,
     #[serde(rename = "logoFile")]
     pub logo: Option<PathBuf>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ForgeModDependency {
+    #[serde(rename = "modId")]
+    pub id: Rc<str>,
+    // pub version: ModVersion,
+    pub mandatory: bool,
+    #[serde(rename = "versionRange")]
+    pub version_range: ForgeModVersion,
+    pub ordering: Option<Rc<str>>,
+    pub side: Rc<str>,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct ModSemver {
+    pub major: Option<u32>,
+    pub minor: Option<u32>,
+    pub patch: Option<u32>,
+}
+
+#[derive(Debug)]
+pub struct ModVersionRange {
+    pub from: ModSemver,
+    pub to: Option<ModSemver>,
+    pub mode: ModVersionRangeMode,
 }
 
 #[derive(Debug, Deserialize)]
@@ -105,25 +132,6 @@ impl<'de> Deserialize<'de> for ForgeModVersion {
     }
 }
 
-#[derive(Deserialize, Debug)]
-pub struct ForgeModDependency {
-    #[serde(rename = "modId")]
-    pub id: String,
-    // pub version: ModVersion,
-    pub mandatory: bool,
-    #[serde(rename = "versionRange")]
-    pub version_range: ForgeModVersion,
-    pub ordering: Option<String>,
-    pub side: String,
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub struct ModSemver {
-    pub major: Option<u32>,
-    pub minor: Option<u32>,
-    pub patch: Option<u32>,
-}
-
 impl<'de> Deserialize<'de> for ModSemver {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -160,13 +168,6 @@ impl FromStr for ModSemver {
 pub enum ModVersionParseError {
     #[error("error while parsing version: {0}")]
     Parse(#[from] std::num::ParseIntError),
-}
-
-#[derive(Debug)]
-pub struct ModVersionRange {
-    pub from: ModSemver,
-    pub to: Option<ModSemver>,
-    pub mode: ModVersionRangeMode,
 }
 
 impl<'de> Deserialize<'de> for ModVersionRange {
@@ -499,10 +500,9 @@ mod tests {
             }
 
             let mod_meta = from_str::<ForgeMod>(
-                grab_meta_file(file.path())
+                &grab_meta_file(file.path())
                     .expect("expected meta file to be grabbed")
-                    .raw
-                    .as_str(),
+                    .raw,
             );
 
             assert!(mod_meta.is_ok());
