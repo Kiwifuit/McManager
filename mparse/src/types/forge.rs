@@ -1,22 +1,24 @@
 use super::ModpackProviderMetadata;
 use serde::Deserialize;
-
+use std::rc::Rc;
 #[derive(Debug, Deserialize)]
 pub struct ForgeModpack {
     pub minecraft: ModpackLoaderMeta,
-    pub name: String,
-    pub version: String,
-    pub author: String,
-    pub files: Vec<ModpackFiles>,
-    overrides: String,
+    pub name: Rc<str>,
+    pub version: Rc<str>,
+    pub author: Rc<str>,
+    pub files: Rc<[ModpackFiles]>,
+    overrides: Rc<str>,
 }
 
 impl ModpackProviderMetadata for ForgeModpack {
-    fn overrides_dir(&self) -> &str {
-        &self.overrides
+    type Out = Rc<str>;
+
+    fn overrides_dir(&self) -> Self::Out {
+        self.overrides.clone()
     }
 
-    fn modpack_name(&self) -> String {
+    fn modpack_name(&self) -> Self::Out {
         self.name.clone()
     }
 }
@@ -24,13 +26,13 @@ impl ModpackProviderMetadata for ForgeModpack {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ModpackLoaderMeta {
-    pub version: String,
+    pub version: Rc<str>,
     pub mod_loaders: Vec<ModpackLoaderVersion>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ModpackLoaderVersion {
-    pub id: String,
+    pub id: Rc<str>,
     pub primary: bool,
 }
 

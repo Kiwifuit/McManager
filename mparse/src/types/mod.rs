@@ -12,6 +12,8 @@ pub enum ModpackProvider {
 }
 
 pub trait ModpackProviderMetadata {
-    fn overrides_dir(&self) -> &str;
-    fn modpack_name(&self) -> String;
+    type Out;
+
+    fn overrides_dir(&self) -> Self::Out;
+    fn modpack_name(&self) -> Self::Out;
 }
