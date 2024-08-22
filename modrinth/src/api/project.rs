@@ -73,7 +73,7 @@ pub async fn search_project(
 ///     let res = search_project(&client, &query).await.unwrap();
 ///
 ///     let res = res.hits.first().unwrap();
-///     assert_eq!(res.project_id, "5yJ5IDKm"); // https://modrinth.com/mod/kontraption
+///     assert_eq!(res.project_id, "5yJ5IDKm".into()); // https://modrinth.com/mod/kontraption
 ///     assert_eq!(res.project_type, ProjectType::Mod);
 ///
 ///     let project = get_project(&client, res).await;
@@ -82,7 +82,7 @@ pub async fn search_project(
 ///
 ///     let project = project.unwrap();
 ///
-///     assert_eq!(project.id, "5yJ5IDKm");
+///     assert_eq!(project.id, "5yJ5IDKm".into());
 ///     assert_eq!(project.project_type, ProjectType::Mod);
 /// }
 /// ```
@@ -144,7 +144,7 @@ mod test {
         let res = search_project(&client, &query).await.unwrap();
 
         let res = res.hits.first().unwrap();
-        assert_eq!(res.project_id, "5yJ5IDKm"); // https://modrinth.com/mod/kontraption
+        assert_eq!(res.project_id, "5yJ5IDKm".into()); // https://modrinth.com/mod/kontraption
         assert_eq!(res.project_type, ProjectType::Mod);
 
         let project = get_project(&client, res).await;
@@ -153,7 +153,7 @@ mod test {
 
         let project = project.unwrap();
 
-        assert_eq!(project.id, "5yJ5IDKm");
+        assert_eq!(project.id, "5yJ5IDKm".into());
         assert_eq!(project.project_type, ProjectType::Mod);
     }
 }

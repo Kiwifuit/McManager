@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use std::rc::Rc;
 
 use crate::Loader;
 
@@ -9,29 +10,29 @@ use crate::Loader;
 /// *been copied over from [Modrinth's documentation](https://docs.modrinth.com/#tag/version_model)*
 pub struct ModrinthProjectVersion {
     /// The name of this version
-    pub name: String,
+    pub name: Rc<str>,
     /// The version number. Ideally will follow semantic versioning
-    pub version_number: String,
+    pub version_number: Rc<str>,
     /// The changelog for this version
-    pub changelog: Option<String>,
+    pub changelog: Option<Rc<str>>,
     /// A list of specific versions of projects that this version depends on
     pub dependencies: Option<Vec<VersionDependency>>,
     /// The release channel for this version
-    pub game_versions: Vec<String>,
+    pub game_versions: Vec<Rc<str>>,
     /// A list of versions of Minecraft that this version supports
     pub version_type: VersionType,
     /// The mod loaders that this version supports
     pub loaders: Option<Vec<Loader>>,
     /// Whether the version is featured or not
     pub featured: bool,
-    /// The ID of the version, encoded as a base62 string
-    pub id: String,
+    /// The ID of the version, encoded as a base62 Rc<str>
+    pub id: Rc<str>,
     /// The ID of the project this version is for
-    pub project_id: String,
+    pub project_id: Rc<str>,
     /// The ID of the author who published this version
-    pub author_id: String,
+    pub author_id: Rc<str>,
     /// The date this version has been published
-    pub date_published: String,
+    pub date_published: Rc<str>,
     /// The number of times this version has been downloaded
     pub downloads: usize,
     /// A list of files available for download for this version
@@ -76,22 +77,24 @@ impl VersionDependency {
 /// Represents a unresolved dependency of a `ModrinthProjectVersion`
 pub struct UnresolvedVersionDependency {
     /// The version id of the unresolved dependency
-    pub version_id: Option<String>,
+    pub version_id: Option<Rc<str>>,
     /// The project id of the unresolved dependency
-    pub project_id: Option<String>,
+    pub project_id: Option<Rc<str>>,
     /// The file name of the unresolved dependency
-    pub file_name: Option<String>,
+    pub file_name: Option<Rc<str>>,
     /// The requirement type (Required, Optional, etc.) of the unresolved dependency
     pub dependency_type: DependencyType,
 }
 
 impl super::ModrinthProjectMeta for UnresolvedVersionDependency {
-    fn project_id(&self) -> Option<&String> {
-        self.project_id.as_ref()
+    type Id = Rc<str>;
+
+    fn project_id(&self) -> Option<Self::Id> {
+        self.project_id.clone()
     }
 
-    fn version_id(&self) -> Option<&String> {
-        self.version_id.as_ref()
+    fn version_id(&self) -> Option<Self::Id> {
+        self.version_id.clone()
     }
 }
 
@@ -126,9 +129,9 @@ pub struct VersionFile {
     /// Hashes of the file provided by Modrinth
     pub hashes: VersionFileHashes,
     /// URL pointing to the resource to download
-    pub url: String,
+    pub url: Rc<str>,
     /// Name of the file
-    pub filename: String,
+    pub filename: Rc<str>,
     /// Is the file a primary file
     pub primary: bool,
     /// Size of the file
@@ -140,9 +143,9 @@ pub struct VersionFile {
 #[derive(Debug, Deserialize, PartialEq, Eq)]
 pub struct VersionFileHashes {
     /// SHA512 hash of the file
-    pub sha512: String,
+    pub sha512: Rc<str>,
     /// SHA1 hash of the file
-    pub sha1: String,
+    pub sha1: Rc<str>,
 }
 
 #[derive(Debug, Deserialize, PartialEq, Eq)]

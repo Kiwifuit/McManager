@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use std::rc::Rc;
 
 use super::{Loader, ModRequirement, ProjectType};
 
@@ -10,64 +11,66 @@ use super::{Loader, ModRequirement, ProjectType};
 #[derive(Debug, Deserialize)]
 pub struct ModrinthProject {
     /// The slug of a project, used for vanity URLs. Regex: `^[\w!@$()`.+,"\-']{3,64}$`
-    pub slug: String,
+    pub slug: Rc<str>,
     /// The title or name of the project
-    pub title: String,
+    pub title: Rc<str>,
     /// A short description of the project
-    pub description: String,
+    pub description: Rc<str>,
     /// A list of the categories that the project has
-    pub categories: Vec<String>,
+    pub categories: Vec<Rc<str>>,
     /// The client side support of the project
     pub client_side: ModRequirement,
     /// The client side support of the project
     pub server_side: ModRequirement,
     /// A long form description of the project
-    pub body: String,
+    pub body: Rc<str>,
     /// The status of the project
     pub status: Status,
 
     /// A list of categories which are searchable but non-primary
-    pub additional_categories: Option<Vec<String>>,
+    pub additional_categories: Option<Vec<Rc<str>>>,
     /// An optional link to where to submit bugs or issues with the project
-    pub issues_url: Option<String>,
+    pub issues_url: Option<Rc<str>>,
     /// An optional link to the source code of the project
-    pub source_url: Option<String>,
+    pub source_url: Option<Rc<str>>,
     /// An optional link to the project's wiki page or other relevant information
-    pub wiki_url: Option<String>,
+    pub wiki_url: Option<Rc<str>>,
     /// An optional invite link to the project's discord
-    pub discord_url: Option<String>,
+    pub discord_url: Option<Rc<str>>,
 
     /// The project type of the project
     pub project_type: ProjectType,
     /// The URL of the project's icon
-    pub icon_url: Option<String>,
+    pub icon_url: Option<Rc<str>>,
 
     /// The RGB color of the project, automatically generated from the project icon
     pub color: Option<u32>,
 
-    /// The ID of the project, encoded as a base62 string
-    pub id: String,
+    /// The ID of the project, encoded as a base62 Rc<str>
+    pub id: Rc<str>,
     /// The ID of the team that has ownership of this project
-    pub team: String,
+    pub team: Rc<str>,
 
     /// The date the project was published
-    pub published: String,
+    pub published: Rc<str>,
     /// The date the project was last updated
-    pub updated: String,
+    pub updated: Rc<str>,
 
     /// A list of the version IDs of the project (will never be empty unless `draft` status)
-    pub versions: Vec<String>,
+    pub versions: Vec<Rc<str>>,
     /// A list of all of the game versions supported by the project
-    pub game_versions: Vec<String>,
+    pub game_versions: Vec<Rc<str>>,
     /// A list of all of the loaders supported by the project
-    pub loaders: Vec<Loader>,
+    pub loaders: Rc<[Loader]>,
     /// A list of images that have been uploaded to the project's gallery
-    pub gallery: Option<Vec<GalleryEntry>>,
+    pub gallery: Option<Rc<[GalleryEntry]>>,
 }
 
 impl super::ModrinthProjectMeta for ModrinthProject {
-    fn project_id(&self) -> Option<&String> {
-        Some(&self.id)
+    type Id = Rc<str>;
+
+    fn project_id(&self) -> Option<Self::Id> {
+        Some(self.id.clone())
     }
 }
 
@@ -75,13 +78,13 @@ impl super::ModrinthProjectMeta for ModrinthProject {
 /// Represents an image in a gallery
 pub struct GalleryEntry {
     /// The URL of the image
-    pub url: String,
+    pub url: Rc<str>,
     /// The image's title
-    pub title: Option<String>,
+    pub title: Option<Rc<str>>,
     /// The image's description
-    pub description: Option<String>,
+    pub description: Option<Rc<str>>,
     /// When the image was uploaded
-    pub created: String,
+    pub created: Rc<str>,
     /// What order/index the image should be at
     pub ordering: Option<u8>,
 }

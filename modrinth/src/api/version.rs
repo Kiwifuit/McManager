@@ -1,3 +1,5 @@
+use std::fmt::{Debug, Display};
+
 use super::{APIError, ENDPOINT};
 use log::info;
 use reqwest::Client;
@@ -47,6 +49,7 @@ pub async fn get_versions<M>(
 ) -> Result<Vec<ModrinthProjectVersion>, APIError>
 where
     M: ModrinthProjectMeta,
+    <M as ModrinthProjectMeta>::Id: Display,
 {
     info!("Searching for versions with params: {:?}", params);
 
@@ -74,6 +77,7 @@ pub(crate) async fn get_version<M>(
 ) -> Result<ModrinthProjectVersion, APIError>
 where
     M: ModrinthProjectMeta,
+    <M as ModrinthProjectMeta>::Id: Display + Debug,
 {
     info!("Searching for version: {:?}", project.version_id().unwrap());
 
