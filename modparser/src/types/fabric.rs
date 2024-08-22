@@ -1,42 +1,44 @@
 use serde::Deserialize;
-use std::{collections::HashMap, str::FromStr};
+use std::collections::HashMap;
+use std::rc::Rc;
+use std::str::FromStr;
 
 #[derive(Debug, Deserialize)]
 pub struct FabricMod {
     #[serde(rename = "schemaVersion")]
     _schema_version: u8,
     #[serde(rename = "entrypoints")]
-    _entrypoints: Option<HashMap<String, Vec<String>>>,
+    _entrypoints: Option<HashMap<Rc<str>, Vec<Rc<str>>>>,
     #[serde(rename = "accessWidener")]
-    _access_widener: Option<String>,
+    _access_widener: Option<Rc<str>>,
     #[serde(rename = "jars")]
-    _jars: Option<Vec<HashMap<String, String>>>,
+    _jars: Option<Vec<HashMap<Rc<str>, Rc<str>>>>,
 
     #[serde(rename = "id")]
-    pub mod_id: String,
-    pub icon: String,
+    pub mod_id: Rc<str>,
+    pub icon: Rc<str>,
     #[serde(rename = "version")]
-    pub mod_version: String,
-    pub name: Option<String>,
-    pub description: Option<String>,
-    pub authors: Option<Vec<String>>,
-    pub contributors: Option<Vec<String>>,
+    pub mod_version: Rc<str>,
+    pub name: Option<Rc<str>>,
+    pub description: Option<Rc<str>>,
+    pub authors: Option<Vec<Rc<str>>>,
+    pub contributors: Option<Vec<Rc<str>>>,
     pub contact: Option<FabricModContact>,
-    pub license: Option<String>,
+    pub license: Option<Rc<str>>,
     #[serde(rename = "depends")]
-    pub dependencies: Option<HashMap<String, FabricDependencyVersion>>,
-    pub recommends: Option<HashMap<String, FabricDependencyVersion>>,
-    pub conflicts: Option<HashMap<String, FabricDependencyVersion>>,
-    pub breaks: Option<HashMap<String, FabricDependencyVersion>>,
+    pub dependencies: Option<HashMap<Rc<str>, FabricDependencyVersion>>,
+    pub recommends: Option<HashMap<Rc<str>, FabricDependencyVersion>>,
+    pub conflicts: Option<HashMap<Rc<str>, FabricDependencyVersion>>,
+    pub breaks: Option<HashMap<Rc<str>, FabricDependencyVersion>>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct FabricModContact {
-    pub homepage: Option<String>,
-    pub issues: Option<String>,
-    pub sources: Option<String>,
-    pub email: Option<String>,
-    pub irc: Option<String>,
+    pub homepage: Option<Rc<str>>,
+    pub issues: Option<Rc<str>>,
+    pub sources: Option<Rc<str>>,
+    pub email: Option<Rc<str>>,
+    pub irc: Option<Rc<str>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -54,7 +56,7 @@ pub enum FabricDependencyVersionMode {
 #[derive(Debug)]
 pub struct FabricDependencyVersion {
     pub mode: FabricDependencyVersionMode,
-    pub version: String,
+    pub version: Rc<str>,
 }
 
 impl<'de> Deserialize<'de> for FabricDependencyVersion {
@@ -99,7 +101,7 @@ impl FromStr for FabricDependencyVersion {
         };
 
         let version_start = if Self::check_equals(s) { 2 } else { 1 };
-        let version = s[version_start..].to_string();
+        let version = Rc::from(s[version_start..].to_string().into_boxed_str());
 
         Ok(Self { mode, version })
     }
@@ -122,10 +124,9 @@ mod tests {
             }
 
             let mod_meta = from_str::<FabricMod>(
-                grab_meta_file(file.path())
+                &grab_meta_file(file.path())
                     .expect("expected meta file to be grabbed")
-                    .raw
-                    .as_str(),
+                    .raw,
             );
 
             assert!(mod_meta.is_ok());
