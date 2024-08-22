@@ -1,11 +1,12 @@
 use super::{DateTime, HangarTags, HangarVisibility};
 use serde::Deserialize;
+use std::{fmt::Debug, rc::Rc};
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HangarProjects {
     pub pagination: HangarProjectsPagination,
-    pub result: Vec<HangarProject>,
+    pub result: Rc<[HangarProject]>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -20,11 +21,11 @@ pub struct HangarProjectsPagination {
 #[serde(rename_all = "camelCase")]
 pub struct HangarProject {
     pub created_at: DateTime,
-    pub name: String,
+    pub name: Rc<str>,
     pub namespace: HangarProjectNamespace,
     pub last_updated: DateTime,
-    pub avatar_url: String,
-    pub description: String,
+    pub avatar_url: Rc<str>,
+    pub description: Rc<str>,
     pub category: HangarProjectCategory,
     pub visibility: HangarVisibility,
     pub settings: HangarProjectSettings,
@@ -33,32 +34,32 @@ pub struct HangarProject {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HangarProjectSettings {
-    pub links: Option<Vec<HangarProjectLinks>>,
+    pub links: Option<Rc<[HangarProjectLinks]>>,
     pub tags: HangarTags,
     pub license: HangarProjectLicense,
-    pub keywords: Vec<String>,
+    pub keywords: Vec<Rc<str>>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HangarProjectNamespace {
-    pub owner: String,
-    pub slug: String,
+    pub owner: Rc<str>,
+    pub slug: Rc<str>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HangarProjectLinks {
     #[serde(deserialize_with = "deserialize_links")]
-    pub links: Vec<HangarProjectLink>,
+    pub links: Rc<[HangarProjectLink]>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct HangarProjectLink {
     pub id: u8,
-    pub name: String,
+    pub name: Rc<str>,
     #[serde(deserialize_with = "deserialize_null_default")]
-    pub url: String,
+    pub url: Rc<str>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -80,21 +81,21 @@ pub enum HangarProjectCategory {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HangarProjectLicense {
-    pub name: Option<String>,
-    pub url: Option<String>,
+    pub name: Option<Rc<str>>,
+    pub url: Option<Rc<str>>,
 
     #[serde(rename = "type")]
-    pub license_type: String,
+    pub license_type: Rc<str>,
 }
 
-fn deserialize_links<'de, D>(deserializer: D) -> Result<Vec<HangarProjectLink>, D::Error>
+fn deserialize_links<'de, D>(deserializer: D) -> Result<Rc<[HangarProjectLink]>, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
     struct LinksVisitor;
 
     impl<'de> serde::de::Visitor<'de> for LinksVisitor {
-        type Value = Vec<HangarProjectLink>;
+        type Value = Rc<[HangarProjectLink]>;
 
         fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
             formatter.write_str("a list of HangarProjectLinks")
@@ -112,7 +113,7 @@ where
                 }
             }
 
-            Ok(links)
+            Ok(Rc::from_iter(links.into_boxed_slice()))
         }
     }
 
