@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-
+    name: Test Codebase
     runs-on: ubuntu-latest
 
     steps:
