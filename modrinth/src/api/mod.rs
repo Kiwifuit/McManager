@@ -1,6 +1,6 @@
 #![cfg_attr(not(feature = "api"), allow(unused_imports, dead_code))]
 
-use std::time::Duration;
+use std::{rc::Rc, time::Duration};
 
 #[cfg(feature = "api")]
 use log::{debug, error, info};
@@ -32,7 +32,7 @@ pub enum APIError {
     Http(#[from] reqwest::Error),
 
     #[error("dependency already resolved: {0}")]
-    ResolvedDependency(String),
+    ResolvedDependency(Rc<str>),
 
     #[error("provided mod has no dependencies")]
     NoDependencies,

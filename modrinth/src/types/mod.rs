@@ -1,6 +1,7 @@
 #![allow(clippy::ptr_arg)]
 #[cfg(feature = "types")]
 use serde::{Deserialize, Serialize, Serializer};
+use std::rc::Rc;
 
 #[cfg(feature = "types")]
 pub mod project;
@@ -16,8 +17,10 @@ pub use query::{Facet, FacetOp};
 
 #[cfg(feature = "types")]
 pub(crate) trait ModrinthProjectMeta {
-    fn project_id(&self) -> Option<&String>;
-    fn version_id(&self) -> Option<&String> {
+    type Id;
+
+    fn project_id(&self) -> Option<Self::Id>;
+    fn version_id(&self) -> Option<Self::Id> {
         None
     }
 }
@@ -29,14 +32,14 @@ pub(crate) trait ModrinthProjectMeta {
 /// a `Single` or `Detailed` license
 pub enum License {
     /// License Type
-    Single(String),
+    Single(Rc<str>),
     Detailed {
         /// License ID
-        id: String,
+        id: Rc<str>,
         /// License pretty name
-        name: String,
+        name: Rc<str>,
         /// URL where the license can be found
-        url: Option<String>,
+        url: Option<Rc<str>>,
     },
 }
 
@@ -164,8 +167,8 @@ impl Serialize for ProjectType {
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
 pub enum Gallery {
-    Single(String),
-    Multiple(Vec<String>),
+    Single(Rc<str>),
+    Multiple(Vec<Rc<str>>),
 }
 
 pub(crate) fn serialize_vec_urlencoded<S, T>(vec: &Vec<T>, serializer: S) -> Result<S::Ok, S::Error>
