@@ -13,6 +13,13 @@ export default createHandler(() => (
         </head>
         <body>
           <div id="app">{children}</div>
+          <footer>
+            <ul>
+              <li>MCS by Kiwifuit</li>
+              <li><a href="https://github.com/Kiwifuit" target="_blank" rel="noopener noreferrer">Github</a></li>
+              <li><a href="https://github.com/Kiwifuit/McManager" target="_blank" rel="noopener noreferrer">Repository</a></li>
+            </ul>
+          </footer>
           {scripts}
         </body>
       </html>
