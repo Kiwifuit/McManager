@@ -6,3 +6,7 @@ footer li:not(:last-child)::after {
   content: '●';
   margin-left: 0.5rem;
 }
+
+footer {
+  color: #505050;
+}
