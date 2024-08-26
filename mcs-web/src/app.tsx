@@ -13,7 +13,7 @@ export default function App() {
         <MetaProvider>
           <Title>MCS</Title>
           <nav>
-            <ul class="flex gap-4 text-xl px-5 py-3 bg-accent">
+            <ul class="flex gap-4 text-xl px-5 py-3 dark:bg-dark-accent bg-light-accent">
               <li class="grow"><a href="/" class="flex items-center w-fit">
                 <BiSolidHomeAlt2 />
                 Home

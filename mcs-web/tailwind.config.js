@@ -8,7 +8,10 @@ export default {
     colors: {
       "dark-bg": "#202020",
       "dark-fg": "#eaeaea",
-      "accent": "#6534bf",
+      "dark-accent": "#303030",
+      "light-bg": "#ebebeb",
+      "light-fg": "#1c1c1c",
+      "light-accent": "#cccccc"
     }
   },
   plugins: [],

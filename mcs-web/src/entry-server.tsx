@@ -13,7 +13,7 @@ export default createHandler(() => (
           <link rel="icon" href="/favicon.ico" />
           {assets}
         </head>
-        <body class="dark:bg-dark-bg dark:text-dark-fg">
+        <body class="dark:bg-dark-bg dark:text-dark-fg bg-light-bg text-light-fg">
           <div id="app" >{children}</div>
           <footer class="mt-2 text-x">
             <ul class="flex justify-center content-center italic gap-x-1">
