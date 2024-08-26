@@ -1,9 +1,10 @@
 import { Title } from "@solidjs/meta";
 
-export default function About() {
+
+export default function Servers() {
   return (
     <main>
-      <Title>About MCS</Title>
+      <Title>Servers</Title>
     </main>
   );
 }

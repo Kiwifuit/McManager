@@ -1,9 +1,10 @@
 import { Title } from "@solidjs/meta";
 
-export default function About() {
+
+export default function Options() {
   return (
     <main>
-      <Title>About MCS</Title>
+      <Title>MCS Options</Title>
     </main>
   );
 }
