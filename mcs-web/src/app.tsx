@@ -13,30 +13,22 @@ export default function App() {
           <Title>MCS</Title>
           <nav class="mx-3 my-1">
             <ul class="flex gap-4 text-xl">
-              <li>
-                <a href="/" class="flex items-center">
-                  <BiSolidHomeAlt2 />
-                  Home
-                </a>
-              </li>
-              <li class="grow">
-                <a href="/servers" class="flex items-center">
-                  <BiSolidServer />
-                  Servers
-                </a>
-              </li>
-              <li>
-                <a href="/about" class="flex items-center">
-                  <BiSolidInfoCircle />
-                  About
-                </a>
-              </li>
-              <li>
-                <a href="/options" class="flex items-center">
-                  <BiSolidCog />
-                  Options
-                </a>
-              </li>
+              <li><a href="/" class="flex items-center">
+                <BiSolidHomeAlt2 />
+                Home
+              </a></li>
+              <li class="grow"><a href="/servers" class="flex items-center">
+                <BiSolidServer />
+                Servers
+              </a></li>
+              <li><a href="/about" class="flex items-center">
+                <BiSolidInfoCircle />
+                About
+              </a></li>
+              <li><a href="/options" class="flex items-center">
+                <BiSolidCog />
+                Options
+              </a></li>
             </ul>
           </nav>
           <Suspense>{props.children}</Suspense>
