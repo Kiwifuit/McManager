@@ -13,8 +13,8 @@ export default createHandler(() => (
         </head>
         <body>
           <div id="app">{children}</div>
-          <footer>
-            <ul>
+          <footer class="mt-2">
+            <ul class="flex justify-center content-center italic gap-x-1">
               <li>MCS by Kiwifuit</li>
               <li><a href="https://github.com/Kiwifuit" target="_blank" rel="noopener noreferrer">Github</a></li>
               <li><a href="https://github.com/Kiwifuit/McManager" target="_blank" rel="noopener noreferrer">Repository</a></li>

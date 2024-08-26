@@ -10,8 +10,14 @@ export default function App() {
       root={props => (
         <MetaProvider>
           <Title>MCS</Title>
-          <a href="/">Index</a>
-          <a href="/about">About</a>
+          <nav>
+            <ul class="flex gap-4 text-xl">
+              <li><a href="/">Home</a></li>
+              <li class="grow"><a href="/servers">Servers</a></li>
+              <li><a href="/about">About</a></li>
+              <li><a href="/options">MCS Options</a></li>
+            </ul>
+          </nav>
           <Suspense>{props.children}</Suspense>
         </MetaProvider>
       )}
