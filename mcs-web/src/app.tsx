@@ -1,7 +1,8 @@
 import { MetaProvider, Title } from "@solidjs/meta";
 import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
-import { BiSolidCog, BiSolidHomeAlt2, BiSolidInfoCircle, BiSolidServer } from 'solid-icons/bi';
+import { BiSolidCog, BiSolidHomeAlt2, BiSolidInfoCircle } from 'solid-icons/bi';
+import { FiMoon } from 'solid-icons/fi';
 import { Suspense } from "solid-js";
 import "./app.css";
 
@@ -11,15 +12,11 @@ export default function App() {
       root={props => (
         <MetaProvider>
           <Title>MCS</Title>
-          <nav class="mx-3 my-1">
-            <ul class="flex gap-4 text-xl">
-              <li><a href="/" class="flex items-center">
+          <nav>
+            <ul class="flex gap-4 text-xl px-5 py-3 bg-accent">
+              <li class="grow"><a href="/" class="flex items-center w-fit">
                 <BiSolidHomeAlt2 />
                 Home
-              </a></li>
-              <li class="grow"><a href="/servers" class="flex items-center">
-                <BiSolidServer />
-                Servers
               </a></li>
               <li><a href="/about" class="flex items-center">
                 <BiSolidInfoCircle />
@@ -29,6 +26,10 @@ export default function App() {
                 <BiSolidCog />
                 Options
               </a></li>
+              <li><button>
+                <FiMoon />
+                {/* <FiSun /> */}
+              </button></li>
             </ul>
           </nav>
           <Suspense>{props.children}</Suspense>

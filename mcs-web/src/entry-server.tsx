@@ -11,8 +11,8 @@ export default createHandler(() => (
           <link rel="icon" href="/favicon.ico" />
           {assets}
         </head>
-        <body>
-          <div id="app">{children}</div>
+        <body class="dark:bg-dark-bg dark:text-dark-fg">
+          <div id="app" >{children}</div>
           <footer class="mt-2">
             <ul class="flex justify-center content-center italic gap-x-1">
               <li>MCS by Kiwifuit</li>

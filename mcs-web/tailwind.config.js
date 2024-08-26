@@ -5,8 +5,13 @@ export default {
   ],
   theme: {
     extend: {},
+    colors: {
+      "dark-bg": "#202020",
+      "dark-fg": "#eaeaea",
+      "accent": "#6534bf",
+    }
   },
   plugins: [],
-  darkMode: "class"
+  // darkMode: "class"
 }
 
