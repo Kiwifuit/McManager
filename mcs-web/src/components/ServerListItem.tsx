@@ -17,7 +17,7 @@ export default function ServerListItem(props: {
       <a href={`/server/${props.id}/`} class="grid grid-cols-2">
         <p class='text-xl ml-3'>{props.display_name}</p>
         <p class='ml-6 text-dark-server-description col-start-1'>{props.description}</p>
-        <p class="col-start-2 row-start-1">Status: {
+        <p class="col-start-2 row-start-1 text-right mr-3">Status: {
           props.online ?
             (
               <div class="inline-flex gap-1">
@@ -32,8 +32,8 @@ export default function ServerListItem(props: {
               </div>
             )
         }</p>
-        <p>Players: {props.players.active} / {props.players.total}</p>
-        <p class="col-start-2">Server: {props.software}</p>
+        <p class="text-right mr-3">Players: {props.players.active} / {props.players.total}</p>
+        <p class="col-start-2 text-right mr-3">Server: {props.software}</p>
       </a>
     </div>
   )
