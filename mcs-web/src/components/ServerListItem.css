@@ -1,0 +1,11 @@
+.server-item {
+  border: solid white;
+  margin-left: 5px;
+  margin-bottom: 10px;
+  padding: 3px;
+  border-radius: 10px;
+}
+
+/* .server-item>a>p.ml-6 {
+  color: red;
+} */
