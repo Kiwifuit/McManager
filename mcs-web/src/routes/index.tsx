@@ -17,7 +17,7 @@ export default function Home() {
           id="server-1"
           online={true}
           display_name="Server 01 Name"
-          description="Server 01 Description"
+          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra lorem a bibendum vestibulum. Donec tincidunt at nulla aliquam consectetur. Nullam fringilla libero sit amet quam eleifend, id tempor nunc venenatis. Ut euismod sapien quis quam ullamcorper, et consectetur elit imperdiet. Etiam a odio ut ipsum molestie ornare. Etiam rutrum leo non nibh scelerisque auctor. Vivamus eu erat eget justo luctus condimentum. Vivamus hendrerit mi eget lacus imperdiet placerat. Maecenas molestie elit sit amet sem consectetur, vitae tincidunt sapien ullamcorper. Sed fringilla, diam sit amet faucibus tristique, elit ipsum pulvinar velit, eget tincidunt justo ante eget lacus. Proin dapibus venenatis blandit. Donec ut tortor luctus, dignissim felis nec, cursus risus. Cras a ultricies enim. Etiam et elit ut tellus dapibus suscipit. Nulla eget condimentum nisi, eu mattis elit. "
           players={{ total: 20, active: 15 }}
           modpack="test"
           software="Forge 1.2.3 for Minecraft 1.20.1" />
@@ -25,7 +25,7 @@ export default function Home() {
           id="server-2"
           online={true}
           display_name="Server 02 Name"
-          description="Server 02 Description"
+          description=""
           players={{ total: 20, active: 15 }}
           modpack="test2"
           software="Forge 1.2.3 for Minecraft 1.20.1" />
