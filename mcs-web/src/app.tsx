@@ -3,21 +3,47 @@ import { A, Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import { BiSolidCog, BiSolidHomeAlt2, BiSolidInfoCircle } from 'solid-icons/bi';
 import { FiMoon, FiSun } from 'solid-icons/fi';
-import { createSignal, Suspense } from "solid-js";
+import { createEffect, Suspense } from "solid-js";
+import { createStore } from "solid-js/store";
+import Cookies from "universal-cookie";
 import "./app.css";
 
+const APP_STATE_NAME = "AppState";
+const cookieJar = new Cookies();
+
 export default function App() {
-  let [lightMode, setLightMode] = createSignal(true)
+  const cookies = cookieJar.get(APP_STATE_NAME);
+  const [appState, setAppState] = createStore<{isDarkMode: boolean}>(
+    cookies || {isDarkMode: false}
+  );
+
+  createEffect(() => {
+    if (appState.isDarkMode) {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+    }
+
+    const expiry = new Date();
+    expiry.setFullYear(expiry.getFullYear() + 20)
+
+    cookieJar.set(
+      APP_STATE_NAME,
+      appState,
+      {
+        sameSite: "strict",
+        expires: expiry
+      });
+  })
 
   const toggleDarkMode = () => {
-    setLightMode(!lightMode())
+    const new_state = {
+      isDarkMode: !appState.isDarkMode
+    };
 
-    if (lightMode()) {
-      document.documentElement.classList.remove("dark")
-    } else {
-      document.documentElement.classList.add("dark")
-    }
+    setAppState(new_state)
   }
+
 
   return (
     <Router
@@ -41,9 +67,9 @@ export default function App() {
               <li>
                 <button onclick={toggleDarkMode}>
                   {
-                    lightMode() ?
-                      (<FiMoon />)
-                      : (<FiSun />)
+                    appState.isDarkMode ?
+                      (<FiSun />)
+                      : (<FiMoon />)
                   }
                 </button>
               </li>
