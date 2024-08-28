@@ -1,5 +1,3 @@
-// import './ServerListItem.css';
-
 export default function ServerListItem(props: {
   id: string,
   online: boolean,
