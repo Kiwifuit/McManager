@@ -17,7 +17,8 @@ export default {
       "light-accent": "#cccccc",
 
       // ServerListItem component
-      // "light-server-description"
+      "light-server-description": "#3b3b3b",
+      "light-server-background": "#dedcdc",
       "dark-server-description": "#a3a2a2",
       "dark-server-background": "#404040",
 
