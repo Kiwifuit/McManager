@@ -1,12 +1,18 @@
 import { MetaProvider, Title } from "@solidjs/meta";
-import { Router } from "@solidjs/router";
+import { A, Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import { BiSolidCog, BiSolidHomeAlt2, BiSolidInfoCircle } from 'solid-icons/bi';
-import { FiMoon } from 'solid-icons/fi';
-import { Suspense } from "solid-js";
+import { FiMoon, FiSun } from 'solid-icons/fi';
+import { createSignal, Suspense } from "solid-js";
 import "./app.css";
 
 export default function App() {
+  let [lightMode, setLightMode] = createSignal(true)
+
+  const toggleDarkMode = () => {
+    setLightMode(!lightMode())
+  }
+
   return (
     <Router
       root={props => (
@@ -14,22 +20,27 @@ export default function App() {
           <Title>MCS</Title>
           <nav>
             <ul class="flex gap-4 text-xl px-5 py-3 dark:bg-dark-accent bg-light-accent">
-              <li class="grow"><a href="/" class="flex items-center w-fit">
+              <li class="grow"><A href="/" class="flex items-center w-fit">
                 <BiSolidHomeAlt2 />
                 Home
-              </a></li>
-              <li><a href="/about" class="flex items-center">
+              </A></li>
+              <li><A href="/about" class="flex items-center">
                 <BiSolidInfoCircle />
                 About
-              </a></li>
-              <li><a href="/options" class="flex items-center">
+              </A></li>
+              <li><A href="/options" class="flex items-center">
                 <BiSolidCog />
                 Options
-              </a></li>
-              <li><button>
-                <FiMoon />
-                {/* <FiSun /> */}
-              </button></li>
+              </A></li>
+              <li>
+                <button onclick={toggleDarkMode}>
+                  {
+                    lightMode() ?
+                      (<FiMoon />)
+                      : (<FiSun />)
+                  }
+                </button>
+              </li>
             </ul>
           </nav>
           <Suspense>{props.children}</Suspense>
