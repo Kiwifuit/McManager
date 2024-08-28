@@ -11,6 +11,12 @@ export default function App() {
 
   const toggleDarkMode = () => {
     setLightMode(!lightMode())
+
+    if (lightMode()) {
+      document.documentElement.classList.remove("dark")
+    } else {
+      document.documentElement.classList.add("dark")
+    }
   }
 
   return (
