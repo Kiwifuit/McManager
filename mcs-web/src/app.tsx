@@ -14,7 +14,7 @@ const cookieJar = new Cookies();
 export default function App() {
   const cookies = cookieJar.get(APP_STATE_NAME);
   const [appState, setAppState] = createStore<{isDarkMode: boolean}>(
-    cookies || {isDarkMode: false}
+    cookies || {isDarkMode: true}
   );
 
   createEffect(() => {
