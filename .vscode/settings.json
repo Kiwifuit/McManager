@@ -3,4 +3,11 @@
   "lldb.showDisassembly": "never",
   "lldb.dereferencePointers": true,
   "lldb.consoleMode": "commands",
+  "rust-analyzer.procMacro.ignored": {
+    "leptos_macro": [
+      // optional:
+      // "component",
+      "server"
+    ],
+  }
 }
