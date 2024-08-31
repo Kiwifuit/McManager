@@ -47,9 +47,9 @@ export default function App() {
         <MetaProvider>
           <Title>MCS</Title>
           <nav>
-            <ul class="flex gap-4 text-xl px-5 py-3 dark:bg-dark-accent bg-light-accent">
+            <ul class="flex gap-4 bg-light-accent px-5 py-3 text-xl dark:bg-dark-accent">
               <li class="grow">
-                <A href="/" class="flex items-center w-fit">
+                <A href="/" class="flex w-fit items-center">
                   <BiSolidHomeAlt2 />
                   Home
                 </A>

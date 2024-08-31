@@ -33,12 +33,12 @@ export default createHandler(() => (
 
           {assets}
         </head>
-        <body class="dark:bg-dark-bg dark:text-dark-fg bg-light-bg text-light-fg">
+        <body class="bg-light-bg text-light-fg dark:bg-dark-bg dark:text-dark-fg">
           <div id="app">{children}</div>
-          <footer class="mt-2 text-x">
-            <ul class="flex justify-center content-center italic gap-x-1">
+          <footer class="text-x mt-2">
+            <ul class="flex content-center justify-center gap-x-1 italic">
               <li>MCS by Kiwifuit</li>
-              <li class="flex items-center ml-1">
+              <li class="ml-1 flex items-center">
                 <a
                   href="https://github.com/Kiwifuit"
                   target="_blank"
@@ -47,7 +47,7 @@ export default createHandler(() => (
                   <BsGithub />
                 </a>
               </li>
-              <li class="flex items-center ml-1 top-10">
+              <li class="top-10 ml-1 flex items-center">
                 <a
                   href="https://github.com/Kiwifuit/McManager"
                   target="_blank"

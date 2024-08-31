@@ -11,29 +11,29 @@ export default function ServerListItem(props: {
   modpack: string | null;
 }) {
   return (
-    <div class="dark:bg-dark-server-background bg-light-server-background mb-3 p-2 rounded-md">
+    <div class="mb-3 rounded-md bg-light-server-background p-2 dark:bg-dark-server-background">
       <a href={`/server/${props.id}/`} class="grid grid-cols-2">
-        <p class="text-xl ml-3">{props.display_name}</p>
-        <p class="ml-6 dark:text-dark-server-description text-light-server-description col-start-1 line-clamp-2 row-span-2">
+        <p class="ml-3 text-xl">{props.display_name}</p>
+        <p class="col-start-1 row-span-2 ml-6 line-clamp-2 text-light-server-description dark:text-dark-server-description">
           {props.description ? props.description : <i>No description</i>}
         </p>
         {props.online ? (
-          <p class="col-start-2 row-start-1 text-right mr-3">
+          <p class="col-start-2 row-start-1 mr-3 text-right">
             Status:
-            <span class="text-server-online mx-1">●</span>
+            <span class="mx-1 text-server-online">●</span>
             <span>Online</span>
           </p>
         ) : (
-          <p class="col-start-2 row-start-1 text-right mr-3">
+          <p class="col-start-2 row-start-1 mr-3 text-right">
             Status:
-            <span class="text-server-offline mx-1">●</span>
+            <span class="mx-1 text-server-offline">●</span>
             <span>Offline</span>
           </p>
         )}
-        <p class="align-middle text-right mr-3">
+        <p class="mr-3 text-right align-middle">
           Players: {props.players.active} / {props.players.total}
         </p>
-        <p class="align-middle col-start-2 text-right mr-3">
+        <p class="col-start-2 mr-3 text-right align-middle">
           Server: {props.software}
         </p>
       </a>
