@@ -1,7 +1,7 @@
 import { Title } from "@solidjs/meta";
 import { useParams } from "@solidjs/router";
 import DashboardNavBar from "~/components/ServerDashboard";
-import './server.css';
+import "./server.css";
 
 export default function Dashboard() {
   const params = useParams();

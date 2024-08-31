@@ -1,8 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./src/**/*.{tsx,ts}"
-  ],
+  content: ["./src/**/*.{tsx,ts}"],
   theme: {
     extend: {},
     colors: {
@@ -25,9 +23,8 @@ export default {
       // Server Online/Offline indicator
       "server-offline": "#d62f2f",
       "server-online": "#2ed154",
-    }
+    },
   },
   plugins: [],
-  darkMode: "class"
-}
-
+  darkMode: "class",
+};

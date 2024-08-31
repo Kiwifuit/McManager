@@ -8,8 +8,8 @@ export default function NotFound() {
       <HttpStatusCode code={404} />
       <h1 class="text-3xl font-bold">Page Not Found</h1>
       <p class="ml-3 max-w-xl">
-        This could mean that the URL you typed was wrong. If this shouldn't
-        be the case, contact the developers of the website immediately
+        This could mean that the URL you typed was wrong. If this shouldn't be
+        the case, contact the developers of the website immediately
       </p>
     </main>
   );

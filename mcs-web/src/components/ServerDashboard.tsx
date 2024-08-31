@@ -12,13 +12,18 @@ export default function DashboardNavBar() {
         <NavbarButton url="./modpacks" name="Modpacks" />
       </ul>
     </aside>
-  )
+  );
 }
 
-function NavbarButton(props: {url: string, name: string}) {
+function NavbarButton(props: { url: string; name: string }) {
   return (
     <li>
-      <a class="bg-server-online px-3 py-2 rounded-sm w-full block shadow-dark-bg active:shadow-inner" href={props.url}>{props.name}</a>
+      <a
+        class="bg-server-online px-3 py-2 rounded-sm w-full block shadow-dark-bg active:shadow-inner"
+        href={props.url}
+      >
+        {props.name}
+      </a>
     </li>
-   )
+  );
 }
