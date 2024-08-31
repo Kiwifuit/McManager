@@ -3,11 +3,10 @@
   "lldb.showDisassembly": "never",
   "lldb.dereferencePointers": true,
   "lldb.consoleMode": "commands",
-  "rust-analyzer.procMacro.ignored": {
-    "leptos_macro": [
-      // optional:
-      // "component",
-      "server"
-    ],
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
   }
 }
