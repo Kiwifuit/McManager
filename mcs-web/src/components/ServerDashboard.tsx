@@ -1,7 +1,7 @@
 export default function DashboardNavBar() {
   return (
-    <aside class="bg-server-offline">
-      <ul class="mt-2 flex flex-col gap-3 text-center">
+    <aside class="bg-gradient-to-b from-server-offline via-server-offline">
+      <ul class="mt-2 flex flex-col gap-3 text-center rounded-xl h-[calc(100vh-2rem)]">
         <NavbarButton url="./server" name="Server" />
         <NavbarButton url="./options" name="Options" />
         <NavbarButton url="./console" name="Console" />

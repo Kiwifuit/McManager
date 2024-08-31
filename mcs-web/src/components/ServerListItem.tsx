@@ -14,7 +14,7 @@ export default function ServerListItem(props: {
     <div class="mb-3 rounded-md bg-light-server-background p-2 dark:bg-dark-server-background">
       <a href={`/server/${props.id}/`} class="grid grid-cols-2">
         <p class="ml-3 text-xl">{props.display_name}</p>
-        <p class="col-start-1 row-span-2 ml-6 line-clamp-2 text-light-server-description dark:text-dark-server-description">
+        <p class="col-start-1 row-span-2 ml-6 truncate text-light-server-description dark:text-dark-server-description">
           {props.description ? props.description : <i>No description</i>}
         </p>
         {props.online ? (
