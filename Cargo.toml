@@ -1,6 +1,14 @@
 [workspace]
 resolver = "2"
-members = ["denji", "hangar", "mar", "mcs-rtl", "modparser", "modrinth", "mparse"]
+members = [
+  "denji",
+  "hangar",
+  "mar",
+  "mcs-ffi",
+  "modparser",
+  "modrinth",
+  "mparse",
+]
 
 [workspace.dependencies]
 log = "0.4.21"
@@ -29,3 +37,10 @@ opt-level = 'z'
 lto = true
 codegen-units = 1
 panic = "abort"
+
+[profile.release]
+opt-level = "s"
+strip = true
+lto = true
+codegen-units = 1
+split-debuginfo = "off"
