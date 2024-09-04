@@ -659,6 +659,7 @@ dependencies = [
 name = "mcs-ffi"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "denji",
  "hangar",
  "modparser",
