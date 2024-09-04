@@ -12,6 +12,7 @@ modrinth = { path = "../modrinth" }
 hangar = { path = "../hangar" }
 
 [lib]
+name = "mcs"
 crate-type = ["cdylib"]
 
 [lints]
