@@ -1,0 +1,18 @@
+[package]
+name = "mcs-ffi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+denji = { path = "../denji" }
+modparser = { path = "../modparser" }
+mparse = { path = "../mparse" }
+
+modrinth = { path = "../modrinth" }
+hangar = { path = "../hangar" }
+
+[lib]
+crate-type = ["cdylib"]
+
+[lints]
+workspace = true
