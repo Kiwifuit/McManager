@@ -10,6 +10,8 @@ mparse = { path = "../mparse" }
 
 modrinth = { path = "../modrinth" }
 hangar = { path = "../hangar" }
+log.workspace = true
+
 
 [build-dependencies]
 anyhow.workspace = true

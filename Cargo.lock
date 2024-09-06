@@ -669,6 +669,7 @@ dependencies = [
  "denji",
  "hangar",
  "lazy_static",
+ "log",
  "modparser",
  "modrinth",
  "mparse",
