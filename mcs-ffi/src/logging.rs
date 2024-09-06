@@ -1,6 +1,7 @@
+use chrono::Local;
+use log::{set_logger, set_max_level, Level, Record};
+use serde::Serialize;
 use std::ffi::{c_char, CString};
-
-use log::{set_logger, set_max_level, Level};
 
 type LogConsumer = extern "C" fn(*const c_char);
 
@@ -31,12 +32,31 @@ impl log::Log for FfiLogger {
         }
 
         if let Some(cb) = unsafe { CONSUMER } {
-            let msg = "test".to_string();
-            let msg_to_pass = CString::new(msg).unwrap();
+            let log = LogRecord::from(record);
+            let log_cs = CString::new(serde_json::to_string(&log).unwrap()).unwrap();
 
-            cb(msg_to_pass.as_ptr());
+            cb(log_cs.as_ptr());
         }
     }
 
     fn flush(&self) {}
+}
+
+#[derive(Serialize)]
+struct LogRecord<'a> {
+    time: i64,
+    module: &'a str,
+    message: String,
+    level: Level,
+}
+
+impl<'a> From<&Record<'a>> for LogRecord<'a> {
+    fn from(value: &Record<'a>) -> Self {
+        Self {
+            time: Local::now().timestamp(),
+            module: value.module_path().unwrap_or("<module>"),
+            level: value.level(),
+            message: format!("{}", value.args()),
+        }
+    }
 }

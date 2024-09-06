@@ -10,8 +10,15 @@ mparse = { path = "../mparse" }
 
 modrinth = { path = "../modrinth" }
 hangar = { path = "../hangar" }
-log.workspace = true
 
+log = { workspace = true, features = ["serde"] }
+serde.workspace = true
+serde_json.workspace = true
+
+chrono = { version = "0.4.38", default-features = false, features = [
+  "std",
+  "clock",
+] }
 
 [build-dependencies]
 anyhow.workspace = true
