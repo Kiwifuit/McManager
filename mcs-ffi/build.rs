@@ -1,13 +1,15 @@
-use std::cell::LazyCell;
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
 use std::str::FromStr;
 
 use anyhow::Context;
+use lazy_static::lazy_static;
 
-const GIT_PATH: LazyCell<PathBuf> =
-    LazyCell::new(|| PathBuf::from_str("../.git/").expect("expected path to be created"));
+lazy_static! {
+    static ref GIT_PATH: PathBuf =
+        PathBuf::from_str("../.git/").expect("expected path to be created");
+}
 
 fn main() -> anyhow::Result<()> {
     let head = GIT_PATH.join("head");

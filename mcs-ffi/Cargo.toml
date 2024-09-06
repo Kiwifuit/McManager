@@ -13,7 +13,7 @@ hangar = { path = "../hangar" }
 
 [build-dependencies]
 anyhow.workspace = true
-
+lazy_static = "1.5.0"
 
 [lib]
 name = "mcs"
