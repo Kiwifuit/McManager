@@ -10,7 +10,7 @@ export default function Dashboard() {
   return (
     <main id="dashboard-ui">
       <Title>{displayName} dashboard</Title>
-      <DashboardNavBar name={displayName} />
+      <DashboardNavBar displayName={displayName} id={params.id} />
       <div class="col-start-2 ml-5 mt-3">
         <h1 class="text-4xl font-bold">Dashboard</h1>
       </div>
