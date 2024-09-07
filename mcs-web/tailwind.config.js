@@ -20,6 +20,10 @@ export default {
       "dark-server-description": "#a3a2a2",
       "dark-server-background": "#404040",
 
+      // Server Dashboard component
+      "dark-dashboard-hover":"#404040",
+      "light-dashboard-hover":"#dddddd",
+
       // Server Online/Offline indicator
       "server-offline": "#d62f2f",
       "server-online": "#2ed154",
