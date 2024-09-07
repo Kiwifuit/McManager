@@ -4,12 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-denji = { path = "../denji" }
-modparser = { path = "../modparser" }
-mparse = { path = "../mparse" }
+denji = { path = "../denji", optional = true }
+modparser = { path = "../modparser", optional = true }
+mparse = { path = "../mparse", optional = true }
 
-modrinth = { path = "../modrinth" }
-hangar = { path = "../hangar" }
+modrinth = { path = "../modrinth", optional = true }
+hangar = { path = "../hangar", optional = true }
 
 log = { workspace = true, features = ["serde"] }
 serde.workspace = true
@@ -26,7 +26,23 @@ lazy_static = "1.5.0"
 
 [lib]
 name = "mcs"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [lints]
 workspace = true
+
+[features]
+default = []
+
+all-providers = ["provider-modrinth", "provider-hangar", "provider-curse"]
+provider-modrinth = ["dep:modrinth"]
+provider-hangar = ["dep:hangar"]
+provider-curse = []
+
+all-parsers = ["parser-modpack", "parser-modjar"]
+parser-modpack = ["dep:mparse"]
+parser-modjar = ["dep:modparser"]
+
+server-utils = ["dep:denji"]
+
+mcs = ["all-providers", "all-parsers", "server-utils"]
