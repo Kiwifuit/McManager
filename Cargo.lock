@@ -244,6 +244,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "dms-backend"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "denji",
+ "hangar",
+ "lazy_static",
+ "log",
+ "modparser",
+ "modrinth",
+ "mparse",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "encoding_rs"
 version = "0.8.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -703,23 +720,6 @@ dependencies = [
  "serde",
  "thiserror",
  "tokio",
-]
-
-[[package]]
-name = "mcs-ffi"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "chrono",
- "denji",
- "hangar",
- "lazy_static",
- "log",
- "modparser",
- "modrinth",
- "mparse",
- "serde",
- "serde_json",
 ]
 
 [[package]]

@@ -4,10 +4,10 @@ members = [
   "denji",
   "hangar",
   "mar",
-  "mcs-ffi",
+  "dms-backend",
   "modparser",
   "modrinth",
-  "mparse",
+  "packparse",
 ]
 
 [workspace.dependencies]
