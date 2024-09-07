@@ -1,16 +1,19 @@
-export default function DashboardNavBar(props: { name: string }) {
+export default function DashboardNavBar(props: {
+  displayName: string;
+  id: string;
+}) {
   return (
     <aside class="bg-light-accent dark:bg-dark-accent">
       <ul class="mt-2 flex h-[calc(100vh-3.75rem)] flex-col rounded-xl text-left">
-        <p class="truncate px-4 py-2 text-2xl font-bold">{props.name}</p>
-        <NavbarButton url="./server" name="Server" />
-        <NavbarButton url="./options" name="Options" />
-        <NavbarButton url="./console" name="Console" />
-        <NavbarButton url="./logs" name="Logs" />
-        <NavbarButton url="./players" name="Players" />
-        <NavbarButton url="./worlds" name="Worlds" />
-        <NavbarButton url="./software" name="Software" />
-        <NavbarButton url="./modpacks" name="Modpacks" />
+        <p class="truncate px-4 py-2 text-2xl font-bold">{props.displayName}</p>
+        <NavbarButton url={`/server/${props.id}/`} name="Server" />
+        <NavbarButton url={`/server/${props.id}/options`} name="Options" />
+        <NavbarButton url={`/server/${props.id}/console`} name="Console" />
+        <NavbarButton url={`/server/${props.id}/logs`} name="Logs" />
+        <NavbarButton url={`/server/${props.id}/players`} name="Players" />
+        <NavbarButton url={`/server/${props.id}/worlds`} name="Worlds" />
+        <NavbarButton url={`/server/${props.id}/software`} name="Software" />
+        <NavbarButton url={`/server/${props.id}/modpacks`} name="Modpacks" />
       </ul>
     </aside>
   );
