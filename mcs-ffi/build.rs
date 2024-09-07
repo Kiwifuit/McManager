@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
+use std::process::{Command, Stdio};
 use std::str::FromStr;
 
 use anyhow::Context;
@@ -12,6 +13,49 @@ lazy_static! {
 }
 
 fn main() -> anyhow::Result<()> {
+    let bruh = get_git_sha_file()
+        .or_else(get_git_sha_command)
+        .context("while attempting to resolve git HEAD commit")
+        .context("this means that the build script was unable to get the HEAD commit");
+
+    eprintln!("bruh: {:?}", bruh);
+
+    let git_sha = bruh?;
+
+    println!("cargo::rustc-env=GIT_SHA_LONG={}", git_sha);
+    println!(
+        "cargo::rustc-env=GIT_SHA_SHORT={}",
+        git_sha.get(..8).unwrap()
+    );
+
+    Ok(())
+}
+
+fn get_git_sha_command(error: anyhow::Error) -> anyhow::Result<String> {
+    println!(
+        "cargo::warning=Failed to grab HEAD by file: {}. attempting git command",
+        error
+    );
+
+    let command = Command::new("git")
+        .args(vec!["rev-parse", "HEAD"])
+        .stdout(Stdio::piped())
+        .spawn()
+        .context("while trying to spawn `git rev-parse HEAD`")?;
+    let commit_hash = String::from_utf8(
+        command
+            .wait_with_output()
+            .context("while waiting for `git` output")?
+            .stdout,
+    )
+    .context("while parsing command output")?;
+
+    eprintln!("commit hash empty: {}", commit_hash.is_empty());
+
+    Ok(commit_hash)
+}
+
+fn get_git_sha_file() -> anyhow::Result<String> {
     let head = GIT_PATH.join("head");
 
     let mut ref_file =
@@ -37,11 +81,5 @@ fn main() -> anyhow::Result<()> {
         git_head_commit.display()
     ))?;
 
-    println!("cargo::rustc-env=GIT_SHA_LONG={}", git_sha);
-    println!(
-        "cargo::rustc-env=GIT_SHA_SHORT={}",
-        git_sha.get(..8).unwrap()
-    );
-
-    Ok(())
+    Ok(git_sha)
 }
