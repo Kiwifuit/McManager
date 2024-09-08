@@ -88,7 +88,7 @@ impl FromStr for FabricDependencyVersion {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        #[allow(clippy::wildcard_in_or_patterns)]
+        #[expect(clippy::wildcard_in_or_patterns)]
         let mode = match s.chars().next().unwrap() {
             any_char if any_char.is_numeric() => FabricDependencyVersionMode::ExactMatch,
             '>' if Self::check_equals(s) => FabricDependencyVersionMode::GreaterThanEqual,
