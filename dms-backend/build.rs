@@ -12,6 +12,17 @@ lazy_static! {
         PathBuf::from_str("../.git/").expect("expected path to be created");
 }
 
+static mut FEATURES: Vec<&'static str> = vec![];
+
+macro_rules! detect_feature {
+    ($feat:literal) => {
+        #[cfg(feature = $feat)]
+        unsafe {
+            FEATURES.push($feat)
+        }
+    };
+}
+
 fn main() -> anyhow::Result<()> {
     let bruh = get_git_sha_file()
         .or_else(get_git_sha_command)
@@ -27,6 +38,23 @@ fn main() -> anyhow::Result<()> {
         "cargo::rustc-env=GIT_SHA_SHORT={}",
         git_sha.get(..8).unwrap()
     );
+
+    detect_feature!("mcs");
+    detect_feature!("server-utils");
+    detect_feature!("all-providers");
+
+    #[cfg(not(feature = "all-providers"))]
+    detect_feature!("provider-modrinth");
+
+    #[cfg(not(feature = "all-providers"))]
+    detect_feature!("provider-hangar");
+
+    #[cfg(not(feature = "all-providers"))]
+    detect_feature!("provider-curse");
+
+    println!("cargo::rustc-env=CRATE_FEATURES={}", unsafe {
+        FEATURES.join(",")
+    });
 
     Ok(())
 }

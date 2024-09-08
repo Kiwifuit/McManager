@@ -2,9 +2,9 @@
 resolver = "2"
 members = [
   "denji",
+  "dms-backend",
   "hangar",
   "mar",
-  "dms-backend",
   "modparser",
   "modrinth",
   "packparse",
