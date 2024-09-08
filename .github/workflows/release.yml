@@ -17,40 +17,43 @@ jobs:
             dynLibName: libmcs.dll
             releaseLibName: mcs-x86_64.dll
 
-          # - uname: x86 Windows
-          #   target: i686-pc-windows-gnu
-          #   dynLibName: libmcs.dll
-          #   releaseLibName: mcs-i686.dll
+          - uname: x86 Windows
+            target: i686-pc-windows-gnu
+            dynLibName: libmcs.dll
+            releaseLibName: mcs-i686.dll
 
-          # - uname: x86-64 Linux
-          #   target: x86_64-unknown-linux-gnu
-          #   dynLibName: libmcs.so
-          #   releaseLibName: libmcs-x86_64.so
+          - uname: x86-64 Linux
+            target: x86_64-unknown-linux-gnu
+            dynLibName: libmcs.so
+            releaseLibName: libmcs-x86_64.so
 
-          # - uname: x86 Linux
-          #   target: i686-unknown-linux-gnu
-          #   dynLibName: libmcs.so
-          #   releaseLibName: libmcs-i686.so
+          - uname: x86 Linux
+            target: i686-unknown-linux-gnu
+            dynLibName: libmcs.so
+            releaseLibName: libmcs-i686.so
 
-          # - uname: ARM64 Linux
-          #   target: aarch64-unknown-linux-gnu
-          #   dynLibName: libmcs.so
-          #   releaseLibName: libmcs-aarch64.so
+          - uname: ARM64 Linux
+            target: aarch64-unknown-linux-gnu
+            dynLibName: libmcs.so
+            releaseLibName: libmcs-aarch64.so
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Install Cross
-        uses: taiki-e/install-action@v2
+        uses: actions-rs/toolchain@v1
         with:
-          tool: cross@0.2.5
+          toolchain: stable
+          target: ${{ matrix.platform.target }}
+          override: true
 
       - name: Build for ${{ matrix.platform.uname }}
-        run: cross build --target ${{ matrix.platform.target }} --release --package mcs-ffi
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --target=${{ matrix.platform.target }} --features=mcs
+          use-cross: true
 
       - name: "[1/2] Make dynlib dir"
         run: mkdir dist
