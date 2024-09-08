@@ -3,6 +3,7 @@
   "lldb.showDisassembly": "never",
   "lldb.dereferencePointers": true,
   "lldb.consoleMode": "commands",
+  "rust-analyzer.cargo.features": "all",
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
