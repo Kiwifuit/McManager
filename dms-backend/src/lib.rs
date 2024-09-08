@@ -1,3 +1,7 @@
+// Core components
 pub mod logging;
-pub mod modrinth;
 pub mod versioning;
+
+// parsers
+#[cfg(feature = "provider-modrinth")]
+pub mod modrinth;
