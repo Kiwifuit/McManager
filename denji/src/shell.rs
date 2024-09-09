@@ -4,6 +4,7 @@ use log::{debug, error, info};
 use mar::types::MavenArtifact;
 use mar::{get_artifact, get_versions};
 use reqwest::get;
+use std::borrow::{Borrow, Cow};
 use std::ffi::OsStr;
 use std::fmt::Display;
 use std::fs::{create_dir, File};
@@ -171,6 +172,19 @@ pub trait ServerSoftwareMeta: Display + Into<MavenArtifact> + Copy {
     where
         I: AsRef<OsStr> + ?Sized + 'a;
     fn run_sh_content(&self) -> Vec<String>;
+}
+
+impl<'a> From<Cow<'a, str>> for ServerSoftware {
+    #[expect(clippy::wildcard_in_or_patterns)]
+    fn from(value: Cow<'a, str>) -> Self {
+        match value.borrow() {
+            "forge" => Self::Forge,
+            "neoforge" => Self::Neoforge,
+            "fabric" => Self::Fabric,
+            "quilt" => Self::Quilt,
+            "glowstone" | _ => Self::Glowstone,
+        }
+    }
 }
 
 impl Display for ServerSoftware {
