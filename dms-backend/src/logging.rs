@@ -9,12 +9,12 @@ static mut CONSUMER: Option<LogConsumer> = None;
 static LOGGER: FfiLogger = FfiLogger;
 
 #[no_mangle]
-pub extern "C" fn mcs_register_log_consumer(callback: LogConsumer) {
+pub extern "C" fn dms_register_log_consumer(callback: LogConsumer) {
     unsafe { CONSUMER = Some(callback) };
 }
 
 #[no_mangle]
-pub extern "C" fn mcs_init_logger() {
+pub extern "C" fn dms_init_logger() {
     set_logger(&LOGGER).unwrap();
     set_max_level(log::LevelFilter::Info);
 }

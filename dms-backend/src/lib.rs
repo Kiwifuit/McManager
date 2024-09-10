@@ -7,5 +7,5 @@ pub mod versioning;
 pub mod modrinth;
 
 // Misc
-#[cfg(any(feature = "mcs", feature = "server-utils"))]
+#[cfg(feature = "server-utils")]
 pub mod server;

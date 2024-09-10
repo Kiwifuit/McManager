@@ -39,7 +39,7 @@ fn main() -> anyhow::Result<()> {
         git_sha.get(..8).unwrap()
     );
 
-    detect_feature!("mcs");
+    detect_feature!("dms");
     detect_feature!("server-utils");
     detect_feature!("all-providers");
     detect_feature!("all-parsers");

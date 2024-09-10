@@ -25,7 +25,7 @@ pub struct ServerEntrySoftware {
 
 #[no_mangle]
 #[expect(clippy::not_unsafe_ptr_arg_deref)]
-pub fn build_server(
+pub fn dms_build_server(
     name: FFIString,
     server_version: FFIString,
     loader: FFIString,
