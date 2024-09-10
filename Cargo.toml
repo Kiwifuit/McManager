@@ -11,17 +11,17 @@ members = [
 ]
 
 [workspace.dependencies]
-tempdir = "0.3.7"
+temp-dir = "0.1.13"
 log = "0.4.21"
 thiserror = "1.0.58"
 anyhow = "1.0.86"
 serde_json = "1.0.116"
-dotenv = "0.15.0"
+dotenv_rs = "0.16.1"
 
 sha1_smol = { version = "1.0.0", features = ["serde"] }
 serde = { version = "1.0.197", features = ["derive", "rc"] }
-zip = { version = "0.6.6", default-features = false, features = ["deflate"] }
-reqwest = { version = "0.12.4", features = ["json", "stream"] }
+zip = { version = "2.2.0", default-features = false, features = ["deflate"] }
+reqwest = { version = "0.12.7", features = ["json", "stream"] }
 tokio = { version = "1.37.0", features = ["full"] }
 
 [workspace.lints.clippy]

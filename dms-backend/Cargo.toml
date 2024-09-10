@@ -11,7 +11,7 @@ modparser = { path = "../modparser", optional = true }
 modrinth = { path = "../modrinth", optional = true }
 hangar = { path = "../hangar", optional = true }
 
-tempdir = { workspace = true, optional = true }
+temp-dir = { workspace = true, optional = true }
 log = { workspace = true, features = ["serde"] }
 serde.workspace = true
 serde_json.workspace = true
@@ -44,6 +44,6 @@ all-parsers = ["parser-modpack", "parser-modjar"]
 parser-modpack = ["dep:packparse"]
 parser-modjar = ["dep:modparser"]
 
-server-utils = ["dep:denji", "dep:tempdir"]
+server-utils = ["dep:denji", "dep:temp-dir"]
 
 mcs = ["all-providers", "all-parsers", "server-utils"]

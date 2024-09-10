@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use humantime::format_duration;
 use log::{info, warn};
-use tempdir::TempDir;
+use temp_dir::TempDir;
 use tokio::task::spawn;
 
 use denji::{MinecraftServer, ServerSoftware};
@@ -15,9 +15,13 @@ const CHANNEL_TIMEOUT: Duration = Duration::from_secs(90);
 async fn main() -> Result<()> {
     env_logger::init();
 
-    let root_dir = TempDir::new("test.denji.serverInstall")?.into_path();
-    let server_installer =
-        MinecraftServer::new(ServerSoftware::Forge, "1.20.4-49.1.4", "1.20.4", root_dir);
+    let temp_dir = TempDir::new().unwrap();
+    let server_installer = MinecraftServer::new(
+        ServerSoftware::Forge,
+        "1.20.4-49.1.4",
+        "1.20.4",
+        temp_dir.path(),
+    );
     let (tx, rx) = channel();
     let server_build = spawn(async move { server_installer.build_server(tx).await });
 
@@ -42,5 +46,12 @@ async fn main() -> Result<()> {
         .context("while trying to install server")?;
 
     info!("you may test the channel and close this program when finished");
-    Result::Ok(())
+
+    temp_dir.clone();
+    Ok(())
+}
+
+fn f() {
+    let temp_dir = TempDir::new().unwrap();
+    let metadata = std::fs::metadata(temp_dir.path()).unwrap();
 }
