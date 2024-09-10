@@ -258,6 +258,7 @@ dependencies = [
  "packparse",
  "serde",
  "serde_json",
+ "tempdir",
 ]
 
 [[package]]
