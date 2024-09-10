@@ -6,36 +6,35 @@ on:
 
 jobs:
   ffi:
-    name: Build backend dynlib
+    name: Build backend bin
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         platform:
-          - uname: x86-64 Windows
-            target: x86_64-pc-windows-gnu
-            dynLibName: libmcs.dll
-            releaseLibName: mcs-x86_64.dll
+          - target: x86_64-pc-windows-gnu
+            binName: dmsd.dll
+            artifactName: dms-windows-amd64.zip
 
-          - uname: x86 Windows
-            target: i686-pc-windows-gnu
-            dynLibName: libmcs.dll
-            releaseLibName: mcs-i686.dll
+          - target: i686-pc-windows-gnu
+            binName: dmsd.dll
+            artifactName: dms-windows-x86.zip
 
-          - uname: x86-64 Linux
-            target: x86_64-unknown-linux-gnu
-            dynLibName: libmcs.so
-            releaseLibName: libmcs-x86_64.so
+          - target: x86_64-unknown-linux-gnu
+            binName: libdmsd.so
+            artifactName: dms-linux-amd64.zip
 
-          - uname: x86 Linux
-            target: i686-unknown-linux-gnu
-            dynLibName: libmcs.so
-            releaseLibName: libmcs-i686.so
+          - target: i686-unknown-linux-gnu
+            binName: libdmsd.so
+            artifactName: dms-linux-x86.zip
 
-          - uname: ARM64 Linux
-            target: aarch64-unknown-linux-gnu
-            dynLibName: libmcs.so
-            releaseLibName: libmcs-aarch64.so
+          - target: armv7-unknown-linux-gnueabihf
+            binName: libdmsd.so
+            artifactName: dms-linux-armv7.zip
+
+          - target: aarch64-unknown-linux-gnu
+            binName: libdmsd.so
+            artifactName: dms-linux-arm64.zip
 
     steps:
       - name: Checkout Code
@@ -48,24 +47,25 @@ jobs:
           target: ${{ matrix.platform.target }}
           override: true
 
-      - name: Build for ${{ matrix.platform.uname }}
+      - name: Build Backend Library
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --target=${{ matrix.platform.target }} --features=mcs
+          args: --release --target=${{ matrix.platform.target }}
           use-cross: true
 
-      - name: "[1/2] Make dynlib dir"
-        run: mkdir dist
-
-      - name: "[2/2] Collect dynlibs"
-        run: cp target/${{ matrix.platform.target }}/release/${{ matrix.platform.dynLibName }} dist/${{ matrix.platform.releaseLibName }}
+      - name: Package build artifact
+        run: |
+          mkdir dist
+          mv target/${{ matrix.platform.target }}/release/${{ matrix.platform.binName }} dist/
+          cd dist && sha256sum * > checksums.sha256 && cd ..
+          zip -9rj dist dist
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          path: dist/
-          name: Dynlibs
+          path: dist.zip
+          name: ${{ matrix.platform.artifactName }}
 
   release:
     needs: ffi
@@ -75,12 +75,29 @@ jobs:
       contents: write
 
     steps:
+      - name: Prepare artifact dir
+        run: mkdir dist
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: Collect Build Artifacts
+        run: |
+          for f in artifacts/*/*; do
+            fp=$(dirname $f);
+            fn=$(basename "$fp");
+            mv "$f" "dist/$fn";
+          done
+
+          cd dist
+          sha256sum * > checksums.sha256
+          cd ..
 
       - name: Create release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2.0.8
         with:
-          files: dist/*
+          files: |
+            dist/*
           generate_release_notes: true
