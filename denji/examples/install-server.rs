@@ -20,7 +20,7 @@ async fn main() -> Result<()> {
         ServerSoftware::Forge,
         "1.20.4-49.1.4",
         "1.20.4",
-        temp_dir.path(),
+        temp_dir.path().to_owned(),
     );
     let (tx, rx) = channel();
     let server_build = spawn(async move { server_installer.build_server(tx).await });
@@ -47,11 +47,5 @@ async fn main() -> Result<()> {
 
     info!("you may test the channel and close this program when finished");
 
-    temp_dir.clone();
     Ok(())
-}
-
-fn f() {
-    let temp_dir = TempDir::new().unwrap();
-    let metadata = std::fs::metadata(temp_dir.path()).unwrap();
 }
