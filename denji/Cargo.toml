@@ -14,7 +14,7 @@ mar = { path = "../mar" }
 [dev-dependencies]
 env_logger = "0.11.5"
 humantime = "2.1.0"
-tempdir.workspace = true
+temp-dir.workspace = true
 tokio.workspace = true
 
 [lints]
