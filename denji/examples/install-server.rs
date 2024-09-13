@@ -15,7 +15,7 @@ const CHANNEL_TIMEOUT: Duration = Duration::from_secs(90);
 async fn main() -> Result<()> {
     env_logger::init();
 
-    let temp_dir = TempDir::new()?;
+    let temp_dir = TempDir::with_prefix("denji_server")?;
     let server_installer = MinecraftServer::new(
         ServerSoftware::Forge,
         "1.20.4-49.1.4",
