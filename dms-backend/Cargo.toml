@@ -46,4 +46,4 @@ parser-modjar = ["dep:modparser"]
 
 server-utils = ["dep:denji", "dep:temp-dir"]
 
-mcs = ["all-providers", "all-parsers", "server-utils"]
+dms = ["all-providers", "all-parsers", "server-utils"]
