@@ -1,9 +1,17 @@
 {
   "recommendations": [
+    // Typescript / DMS Web
     "oven.bun-vscode",
     "ms-vscode.vscode-typescript-next",
+    "bradlc.vscode-tailwindcss",
+    "stivo.tailwind-fold",
+    // Rust / DMS Backend
     "rust-lang.rust-analyzer",
     "esbenp.prettier-vscode",
-    "vadimcn.vscode-lldb"
+    "vadimcn.vscode-lldb",
+    // Misc
+    "tamasfe.even-better-toml",
+    "fill-labs.dependi",
+    "streetsidesoftware.code-spell-checker",
   ]
 }
