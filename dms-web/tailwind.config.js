@@ -27,6 +27,11 @@ export default {
       // Server Online/Offline indicator
       "server-offline": "#d62f2f",
       "server-online": "#2ed154",
+
+      // Dashboard: Logs & Console
+      "dark-dashboard-title": "#252525",
+      "dark-dashboard-body": "#303030",
+      "dark-dashboard-button": "#353535",
     },
   },
   plugins: [],
