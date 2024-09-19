@@ -32,6 +32,7 @@ export default {
       "dark-dashboard-title": "#252525",
       "dark-dashboard-body": "#303030",
       "dark-dashboard-button": "#353535",
+      "dark-dashboard-text": "#505050",
     },
   },
   plugins: [],

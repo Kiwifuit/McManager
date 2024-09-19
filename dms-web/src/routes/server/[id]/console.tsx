@@ -7,9 +7,20 @@ import "./server.css";
 export default function Dashboard() {
   const params = useParams();
   const displayName = params.id.replaceAll("-", " ").toUpperCase();
-  // Initial console logs
-  // should be empty during 1.0
   const [logs, setLogs] = createSignal<string[]>([]);
+  const [currentCommand, setCommand] = createSignal<string>("");
+
+  // Console input handler
+  const sendCommand = (command: string) => {
+    console.log(`Command sent: ${command}`);
+    onNewLog(`New command: ${command}`);
+  };
+
+  // Console Content Updater
+  const onNewLog = (newLog: string) => {
+    setLogs([...logs(), newLog]);
+    autoScroll();
+  };
 
   // Console content autoscroll
   let consoleContent: HTMLDivElement | undefined;
@@ -20,14 +31,8 @@ export default function Dashboard() {
     }
   };
 
-  const onNewLog = (newLog: string) => {
-    setLogs([...logs(), newLog]);
-    autoScroll();
-  };
-
-  let dev_intervalid: NodeJS.Timeout;
-
   onMount(() => {
+    // Console log updater
     if (typeof MutationObserver !== undefined) {
       const newContentObserver = new MutationObserver(autoScroll);
 
@@ -41,19 +46,11 @@ export default function Dashboard() {
 
       onCleanup(() => {
         newContentObserver.disconnect();
-        clearInterval(dev_intervalid);
       });
     }
 
     autoScroll();
   });
-
-  // pre-1.0 only
-  let counter = 0;
-  dev_intervalid = setInterval(() => {
-    onNewLog(`new log line ${counter}`);
-    counter++;
-  }, 1000);
 
   return (
     <main id="dashboard-ui">
@@ -74,6 +71,25 @@ export default function Dashboard() {
           <For each={logs()} fallback={<p>Fetching logs...</p>}>
             {(log) => <p class="font-mono">{log}</p>}
           </For>
+        </div>
+        <div id="console-input" class="flex">
+          <input
+            class="dark:bg-dark-dashboard-text grow px-2 py-1 text-light-fg dark:text-dark-fg"
+            type="text"
+            onInput={(e) => {
+              e.preventDefault();
+
+              setCommand(e.target.value);
+            }}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                sendCommand(currentCommand());
+                setCommand("");
+                e.currentTarget.value = "";
+              }
+            }}
+          />
+          <button class="px-2 py-1 dark:bg-dark-dashboard-button">Enter</button>
         </div>
       </div>
     </main>
