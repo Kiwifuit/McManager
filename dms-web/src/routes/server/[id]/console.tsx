@@ -1,5 +1,6 @@
 import { Title } from "@solidjs/meta";
 import { useParams } from "@solidjs/router";
+import { AiOutlineEnter } from "solid-icons/ai";
 import { createSignal, For, onCleanup, onMount } from "solid-js";
 import DashboardNavBar from "~/components/ServerDashboard";
 import "./server.css";
@@ -10,16 +11,22 @@ export default function Dashboard() {
   const [logs, setLogs] = createSignal<string[]>([]);
   const [currentCommand, setCommand] = createSignal<string>("");
 
-  // Console input handler
-  const sendCommand = (command: string) => {
-    console.log(`Command sent: ${command}`);
-    onNewLog(`New command: ${command}`);
-  };
-
   // Console Content Updater
   const onNewLog = (newLog: string) => {
     setLogs([...logs(), newLog]);
     autoScroll();
+  };
+
+  // Command Handler + Input Field
+  let consoleCommandInput: HTMLInputElement | undefined;
+  const handleCommand = () => {
+    console.log(`Command sent: ${currentCommand()}`);
+    onNewLog(`New command: ${currentCommand()}`);
+    setCommand("");
+
+    if (consoleCommandInput) {
+      consoleCommandInput.value = "";
+    }
   };
 
   // Console content autoscroll
@@ -74,8 +81,10 @@ export default function Dashboard() {
         </div>
         <div id="console-input" class="flex">
           <input
-            class="dark:bg-dark-dashboard-text grow px-2 py-1 text-light-fg dark:text-dark-fg"
+            class="grow px-2 py-1 text-light-fg outline-none dark:bg-dark-dashboard-text dark:text-dark-fg"
             type="text"
+            placeholder="test!"
+            ref={consoleCommandInput}
             onInput={(e) => {
               e.preventDefault();
 
@@ -83,13 +92,17 @@ export default function Dashboard() {
             }}
             onKeyPress={(e) => {
               if (e.key === "Enter") {
-                sendCommand(currentCommand());
-                setCommand("");
-                e.currentTarget.value = "";
+                handleCommand();
               }
             }}
           />
-          <button class="px-2 py-1 dark:bg-dark-dashboard-button">Enter</button>
+          <button
+            class="px-2 py-1 dark:bg-dark-dashboard-button"
+            onclick={handleCommand}
+            disabled={currentCommand().trim() === ""}
+          >
+            <AiOutlineEnter />
+          </button>
         </div>
       </div>
     </main>
