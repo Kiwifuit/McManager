@@ -45,7 +45,7 @@ export default function Dashboard() {
 
       // Dev stuff
       setTimeout(() => {
-        for (let i = 0; i <= 1000; i++) {
+        for (let i = 0; i <= 30; i++) {
           onNewLog(`dev log: ${i}`);
         }
       }, 500);
@@ -61,14 +61,14 @@ export default function Dashboard() {
       <div class="col-start-2 mx-4 mt-3 overflow-x-auto">
         <div
           id="log-title"
-          class="flex h-9 content-center p-5 dark:bg-dark-dashboard-title"
+          class="bg-light-dashboard-title flex h-9 content-center p-5 dark:bg-dark-dashboard-title"
         >
           <h1 class="grow self-center text-lg font-bold">Logs</h1>
           <div class="flex gap-3 self-center">
-            <button class="rounded-md p-2 dark:bg-dark-dashboard-button">
+            <button class="bg-light-dashboard-button rounded-md p-2 dark:bg-dark-dashboard-button">
               <BiSolidCopyAlt />
             </button>
-            <button class="rounded-md p-2 dark:bg-dark-dashboard-button">
+            <button class="bg-light-dashboard-button rounded-md p-2 dark:bg-dark-dashboard-button">
               <FaSolidUpload />
             </button>
           </div>
@@ -76,7 +76,7 @@ export default function Dashboard() {
         <div
           id="log-content"
           ref={consoleContent}
-          class="max-h-[500px] overflow-auto text-nowrap p-5 font-mono dark:bg-dark-dashboard-body"
+          class="bg-light-dashboard-body max-h-[500px] overflow-auto text-nowrap p-5 font-mono dark:bg-dark-dashboard-body"
         >
           <table class="table-auto">
             <For each={logs()} fallback={<p>loading...</p>}>

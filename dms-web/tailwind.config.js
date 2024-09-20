@@ -33,6 +33,13 @@ export default {
       "dark-dashboard-body": "#303030",
       "dark-dashboard-button": "#353535",
       "dark-dashboard-text": "#404040",
+      "dark-placeholder-text": "#cacaca",
+
+      "light-dashboard-title": "#a0a0a0",
+      "light-dashboard-body": "#909090",
+      "light-dashboard-button": "#858585",
+      "light-dashboard-text": "#757575",
+      "light-placeholder-text": "#3c3c3c"
     },
   },
   plugins: [],

@@ -22,6 +22,7 @@ export default function Dashboard() {
   const handleCommand = () => {
     console.log(`Command sent: ${currentCommand()}`);
     onNewLog(`New command: ${currentCommand()}`);
+    onNewLog(`Command Response`);
     setCommand("");
 
     if (consoleCommandInput) {
@@ -66,14 +67,14 @@ export default function Dashboard() {
       <div class="col-start-2 mx-4 mt-3 overflow-x-auto">
         <div
           id="log-title"
-          class="flex h-9 content-center p-5 dark:bg-dark-dashboard-title"
+          class="bg-light-dashboard-title flex h-9 content-center p-5 dark:bg-dark-dashboard-title"
         >
           <h1 class="grow self-center text-lg font-bold">Console</h1>
         </div>
         <div
           id="console-content"
           ref={consoleContent}
-          class="h-[500px] overflow-y-auto p-5 font-mono dark:bg-dark-dashboard-body"
+          class="bg-light-dashboard-body h-[500px] overflow-y-auto p-5 font-mono dark:bg-dark-dashboard-body"
         >
           <For each={logs()} fallback={<p>Fetching logs...</p>}>
             {(log) => <p class="font-mono">{log}</p>}
@@ -81,9 +82,9 @@ export default function Dashboard() {
         </div>
         <div id="console-input" class="flex">
           <input
-            class="grow px-2 py-1 text-light-fg outline-none dark:bg-dark-dashboard-text dark:text-dark-fg"
+            class="bg-light-dashboard-text placeholder:text-light-placeholder-text dark:placeholder:text-dark-placeholder-text grow px-2 py-1 text-light-fg outline-none placeholder:italic dark:bg-dark-dashboard-text dark:text-dark-fg"
             type="text"
-            placeholder="test!"
+            placeholder="> say hello world!"
             ref={consoleCommandInput}
             onInput={(e) => {
               e.preventDefault();
@@ -97,7 +98,7 @@ export default function Dashboard() {
             }}
           />
           <button
-            class="px-2 py-1 dark:bg-dark-dashboard-button"
+            class="bg-light-dashboard-button px-2 py-1 dark:bg-dark-dashboard-button"
             onclick={handleCommand}
             disabled={currentCommand().trim() === ""}
           >
