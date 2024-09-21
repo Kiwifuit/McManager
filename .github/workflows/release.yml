@@ -13,27 +13,27 @@ jobs:
       matrix:
         platform:
           - target: x86_64-pc-windows-gnu
-            binName: dmsd.dll
+            binName: dmsb.dll
             artifactName: dms-windows-amd64.zip
 
           - target: i686-pc-windows-gnu
-            binName: dmsd.dll
+            binName: dmsb.dll
             artifactName: dms-windows-x86.zip
 
           - target: x86_64-unknown-linux-gnu
-            binName: libdmsd.so
+            binName: libdmsb.so
             artifactName: dms-linux-amd64.zip
 
           - target: i686-unknown-linux-gnu
-            binName: libdmsd.so
+            binName: libdmsb.so
             artifactName: dms-linux-x86.zip
 
           - target: armv7-unknown-linux-gnueabihf
-            binName: libdmsd.so
+            binName: libdmsb.so
             artifactName: dms-linux-armv7.zip
 
           - target: aarch64-unknown-linux-gnu
-            binName: libdmsd.so
+            binName: libdmsb.so
             artifactName: dms-linux-arm64.zip
 
     steps:
