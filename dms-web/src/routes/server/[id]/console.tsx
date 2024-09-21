@@ -1,13 +1,16 @@
 import { Title } from "@solidjs/meta";
 import { useParams } from "@solidjs/router";
+import { BiRegularNoSignal } from "solid-icons/bi";
 import { BsArrowReturnLeft } from "solid-icons/bs";
-import { createSignal, For, onCleanup, onMount } from "solid-js";
+import { createSignal, For, Match, onCleanup, onMount, Switch } from "solid-js";
 import DashboardNavBar from "~/components/ServerDashboard";
 import "./server.css";
 
 export default function Dashboard() {
   const params = useParams();
   const displayName = params.id.replaceAll("-", " ").toUpperCase();
+  const offline = false;
+
   const [logs, setLogs] = createSignal<string[]>([]);
   const [currentCommand, setCommand] = createSignal<string>("");
 
@@ -71,40 +74,55 @@ export default function Dashboard() {
         >
           <h1 class="grow self-center text-lg font-bold">Console</h1>
         </div>
-        <div
-          id="console-content"
-          ref={consoleContent}
-          class="h-[500px] overflow-y-auto bg-light-dashboard-body p-5 font-mono dark:bg-dark-dashboard-body"
-        >
-          <For each={logs()} fallback={<p>Fetching logs...</p>}>
-            {(log) => <p class="font-mono">{log}</p>}
-          </For>
-        </div>
-        <div id="console-input" class="flex">
-          <input
-            class="grow bg-light-dashboard-text px-2 py-1 text-light-fg outline-none placeholder:italic placeholder:text-light-placeholder-text dark:bg-dark-dashboard-text dark:text-dark-fg dark:placeholder:text-dark-placeholder-text"
-            type="text"
-            placeholder="> say hello world!"
-            ref={consoleCommandInput}
-            onInput={(e) => {
-              e.preventDefault();
+        <Switch>
+          <Match when={!offline}>
+            <div
+              id="console-content"
+              ref={consoleContent}
+              class="h-[500px] overflow-y-auto bg-light-dashboard-body p-5 font-mono dark:bg-dark-dashboard-body"
+            >
+              <For each={logs()} fallback={<p>Fetching logs...</p>}>
+                {(log) => <p class="font-mono">{log}</p>}
+              </For>
+            </div>
+            <div id="console-input" class="flex">
+              <input
+                class="grow bg-light-dashboard-text px-2 py-1 text-light-fg outline-none placeholder:italic placeholder:text-light-placeholder-text dark:bg-dark-dashboard-text dark:text-dark-fg dark:placeholder:text-dark-placeholder-text"
+                type="text"
+                placeholder="> say hello world!"
+                ref={consoleCommandInput}
+                onInput={(e) => {
+                  e.preventDefault();
 
-              setCommand(e.target.value);
-            }}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                handleCommand();
-              }
-            }}
-          />
-          <button
-            class="bg-light-dashboard-button px-2 py-1 dark:bg-dark-dashboard-button"
-            onclick={handleCommand}
-            disabled={currentCommand().trim() === ""}
-          >
-            <BsArrowReturnLeft />
-          </button>
-        </div>
+                  setCommand(e.target.value);
+                }}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleCommand();
+                  }
+                }}
+              />
+              <button
+                class="bg-light-dashboard-button px-2 py-1 dark:bg-dark-dashboard-button"
+                onclick={handleCommand}
+                disabled={currentCommand().trim() === ""}
+              >
+                <BsArrowReturnLeft />
+              </button>
+            </div>
+          </Match>
+          <Match when={offline}>
+            <div
+              id="console-offline-content"
+              class="grid h-[500px] overflow-y-auto bg-light-dashboard-body p-5 dark:bg-dark-dashboard-body"
+            >
+              <p class="m-auto flex flex-row justify-center gap-3 text-6xl">
+                <BiRegularNoSignal />
+                Offline
+              </p>
+            </div>
+          </Match>
+        </Switch>
       </div>
     </main>
   );
