@@ -32,7 +32,9 @@ export default createHandler(() => (
           {assets}
         </head>
         <body class="bg-light-bg text-light-fg dark:bg-dark-bg dark:text-dark-fg">
-          <div id="app">{children}</div>
+          <div id="app" class="flex min-h-screen flex-col">
+            {children}
+          </div>
           {scripts}
         </body>
       </html>

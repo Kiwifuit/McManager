@@ -1,18 +1,24 @@
 import { Title } from "@solidjs/meta";
+import { FaSolidPlus } from "solid-icons/fa";
+import { createSignal } from "solid-js";
 import ServerListItem from "~/components/ServerListItem";
 
 export default function Home() {
-  const props = {
-    id: "server1",
-    display_name: "Display name for test",
-    description: "test description",
-  };
+  const [isOpen, setOpen] = createSignal(false);
 
   return (
     <main class="mt-32 grid w-screen place-items-center">
       <Title>Servers</Title>
       <div class="w-1/2 font-extralight">
-        <h1 class="mb-5 text-4xl font-bold">Servers:</h1>
+        <div class="mb-5 flex flex-row">
+          <h1 class="grow text-4xl font-bold">Servers:</h1>
+          <a
+            class="grid rounded bg-light-dashboard-button px-3 dark:bg-dark-dashboard-button"
+            href="/new"
+          >
+            <FaSolidPlus class="m-auto" />
+          </a>
+        </div>
         <ServerListItem
           id="server-1"
           online={true}
