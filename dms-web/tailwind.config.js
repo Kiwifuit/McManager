@@ -2,7 +2,12 @@
 export default {
   content: ["./src/**/*.{tsx,ts}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        mono: "FiraCode Nerd Font",
+        sans: "Inter"
+      },
+    },
     colors: {
       // Dark Mode
       "dark-bg": "#202020",

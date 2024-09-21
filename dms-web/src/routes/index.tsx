@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main class="mt-32 grid w-screen place-items-center">
       <Title>Servers</Title>
-      <div class="w-1/2">
+      <div class="w-1/2 font-extralight">
         <h1 class="mb-5 text-4xl font-bold">Servers:</h1>
         <ServerListItem
           id="server-1"

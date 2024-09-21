@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  @font-face {
+    font-family: "FiraCode Nerd Font";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/fonts/FiraCodeNerdFont-Regular.ttf);
+  }
+
+  @font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 100 900;
+    src: url(/fonts/Inter-VariableFont_slnt,wght.ttf);
+  }
+}
+
 footer li:not(:last-child)::after {
   content: "●";
   margin-left: 0.5rem;

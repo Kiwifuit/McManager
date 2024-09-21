@@ -87,7 +87,7 @@ export default function Dashboard() {
             </div>
             <div id="console-input" class="flex">
               <input
-                class="grow bg-light-dashboard-text px-2 py-1 text-light-fg outline-none placeholder:italic placeholder:text-light-placeholder-text dark:bg-dark-dashboard-text dark:text-dark-fg dark:placeholder:text-dark-placeholder-text"
+                class="grow bg-light-dashboard-text px-2 py-1 font-mono text-light-fg outline-none placeholder:italic placeholder:text-light-placeholder-text dark:bg-dark-dashboard-text dark:text-dark-fg dark:placeholder:text-dark-placeholder-text"
                 type="text"
                 placeholder="> say hello world!"
                 ref={consoleCommandInput}
