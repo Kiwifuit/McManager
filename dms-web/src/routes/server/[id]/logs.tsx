@@ -1,3 +1,4 @@
+import { writeClipboard } from "@solid-primitives/clipboard";
 import { Title } from "@solidjs/meta";
 import { useParams } from "@solidjs/router";
 import { BiSolidCopyAlt } from "solid-icons/bi";
@@ -77,7 +78,10 @@ export default function Dashboard() {
         >
           <h1 class="grow self-center text-lg font-bold">Logs</h1>
           <div class="flex gap-3 self-center">
-            <button class="rounded-md bg-light-dashboard-button p-2 dark:bg-dark-dashboard-button">
+            <button
+              class="rounded-md bg-light-dashboard-button p-2 dark:bg-dark-dashboard-button"
+              onClick={() => copyLogs(logs)}
+            >
               <BiSolidCopyAlt />
             </button>
             <button
@@ -117,7 +121,7 @@ function LogRow(props: { log_line: string; lineno: number }) {
 
 async function uploadLogs(logs: Accessor<string[]>) {
   let log_content = logs().join("\n");
-  let log_line_count = logs().length;
+  // let log_line_count = logs().length;
 
   let response = await fetch("https://api.mclo.gs/1/log", {
     method: "POST",
@@ -147,4 +151,8 @@ async function uploadLogs(logs: Accessor<string[]>) {
   } else {
     alert(`Error while uploading logs: ${uploaded_log.error}`);
   }
+}
+
+function copyLogs(logs: Accessor<string[]>) {
+  writeClipboard(logs().join("\n"));
 }

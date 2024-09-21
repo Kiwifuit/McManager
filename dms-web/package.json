@@ -8,6 +8,7 @@
     "version": "vinxi version"
   },
   "dependencies": {
+    "@solid-primitives/clipboard": "^1.5.10",
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.14.1",
     "@solidjs/start": "^1.0.6",
