@@ -1,32 +1,43 @@
-# SolidStart
+# DMS Web Server
 
-Everything you need to build a Solid project, powered by [`solid-start`](https://start.solidjs.com);
+## About: Rust Translation Layer
 
-## Creating a project
+Since I will start working on the FFI layer
+that will be the backbone of this project. This
+means that moving forward, ***Bun is required***,
+and support for NodeJS will not be prioritized.
 
-```bash
-# create a new project in the current directory
-npm init solid@latest
+A PR adding support for NodeJS is highly
+appreciated, but I will not be personally
+working on NodeJS support because of my
+tech stack listed [here](https://github.com/Kiwifuit/DMS/pull/6) in the *Info* section.
 
-# create a new project in my-app
-npm init solid@latest my-app
+## Development
+
+For development, both Cargo and Bun are
+prerequisites. If you haven't already, please
+install [Bun](https://bun.sh/) and [Rust](https://rustup.rs/)
+
+`dms-backend` must be built first. Make
+sure you are in the `dms-backend` directory
+and run:
+
+> [!IMPORTANT]
+> This step only needs to be done when you
+> are developing `dms-web`. For `dms-backend`
+> you need to recompile the shared lib
+
+```
+cargo build --features dms
 ```
 
-## Developing
+After this command succeeds, copy the `libdmsb`
+shared library (`.so` for Linux, `.dll` for
+Windows) and copy it to the `dms-web` directory.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+After copying, make sure you are in the
+`dms-web` directory and run the dev server:
 
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
-
-## Building
-
-Solid apps are built with _presets_, which optimise your project for deployment to different environments.
-
-By default, `npm run build` will generate a Node app that you can run with `npm start`. To use a different preset, add it to the `devDependencies` in `package.json` and specify in your `app.config.js`.
-
-## This project was created with the [Solid CLI](https://solid-cli.netlify.app)
+bun dev
+```

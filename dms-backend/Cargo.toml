@@ -26,7 +26,7 @@ anyhow.workspace = true
 lazy_static = "1.5.0"
 
 [lib]
-name = "dmsd"
+name = "dmsb"
 crate-type = ["cdylib", "rlib"]
 
 [lints]

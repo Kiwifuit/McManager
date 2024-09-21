@@ -1,3 +1,7 @@
 target/
 **/samples/
 **/.env
+
+**/*.so
+**/*.dll
+**/*.dylib
