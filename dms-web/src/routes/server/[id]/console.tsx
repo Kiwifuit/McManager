@@ -1,6 +1,6 @@
 import { Title } from "@solidjs/meta";
 import { useParams } from "@solidjs/router";
-import { AiOutlineEnter } from "solid-icons/ai";
+import { BsArrowReturnLeft } from "solid-icons/bs";
 import { createSignal, For, onCleanup, onMount } from "solid-js";
 import DashboardNavBar from "~/components/ServerDashboard";
 import "./server.css";
@@ -21,7 +21,7 @@ export default function Dashboard() {
   let consoleCommandInput: HTMLInputElement | undefined;
   const handleCommand = () => {
     console.log(`Command sent: ${currentCommand()}`);
-    onNewLog(`New command: ${currentCommand()}`);
+    onNewLog(`> ${currentCommand()}`);
     onNewLog(`Command Response`);
     setCommand("");
 
@@ -67,14 +67,14 @@ export default function Dashboard() {
       <div class="col-start-2 mx-4 mt-3 overflow-x-auto">
         <div
           id="log-title"
-          class="bg-light-dashboard-title flex h-9 content-center p-5 dark:bg-dark-dashboard-title"
+          class="flex h-9 content-center bg-light-dashboard-title p-5 dark:bg-dark-dashboard-title"
         >
           <h1 class="grow self-center text-lg font-bold">Console</h1>
         </div>
         <div
           id="console-content"
           ref={consoleContent}
-          class="bg-light-dashboard-body h-[500px] overflow-y-auto p-5 font-mono dark:bg-dark-dashboard-body"
+          class="h-[500px] overflow-y-auto bg-light-dashboard-body p-5 font-mono dark:bg-dark-dashboard-body"
         >
           <For each={logs()} fallback={<p>Fetching logs...</p>}>
             {(log) => <p class="font-mono">{log}</p>}
@@ -82,7 +82,7 @@ export default function Dashboard() {
         </div>
         <div id="console-input" class="flex">
           <input
-            class="bg-light-dashboard-text placeholder:text-light-placeholder-text dark:placeholder:text-dark-placeholder-text grow px-2 py-1 text-light-fg outline-none placeholder:italic dark:bg-dark-dashboard-text dark:text-dark-fg"
+            class="grow bg-light-dashboard-text px-2 py-1 text-light-fg outline-none placeholder:italic placeholder:text-light-placeholder-text dark:bg-dark-dashboard-text dark:text-dark-fg dark:placeholder:text-dark-placeholder-text"
             type="text"
             placeholder="> say hello world!"
             ref={consoleCommandInput}
@@ -102,7 +102,7 @@ export default function Dashboard() {
             onclick={handleCommand}
             disabled={currentCommand().trim() === ""}
           >
-            <AiOutlineEnter />
+            <BsArrowReturnLeft />
           </button>
         </div>
       </div>
