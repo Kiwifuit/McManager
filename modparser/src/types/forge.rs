@@ -98,27 +98,41 @@ impl<'de> Deserialize<'de> for ForgeModVersion {
       where
         E: serde::de::Error,
       {
-        match value {
-          "*" => Ok(ForgeModVersion::Any),
-          version
-            if version
-              .chars()
-              .nth(0)
-              .ok_or(serde::de::Error::custom(
-                "expected version string to not be empty (version.char().nth(0) returned None)",
-              ))?
-              .is_numeric() =>
-          {
-            Ok(ForgeModVersion::SpecificVersion(
-              version.parse().map_err(serde::de::Error::custom)?,
-            ))
-          }
-          version => Ok(if version.starts_with('[') {
-            ForgeModVersion::VersionRange(version.parse().map_err(serde::de::Error::custom)?)
-          } else {
-            ForgeModVersion::SpecificVersion(version.parse().map_err(serde::de::Error::custom)?)
-          }),
+        if value == "*" {
+          return Ok(ForgeModVersion::Any);
         }
+
+        if value.starts_with('[') {
+          return Ok(ForgeModVersion::SpecificVersion(
+            value.parse().map_err(serde::de::Error::custom)?,
+          ));
+        }
+
+        Ok(ForgeModVersion::SpecificVersion(
+          value.parse().map_err(serde::de::Error::custom)?,
+        ))
+
+        // match value {
+        //   "*" => Ok(ForgeModVersion::Any),
+        //   version
+        //     if version
+        //       .chars()
+        //       .nth(0)
+        //       .ok_or(serde::de::Error::custom(
+        //         "expected version string to not be empty (version.char().nth(0) returned None)",
+        //       ))?
+        //       .is_numeric() =>
+        //   {
+        //     Ok(ForgeModVersion::SpecificVersion(
+        //       version.parse().map_err(serde::de::Error::custom)?,
+        //     ))
+        //   }
+        //   version => Ok(if version.starts_with('[') {
+        //     ForgeModVersion::VersionRange(version.parse().map_err(serde::de::Error::custom)?)
+        //   } else {
+        //     ForgeModVersion::SpecificVersion(version.parse().map_err(serde::de::Error::custom)?)
+        //   }),
+        // }
       }
 
       fn visit_map<A>(self, mut access: A) -> Result<ForgeModVersion, A::Error>
