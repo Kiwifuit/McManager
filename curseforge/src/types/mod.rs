@@ -64,7 +64,6 @@ mod tests {
 
     let data = serde_json::from_str::<CurseResponse<TestStruct>>(&json_data);
 
-    dbg!(&data);
     assert!(data.is_ok());
     assert_eq!(data.unwrap().name, "Samuel L Jackson".to_string());
   }
