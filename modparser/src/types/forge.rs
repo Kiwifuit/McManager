@@ -100,9 +100,19 @@ impl<'de> Deserialize<'de> for ForgeModVersion {
       {
         match value {
           "*" => Ok(ForgeModVersion::Any),
-          version if version.chars().nth(0).unwrap().is_numeric() => Ok(
-            ForgeModVersion::SpecificVersion(version.parse().map_err(serde::de::Error::custom)?),
-          ),
+          version
+            if version
+              .chars()
+              .nth(0)
+              .ok_or(serde::de::Error::custom(
+                "expected version string to not be empty (version.char().nth(0) returned None)",
+              ))?
+              .is_numeric() =>
+          {
+            Ok(ForgeModVersion::SpecificVersion(
+              version.parse().map_err(serde::de::Error::custom)?,
+            ))
+          }
           version => Ok(if version.starts_with('[') {
             ForgeModVersion::VersionRange(version.parse().map_err(serde::de::Error::custom)?)
           } else {
