@@ -64,7 +64,7 @@ where
     return Err(APIError::NoDependencies);
   }
 
-  info!("Resolving dependnecies for mod {}", project.name);
+  info!("Resolving dependencies for mod {}", project.name);
   for dependency in project.dependencies.as_mut().unwrap().iter_mut() {
     let unresolved_dependency = match dependency {
       VersionDependency::Resolved(ver) => {

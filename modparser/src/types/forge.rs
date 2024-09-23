@@ -85,13 +85,13 @@ impl<'de> Deserialize<'de> for ForgeModVersion {
   where
     D: Deserializer<'de>,
   {
-    struct ModLoeaderVersionVisitor;
+    struct ModLoaderVersionVisitor;
 
-    impl<'de> Visitor<'de> for ModLoeaderVersionVisitor {
+    impl<'de> Visitor<'de> for ModLoaderVersionVisitor {
       type Value = ForgeModVersion;
 
       fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("valid string or struct representing ModLoeaderVersion variant")
+        formatter.write_str("valid string or struct representing ModLoaderVersion variant")
       }
 
       fn visit_str<E>(self, value: &str) -> Result<ForgeModVersion, E>
@@ -121,7 +121,7 @@ impl<'de> Deserialize<'de> for ForgeModVersion {
       }
     }
 
-    deserializer.deserialize_any(ModLoeaderVersionVisitor)
+    deserializer.deserialize_any(ModLoaderVersionVisitor)
   }
 }
 
@@ -187,18 +187,18 @@ impl FromStr for ModVersionRange {
   type Err = ModVersionRangeParseError;
 
   fn from_str(s: &str) -> Result<Self, Self::Err> {
-    let delimeter_loc = s.find(',');
+    let delimiter_loc = s.find(',');
     let closing_loc = s.find(']').or(s.find(')'));
     let mut is_strict_version = false;
 
-    if delimeter_loc.is_none() && closing_loc.is_none() {
+    if delimiter_loc.is_none() && closing_loc.is_none() {
       // we assume that we will find a comma somewhere
       return Err(ModVersionRangeParseError::Malformed(s.to_string()));
-    } else if delimeter_loc.is_none() && closing_loc.is_some() {
+    } else if delimiter_loc.is_none() && closing_loc.is_some() {
       // we assume that we are given a 'strict version requirement'
       // e.g. STRICTLY 1.19.2 and no other version
       is_strict_version = true;
-    } else if delimeter_loc.unwrap() == 1 {
+    } else if delimiter_loc.unwrap() == 1 {
       // we assume that we will find a minimum version at the beginning
       return Err(ModVersionRangeParseError::NoMinimum);
     }
@@ -208,14 +208,14 @@ impl FromStr for ModVersionRange {
       return Err(ModVersionRangeParseError::Unclosed);
     }
 
-    let delimeter_loc = delimeter_loc.unwrap_or(closing_loc.unwrap());
+    let delimiter_loc = delimiter_loc.unwrap_or(closing_loc.unwrap());
     let strlen = s.len();
 
-    let ver_min = s[1..delimeter_loc].parse::<ModSemver>();
+    let ver_min = s[1..delimiter_loc].parse::<ModSemver>();
     let ver_max = if is_strict_version {
       None
     } else {
-      s[delimeter_loc + 1..strlen - 1].parse::<ModSemver>().ok()
+      s[delimiter_loc + 1..strlen - 1].parse::<ModSemver>().ok()
     };
     let mode = if is_strict_version {
       ModVersionRangeMode::None
