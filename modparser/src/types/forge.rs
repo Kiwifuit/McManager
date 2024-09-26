@@ -80,6 +80,43 @@ pub enum ForgeModVersion {
   SpecificVersion(ModSemver),
 }
 
+impl ModVersionRange {
+  fn within_range(&self, other: &ModSemver) -> bool {
+    match self.mode {
+      ModVersionRangeMode::None => {
+        panic!("this is a weird case. `ModVersionRange.mode` is `None`!")
+      }
+      ModVersionRangeMode::Between => {
+        self.from < *other
+          && if let Some(to) = &self.to {
+            other < to
+          } else {
+            true
+          }
+      }
+      ModVersionRangeMode::BetweenInclusive => {
+        self.from <= *other
+          && if let Some(to) = &self.to {
+            other <= to
+          } else {
+            true
+          }
+      }
+      ModVersionRangeMode::GreaterThan => self.from < *other,
+    }
+  }
+}
+
+impl ForgeModVersion {
+  pub fn satisfies(&self, version: &ModSemver) -> bool {
+    match &self {
+      ForgeModVersion::Any => true,
+      ForgeModVersion::SpecificVersion(this_version) => this_version == version,
+      ForgeModVersion::VersionRange(range) => range.within_range(version),
+    }
+  }
+}
+
 impl<'de> Deserialize<'de> for ForgeModVersion {
   fn deserialize<D>(deserializer: D) -> Result<ForgeModVersion, D::Error>
   where
@@ -178,6 +215,33 @@ impl FromStr for ModSemver {
       minor: a.get(1).and_then(|some_case| some_case.to_owned().ok()),
       patch: a.get(2).and_then(|some_case| some_case.to_owned().ok()),
     })
+  }
+}
+
+impl Ord for ModSemver {
+  fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+    self
+      .major
+      .unwrap_or_default()
+      .cmp(&other.major.unwrap_or_default())
+      .then(
+        self
+          .minor
+          .unwrap_or_default()
+          .cmp(&other.minor.unwrap_or_default()),
+      )
+      .then(
+        self
+          .patch
+          .unwrap_or_default()
+          .cmp(&other.patch.unwrap_or_default()),
+      )
+  }
+}
+
+impl PartialOrd for ModSemver {
+  fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    Some(self.cmp(other))
   }
 }
 
@@ -503,6 +567,70 @@ mod tests {
     );
 
     assert_eq!(mod_version.mode, ModVersionRangeMode::GreaterThan)
+  }
+
+  #[test]
+  fn version_range_satisfies_inclusive() {
+    let version = "[1.2.3,4.5.6]".parse::<ModVersionRange>();
+    let version_within = "4.5.6".parse::<ModSemver>();
+    let version_outside = "9.3.4".parse::<ModSemver>();
+
+    assert!(version.is_ok());
+    assert!(version_within.is_ok());
+    assert!(version_outside.is_ok());
+
+    let version = version.unwrap();
+    let version_within = version_within.unwrap();
+    let version_outside = version_outside.unwrap();
+
+    assert!(version.within_range(&version_within));
+    assert!(!version.within_range(&version_outside));
+  }
+
+  #[test]
+  fn version_range_satisfies_exclusive() {
+    let version = "[1.2.3,4.5.6)".parse::<ModVersionRange>();
+    let version_within = "4.5.5".parse::<ModSemver>();
+    let version_outside = "4.5.6".parse::<ModSemver>();
+
+    assert!(version.is_ok());
+    assert!(version_within.is_ok());
+    assert!(version_outside.is_ok());
+
+    let version = version.unwrap();
+    let version_within = version_within.unwrap();
+    let version_outside = version_outside.unwrap();
+
+    assert!(version.within_range(&version_within));
+    assert!(!version.within_range(&version_outside));
+  }
+
+  #[test]
+  fn version_range_satisfies_greater() {
+    let version = "[1.2.3,)".parse::<ModVersionRange>();
+    let version_within = "1.3.4".parse::<ModSemver>();
+    let version_outside = "1.2.2".parse::<ModSemver>();
+
+    assert!(version.is_ok());
+    assert!(version_within.is_ok());
+    assert!(version_outside.is_ok());
+
+    let version = version.unwrap();
+    let version_within = version_within.unwrap();
+    let version_outside = version_outside.unwrap();
+
+    assert!(version.within_range(&version_within));
+    assert!(!version.within_range(&version_outside));
+  }
+
+  #[test]
+  fn mod_sem_version_compare() {
+    let mod_a_version = "1.2.3".parse::<ModSemver>();
+    let mod_b_version = "1.2.4".parse::<ModSemver>();
+
+    assert!(mod_a_version.is_ok());
+    assert!(mod_b_version.is_ok());
+    assert!(mod_b_version.unwrap() > mod_a_version.unwrap());
   }
 
   #[test]
