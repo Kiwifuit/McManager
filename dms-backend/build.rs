@@ -24,6 +24,9 @@ macro_rules! detect_feature {
 }
 
 fn main() -> anyhow::Result<()> {
+  // Grab the HEAD commit hash and set it to
+  // these 2 compile-time variables:
+
   let bruh = get_git_sha_file()
     .or_else(get_git_sha_command)
     .context("while attempting to resolve git HEAD commit")
@@ -39,6 +42,7 @@ fn main() -> anyhow::Result<()> {
     git_sha.get(..8).unwrap()
   );
 
+  // Feature listing
   detect_feature!("dms");
   detect_feature!("server-utils");
   detect_feature!("all-providers");
