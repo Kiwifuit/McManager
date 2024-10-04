@@ -49,7 +49,7 @@ pub struct ForgeModDependency {
   #[serde(rename = "versionRange")]
   pub version_range: ForgeModVersion,
   pub ordering: Option<Rc<str>>,
-  pub side: Rc<str>,
+  pub side: Option<Rc<str>>,
 }
 
 #[derive(Debug, PartialEq, Eq)]
