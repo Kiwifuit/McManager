@@ -9,7 +9,7 @@ static mut CONSUMER: Option<LogConsumer> = None;
 static LOGGER: FfiLogger = FfiLogger;
 
 #[no_mangle]
-pub extern "C" fn dms_register_log_consumer(callback: LogConsumer) {
+pub extern "C" fn dms_register_logger(callback: LogConsumer) {
   unsafe { CONSUMER = Some(callback) };
 }
 

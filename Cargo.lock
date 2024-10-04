@@ -278,6 +278,7 @@ dependencies = [
  "serde",
  "serde_json",
  "temp-dir",
+ "thiserror",
 ]
 
 [[package]]
